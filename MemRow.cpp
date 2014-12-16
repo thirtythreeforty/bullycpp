@@ -9,11 +9,11 @@
 namespace bullycpp {
 
 MemRow::MemRow(const MemType type, const uint32_t startAddress, const uint32_t rowNumber, const PicDevice::Family family, const uint32_t pm33f_rowsize)
-	: rowNumber(rowNumber)
-	, family(family)
-	, type(type)
+	: data(pm33f_rowsize * 2, 0xFFFF)
 	, empty(true)
-	, data(pm33f_rowsize * 2, 0xFFFF)
+	, type(type)
+	, rowNumber(rowNumber)
+	, family(family)
 {
 	size_t bufferSize;
 
@@ -48,7 +48,7 @@ MemRow::MemRow(const MemType type, const uint32_t startAddress, const uint32_t r
 	this->buffer.insert(std::begin(this->buffer), bufferSize, 0xFF);
 }
 
-bool MemRow::insertData(uint32_t address, const std::vector<uint8_t> data, size_t offset)
+bool MemRow::insertData(uint32_t address, std::istream& stream)
 {
 	if(address < this->address)
 		return false;
@@ -61,7 +61,7 @@ bool MemRow::insertData(uint32_t address, const std::vector<uint8_t> data, size_
 
 	this->empty = false;
 
-	this->data[address - this->address] = Hex4ToUint16(data, offset);
+	this->data[address - this->address] = parseHex<uint16_t>(stream);
 	return true;
 }
 
@@ -92,7 +92,7 @@ void MemRow::formatData()
 	}
 }
 
-void MemRow::sendData(std::iostream& stream) const
+void MemRow::sendData(ISerialPort& port) const
 {
 	typedef PicBootloaderDriver::Command Command;
 	std::array<uint8_t, 4> buffer = {0, 0, 0, 0};
@@ -113,7 +113,7 @@ void MemRow::sendData(std::iostream& stream) const
 			          nthByte<2>(this->address)
 			         };
 
-			stream << buffer << this->buffer;
+			port << buffer << this->buffer;
 
 			std::cout << "Mem Address: " << std::hex << this->address << std::endl;
 
@@ -125,7 +125,7 @@ void MemRow::sendData(std::iostream& stream) const
 			          nthByte<2>(this->address)
 			         };
 
-			stream << buffer << this->buffer;
+			port << buffer << this->buffer;
 
 			break;
 		case MemType::Configuration:
@@ -135,13 +135,13 @@ void MemRow::sendData(std::iostream& stream) const
 			          this->buffer[1]
 			         };
 
-			stream << buffer;
+			port << buffer;
 		}
-		stream >> buffer;
+		port >> buffer;
 	}
 }
 
-bool MemRow::readData(std::iostream& stream)
+bool MemRow::readData(ISerialPort& port)
 {
 	typedef PicBootloaderDriver::Command Command;
 
@@ -157,8 +157,8 @@ bool MemRow::readData(std::iostream& stream)
 		          nthByte<2>(this->address)
 		         };
 
-		stream << buffer;
-		stream >> this->buffer;
+		port << buffer;
+		port >> this->buffer;
 
 		std::cout << "Mem Address: " << std::hex << this->address << std::endl;
 

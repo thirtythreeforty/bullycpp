@@ -12,20 +12,26 @@
 
 namespace bullycpp {
 
-PicBootloaderDriver::PicBootloaderDriver(std::iostream& stream)
-	: currentDevice()
+PicBootloaderDriver::PicBootloaderDriver(ISerialPort& port)
+	: port(port)
 	, configBitsEnabled(true)
 	, firmwareVersion(0)
-	, stream(stream)
-{}
+	, currentDevice()
+{
+// 	if(!this->port.good()) {
+// 		if(this->port.bad())
+// 			std::perror("Bad stream");
+// 		throw std::invalid_argument("stream not good!");
+// 	}
+}
 
 const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 {
 	std::array<uint8_t, 8> inputData;
-	uint16_t deviceID, revision, processID;
+	uint16_t deviceID = 0, revision = 0, processID = 0;
 
-	this->stream << Command::READ_ID;
-	this->stream >> inputData;
+	this->port << Command::READ_ID;
+	this->port >> inputData;
 
 	deviceID = (inputData[1] << 8) | inputData[0];
 	processID = inputData[5] >> 4;
@@ -74,15 +80,15 @@ void PicBootloaderDriver::getVersion() {
 	uint8_t majorVersion;
 
 	std::cout << "Reading firmware version...\n";
-	this->stream << Command::READ_VERSION;
-	this->stream >> majorVersion;
+	this->port << Command::READ_VERSION;
+	this->port >> majorVersion;
 
 	if(majorVersion == Command::NACK) {
 		// Old bootloader
 		this->firmwareVersion = 0;
 
 		if(!currentDevice)
-			throw new std::logic_error("Device not read!");
+			throw std::logic_error("Device not read!");
 		this->configBitsEnabled = (currentDevice->family == PicDevice::Family::PIC24H ||
 		                           currentDevice->family == PicDevice::Family::PIC24FK ||
 		                           currentDevice->family == PicDevice::Family::dsPIC33F);
@@ -97,7 +103,7 @@ void PicBootloaderDriver::getVersion() {
 	this->firmwareVersion = majorVersion;
 
 	std::array<uint8_t, 2> minorVersion;
-	this->stream >> minorVersion;
+	this->port >> minorVersion;
 
 	std::cout << "Firmware version: " << majorVersion << minorVersion[0]
 	          << ", config bits programming ";
@@ -149,7 +155,158 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 	}
 
 	while(hexFile.good()) {
+		// TODO pass line iterators around
+		std::string line;
+		std::getline(hexFile, line);
+		std::istringstream lineStream(line);
+
+		lineStream.ignore(1); // Ignore ':'
+		const uint8_t byteCount = parseHex<uint8_t>(lineStream);
+		uint16_t address = parseHex<uint16_t>(lineStream);
+		const uint8_t recordType = parseHex<uint8_t>(lineStream);
+		switch(recordType) {
+		case 0:
+			address = (address + extAddr) / 2;
+			if(!checkAddressClash(address, family)) {
+				std::cerr << "Program address in hex file clashes with bootloader location.\n"
+				          << "Aborting.  Recompile target code with appropriate linker file."
+				          << std::endl;
+				return;
+			}
+			for(unsigned int charCount = 0; charCount < byteCount * 2; charCount += 4, ++address) {
+				bool inserted = false;
+				for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
+					uint16_t data = parseHex<uint16_t>(lineStream);
+					if(!checkAddressClash(address, data, family)) {
+						std::cerr << "Program data in hex file clashes with bootloader.\n"
+						          << "Aborting.  Recompile target code with appropriate linker file."
+						          << std::endl;
+						return;
+					}
+					else if(!checkAddressClash(address, data, family, currentDevice->configPage, currentDevice->configWord)) {
+						std::cerr << "Configuration bit programming is not enabled,\n"
+						          << "but data exists on the last page of flash!\n"
+						          << "Aborting.  Enable config bit programming or change hex file."
+						          << std::endl;
+						return;
+					}
+
+					inserted = ppMemory[row].insertData(address, lineStream);
+					if(inserted)
+						break;
+				}
+				if(!inserted) {
+					std::cerr << "Bad hex file: " << std::hex << address << " out of range." << std::endl;
+					return;
+				}
+			}
+			break;
+		case 1:
+			// Do nothing
+			break;
+		case 4:
+			extAddr = parseHex<uint16_t>(lineStream) << 16;
+			break;
+		default:
+			std::cerr << "Unknown hex record type " << std::hex << recordType << std::endl;
+			return;
+		}
 	}
+
+	std::cout << "Hex file read successfully." << std::endl;
+
+	if(this->firmwareVersion < 3) {
+		// Preserve first two locations for bootloader
+		size_t rowSize;
+		size_t offset;
+
+		if(family == PicDevice::Family::dsPIC30F)
+			rowSize = MemRow::PM30F_ROW_SIZE;
+		else if(currentDevice->family == PicDevice::Family::PIC24FK)
+			rowSize = MemRow::PIC24FK_ROW_SIZE;
+		else if(currentDevice->smallRAM)
+			rowSize = MemRow::PM33F_ROW_SIZE_SMALL;
+		else
+			rowSize = MemRow::PM33F_ROW_SIZE_LARGE;
+
+		std::vector<uint8_t> data(rowSize * 3);
+
+		this->port << Command::READ_PM << 0x00 << 0x00 << 0x00;
+		this->port >> data;
+
+		throw new std::logic_error("I have no idea what's going on here.");
+	}
+
+	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
+		ppMemory[row].formatData();
+	}
+
+	ppMemoryVerify = ppMemory;
+
+	std::cout << "Programming device... ";
+	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
+		if(ppMemory[row].getType() == MemRow::MemType::Configuration && !this->configBitsEnabled)
+			continue;
+		if(!shouldSkipRow(ppMemory[row], family))
+			ppMemory[row].sendData(this->port);
+		if(ppMemory[row].getType() == MemRow::MemType::Configuration
+		   && ppMemory[row].getRowNumber() == 0
+		   && family == PicDevice::Family::PIC24H)
+			std::cout << "config bits sent. ";
+	}
+
+	std::cout << "\nVerifying... " << std::endl;
+
+	bool verifyOK = true;
+
+	// only verify program memory
+	for(unsigned int row = 0; row < MemRow::PM_SIZE; ++row) {
+		if(shouldSkipRow(ppMemory[row], family))
+			continue;
+		if(ppMemory[row].readData(this->port)) {
+			uint32_t address = ppMemory[row].getAddress();
+			for(unsigned int index = 0; index < ppMemory[row].getRowSize(); ++index, address += 2) {
+				const uint32_t expected = (ppMemoryVerify[row].getByte(3 * index + 2) << 16) +
+				                          (ppMemoryVerify[row].getByte(3 * index + 1) << 8) +
+				                          (ppMemoryVerify[row].getByte(3 * index));
+				const uint32_t got = (ppMemory[row].getByte(3 * index) << 16) +
+				                     (ppMemory[row].getByte(3 * index + 1) << 8) +
+				                     (ppMemory[row].getByte(3 * index + 2));
+
+				if(expected != got) {
+					verifyOK = false;
+					std::cerr << "Verification failed at address " << std::hex << address << "!\n"
+					          << "Expected " << std::hex << expected << ", got " << std::hex << got
+					          << std::endl;
+					break;
+				}
+			}
+		}
+		else {
+			std::cerr << "Problem reading program memory during verification." << std::endl;
+		}
+		if(!verifyOK)
+			break;
+	}
+	if(!verifyOK)
+		std::cerr << "Verification failed." << std::endl;
+
+	// Because of the way the firmware is written, we need to resend the config bytes
+	// before a reset (if programming the config bits)
+
+	if(this->configBitsEnabled) {
+		for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
+			if(ppMemory[row].getType() == MemRow::MemType::Configuration)
+				ppMemory[row].sendData(this->port);
+		}
+	}
+
+	if(this->firmwareVersion == 0 || this->configBitsEnabled)
+		this->port << Command::RESET;
+	else
+		this->port << Command::POR_RESET;
+
+	std::cout << "Done!" << std::endl;
 }
 
 void PicBootloaderDriver::parseDeviceLine(const std::string& deviceLine)

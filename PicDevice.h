@@ -21,10 +21,10 @@ public:
 	PicDevice(const std::string& name, const unsigned int id, const unsigned int processID, const Family family, const unsigned int configWord, const bool smallRAM)
 		: name(name)
 		, id(id)
-		, processID(processID)
 		, family(family)
 		, configWord(configWord)
 		, configPage((configWord / 1024) * 1024)
+		, processID(processID)
 		, smallRAM(smallRAM)
 	{}
 
@@ -33,8 +33,8 @@ public:
 	unsigned int id;
 
 	Family family;
-	unsigned int configPage;
 	unsigned int configWord;
+	unsigned int configPage;
 	unsigned int revision;
 	unsigned int processID;
 	bool smallRAM;

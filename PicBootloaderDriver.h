@@ -4,8 +4,9 @@
 #include <string>
 #include <boost/optional.hpp>
 
-#include "PicDevice.h"
+#include "ISerialPort.h"
 #include "MemRow.h"
+#include "PicDevice.h"
 
 namespace bullycpp {
 
@@ -27,7 +28,7 @@ public:
 	};
 
 public:
-	PicBootloaderDriver(std::iostream& stream);
+	PicBootloaderDriver(ISerialPort& port);
 	const boost::optional<PicDevice>& readDevice();
 
 	void programHexFile(const std::string& path);
@@ -35,16 +36,17 @@ public:
 
 	void setConfigBitsEnabled(bool value) { configBitsEnabled = value; }
 	bool getConfigBitsEnabled() { return configBitsEnabled; }
-
-private:
-	bool checkAddressClash(const unsigned int address, const PicDevice::Family family);
-	bool checkAddressClash(const unsigned int address, const std::vector<unsigned char>& data, const unsigned int base, const PicDevice::Family family);
-	bool checkAddressClash(const unsigned int address, const std::vector<unsigned char>& data, const unsigned int base, const PicDevice::Family family, const unsigned int configPage, const unsigned int configWord);
-	bool shouldSkipRow(const MemRow& thisRow, const PicDevice::Family family);
+	const boost::optional<PicDevice>& getCurrentDevice() { return currentDevice; }
 	void getVersion();
 
 private:
-	std::iostream& stream;
+	bool checkAddressClash(const unsigned int address, const PicDevice::Family family) {return false;}
+	bool checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family) {return false;}
+	bool checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family, const unsigned int configPage, const unsigned int configWord) {return false;}
+	bool shouldSkipRow(const MemRow& thisRow, const PicDevice::Family family);
+
+private:
+	ISerialPort& port;
 
 	bool configBitsEnabled;
 	unsigned int firmwareVersion;

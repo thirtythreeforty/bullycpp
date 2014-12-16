@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 
+#include "ISerialPort.h"
 #include "PicDevice.h"
 
 namespace bullycpp {
@@ -27,7 +28,7 @@ public:
 	static const size_t PM33F_ROW_SIZE_SMALL = 64 * 4;
 	static const size_t PIC24FK_ROW_SIZE = 32 * 4;
 	static const size_t EE30F_ROW_SIZE = 16;
-  
+
 	static const size_t PM_SIZE = 1536; /* Max: 144KB/3/32=1536 PM rows for 30F. */
 	static const size_t EE_SIZE = 128;  /* 4KB/2/16=128 EE rows */
 	static const size_t CM_SIZE = 12;
@@ -35,10 +36,10 @@ public:
 public:
 	MemRow(const MemType type, const uint32_t startAddress, const uint32_t rowNumber, const PicDevice::Family family, const uint32_t pm33f_rowsize);
 
-	bool insertData(uint32_t address, const std::vector<uint8_t> data, size_t offset);
+	bool insertData(uint32_t address, std::istream& stream);
 	void formatData();
-	void sendData(std::iostream& stream) const;
-	bool readData(std::iostream& stream);
+	void sendData(ISerialPort& port) const;
+	bool readData(ISerialPort& port);
 
 	uint8_t getByte(size_t index) const { return buffer[index]; }
 	void setByte(size_t index, uint8_t data) { buffer[index] = data; }
