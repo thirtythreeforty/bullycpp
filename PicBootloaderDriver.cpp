@@ -257,7 +257,7 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 	// Keep a copy for verification
 	std::vector<MemRow> ppMemoryVerify(ppMemory);
 
-	std::cout << "Programming device... ";
+	std::cout << "Programming device..." << std::endl;
 	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
 		if(ppMemory[row].getType() == MemRow::MemType::Configuration && !this->configBitsEnabled)
 			continue;
@@ -269,7 +269,7 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 			std::cout << "config bits sent. ";
 	}
 
-	std::cout << "\nVerifying... " << std::endl;
+	std::cout << "\nVerifying..." << std::endl;
 
 	bool verifyOK = true;
 
