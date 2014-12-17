@@ -49,8 +49,8 @@ const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 	}
 
 	currentDevice.reset();
-	std::cerr << "Device ID: " << std::hex << deviceID << "\n"
-	          << "Process ID: " << std::hex << processID << "\n"
+	std::cerr << "Device ID: 0x" << std::hex << deviceID << "\n"
+	          << "Process ID: 0x" << std::hex << processID << "\n"
 	          << "Refusing to program unknown device.  Check device or baud rate."
 	          << std::endl;
 
