@@ -108,7 +108,8 @@ void PicBootloaderDriver::getVersion() {
 	std::array<uint8_t, 2> minorVersion;
 	this->port >> minorVersion;
 
-	std::cout << "Firmware version: " << majorVersion << minorVersion[0]
+	std::cout << "Firmware version: "
+	          << static_cast<unsigned int>(majorVersion) << "." << static_cast<unsigned int>(minorVersion[0])
 	          << ", config bits programming ";
 	if(this->configBitsEnabled)
 		std::cout << "enabled.";
@@ -118,7 +119,7 @@ void PicBootloaderDriver::getVersion() {
 
 	if(this->firmwareVersion >= 3) {
 		std::cout << "Firmware v3.0 or later detected.\n"
-		          << "No pages below location " << PROGRAM_START << " will be written." << std::endl;
+		          << "No pages below location 0x" << std::hex << PROGRAM_START << " will be written." << std::endl;
 	}
 }
 
