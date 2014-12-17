@@ -83,6 +83,9 @@ bool PicBootloaderDriver::shouldSkipRow(const MemRow& thisRow, const PicDevice::
 void PicBootloaderDriver::getVersion() {
 	uint8_t majorVersion;
 
+	if(!this->currentDevice)
+		throw std::logic_error("Device not read, or unknown device");
+
 	std::cout << "Reading firmware version...\n";
 	this->port << Command::READ_VERSION;
 	this->port >> majorVersion;

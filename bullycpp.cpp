@@ -37,11 +37,8 @@ int main(int argc, char** argv)
 		tty.setDTR(false);
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-		bootloader.readDevice();
-
-		bootloader.getVersion();
-
-		bootloader.programHexFile(argv[1]);
+		if(bootloader.readDevice())
+			bootloader.programHexFile(argv[1]);
 	}
 	catch(std::logic_error e) {
 		std::cout << "Caught exception: " << e.what() << std::endl;
