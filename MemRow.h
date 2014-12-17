@@ -2,7 +2,6 @@
 #define MEMROW_H
 
 #include <cstdint>
-#include <iostream>
 #include <vector>
 
 #include "ISerialPort.h"
@@ -36,7 +35,7 @@ public:
 public:
 	MemRow(const MemType type, const uint32_t startAddress, const uint32_t rowNumber, const PicDevice::Family family, const uint32_t pm33f_rowsize);
 
-	bool insertData(uint32_t address, std::istream& stream);
+	bool insertData(uint32_t address, uint16_t data);
 	void formatData();
 	void sendData(ISerialPort& port) const;
 	bool readData(ISerialPort& port);

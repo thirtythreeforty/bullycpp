@@ -1,6 +1,7 @@
 #include "MemRow.h"
 
 #include <array>
+#include <iostream>
 #include <stdexcept>
 
 #include "PicBootloaderDriver.h"
@@ -48,7 +49,7 @@ MemRow::MemRow(const MemType type, const uint32_t startAddress, const uint32_t r
 	this->buffer.insert(std::begin(this->buffer), bufferSize, 0xFF);
 }
 
-bool MemRow::insertData(uint32_t address, std::istream& stream)
+bool MemRow::insertData(uint32_t address, uint16_t data)
 {
 	if(address < this->address)
 		return false;
@@ -61,7 +62,7 @@ bool MemRow::insertData(uint32_t address, std::istream& stream)
 
 	this->empty = false;
 
-	this->data[address - this->address] = parseHex<uint16_t>(stream);
+	this->data[address - this->address] = data;
 	return true;
 }
 
@@ -115,7 +116,7 @@ void MemRow::sendData(ISerialPort& port) const
 
 			port << buffer << this->buffer;
 
-			std::cout << "Mem Address: " << std::hex << this->address << std::endl;
+			std::cout << "Mem Address: 0x" << std::hex << this->address << std::endl;
 
 			break;
 		case MemType::EEProm:
@@ -160,7 +161,7 @@ bool MemRow::readData(ISerialPort& port)
 		port << buffer;
 		port >> this->buffer;
 
-		std::cout << "Mem Address: " << std::hex << this->address << std::endl;
+		std::cout << "Mem Address: 0x" << std::hex << this->address << std::endl;
 
 		return true;
 	}

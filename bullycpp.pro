@@ -1,7 +1,6 @@
 PROJECT = bullycpp
 CONFIG += qt c++11
 QT += serialport
-CONFIG += warn_off
 
 SOURCES += bullycpp.cpp
 

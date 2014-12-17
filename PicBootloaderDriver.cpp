@@ -3,6 +3,7 @@
 #include <array>
 #include <cctype>
 #include <fstream>
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <sstream>
@@ -123,12 +124,16 @@ void PicBootloaderDriver::getVersion() {
 	}
 }
 
-void PicBootloaderDriver::programHexFile(const std::string& path)
+void PicBootloaderDriver::programHexFile(const std::string& path) {
+	std::ifstream hexFile(path);
+	programHexFile(hexFile);
+}
+
+void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 {
 	std::vector<uint8_t> buffer;
 	int32_t extAddr = 0;
 	std::vector<MemRow> ppMemory;
-	std::vector<MemRow> ppMemoryVerify;
 	uint32_t pm33f_rowsize;
 
 	getVersion();
@@ -150,9 +155,8 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 	for(unsigned int row = 0; row < MemRow::CM_SIZE; ++row)
 		ppMemory.emplace_back(MemRow::MemType::Configuration, 0xF80000, row, family, pm33f_rowsize);
 
-	std::cerr << "Reading hex file..." << std::endl;
+	std::cout << "Reading hex file..." << std::endl;
 
-	std::ifstream hexFile(path);
 	if(!hexFile) {
 		std::cerr << "Error while opening hex file." << std::endl;
 		return;
@@ -162,7 +166,7 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 		// TODO pass line iterators around
 		std::string line;
 		std::getline(hexFile, line);
-		std::istringstream lineStream(line);
+		std::istringstream lineStream(std::move(line));
 
 		lineStream.ignore(1); // Ignore ':'
 		const uint8_t byteCount = parseHex<uint8_t>(lineStream);
@@ -195,12 +199,11 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 						return;
 					}
 
-					inserted = ppMemory[row].insertData(address, lineStream);
-					if(inserted)
+					if( (inserted = ppMemory[row].insertData(address, data)) )
 						break;
 				}
 				if(!inserted) {
-					std::cerr << "Bad hex file: " << std::hex << address << " out of range." << std::endl;
+					std::cerr << "Bad hex file: 0x" << std::hex << address << " out of range." << std::endl;
 					return;
 				}
 			}
@@ -212,7 +215,7 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 			extAddr = parseHex<uint16_t>(lineStream) << 16;
 			break;
 		default:
-			std::cerr << "Unknown hex record type " << std::hex << recordType << std::endl;
+			std::cerr << "Error: unknown hex record type 0x" << std::hex << recordType << std::endl;
 			return;
 		}
 	}
@@ -222,7 +225,6 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 	if(this->firmwareVersion < 3) {
 		// Preserve first two locations for bootloader
 		size_t rowSize;
-		size_t offset;
 
 		if(family == PicDevice::Family::dsPIC30F)
 			rowSize = MemRow::PM30F_ROW_SIZE;
@@ -238,14 +240,15 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 		this->port << Command::READ_PM << 0x00 << 0x00 << 0x00;
 		this->port >> data;
 
-		throw new std::logic_error("I have no idea what's going on here.");
+		throw new std::logic_error("TODO: I have no idea what's going on here.");
 	}
 
 	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
 		ppMemory[row].formatData();
 	}
 
-	ppMemoryVerify = ppMemory;
+	// Keep a copy for verification
+	std::vector<MemRow> ppMemoryVerify(ppMemory);
 
 	std::cout << "Programming device... ";
 	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
@@ -279,8 +282,8 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 
 				if(expected != got) {
 					verifyOK = false;
-					std::cerr << "Verification failed at address " << std::hex << address << "!\n"
-					          << "Expected " << std::hex << expected << ", got " << std::hex << got
+					std::cerr << "Verification failed at address 0x" << std::hex << address << "!\n"
+					          << "Expected 0x" << std::hex << expected << ", got 0x" << std::hex << got
 					          << std::endl;
 					break;
 				}
@@ -315,17 +318,18 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 
 void PicBootloaderDriver::parseDeviceFile(const std::string& path)
 {
-	std::ifstream file(path);
-	parseDeviceFile(file);
+	std::ifstream deviceFile(path);
+	parseDeviceFile(deviceFile);
 }
 
-void PicBootloaderDriver::parseDeviceFile(std::ifstream& file)
+void PicBootloaderDriver::parseDeviceFile(std::ifstream& deviceFile)
 {
 	using namespace std;
 	string line;
-	while(file.good()) {
-		getline(file, line);
-		if(line[0] != '#')
+	while(deviceFile.good()) {
+		getline(deviceFile, line);
+		boost::trim(line);
+		if(!line.empty() && line[0] != '#')
 			parseDeviceLine(line);
 	}
 }
@@ -373,5 +377,54 @@ void PicBootloaderDriver::parseDeviceLine(const std::string& deviceLine)
 		return;
 	}
 }
+
+namespace {
+	static bool checkAddressClashFamily(const PicDevice::Family family) {
+		using std::begin;
+		using std::end;
+		const std::vector<PicDevice::Family> families {
+			PicDevice::Family::PIC24H,
+			PicDevice::Family::dsPIC33F,
+			PicDevice::Family::PIC24E,
+			PicDevice::Family::dsPIC33E,
+			PicDevice::Family::PIC24FK,
+			PicDevice::Family::PIC24F
+		};
+		return std::find(begin(families), end(families), family) == end(families);
+	}
+}
+
+bool PicBootloaderDriver::checkAddressClash(const unsigned int address, const PicDevice::Family family)
+{
+	// Check if page starts at 0x400.
+	// If so, this page definitely clashes with the bootloader.
+	return !(checkAddressClashFamily(family)
+	         && (address == 0x400));
+}
+
+bool PicBootloaderDriver::checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family)
+{
+	// Ensure that each word between >= 0x200 and <0xC00 is == 0xFFFF
+	// or else we clash with bootloader!
+	return !(checkAddressClashFamily(family)
+	         && (address >= 0x200 && address < PROGRAM_START && data != 0xFFFF));
+}
+
+bool PicBootloaderDriver::checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family, const unsigned int configPage, const unsigned int configWord)
+{
+	// If PIC24F/PIC24E/dsPIC33E code is located on last page,
+	// and configuration bit programming is not enabled, then abort.
+	if(family == PicDevice::Family::PIC24F ||
+	   family == PicDevice::Family::PIC24E ||
+	   family == PicDevice::Family::dsPIC33E)
+	{
+		if(this->configBitsEnabled)
+			return true;
+		if(address >= configPage && address < configWord && data != 0xFFFF)
+			return false;
+	}
+	return true;
+}
+
 
 }
