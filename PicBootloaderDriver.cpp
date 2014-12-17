@@ -1,6 +1,7 @@
 #include "PicBootloaderDriver.h"
 
 #include <array>
+#include <cctype>
 #include <fstream>
 #include <map>
 #include <stdexcept>
@@ -311,6 +312,23 @@ void PicBootloaderDriver::programHexFile(const std::string& path)
 	std::cout << "Done!" << std::endl;
 }
 
+void PicBootloaderDriver::parseDeviceFile(const std::string& path)
+{
+	std::ifstream file(path);
+	parseDeviceFile(file);
+}
+
+void PicBootloaderDriver::parseDeviceFile(std::ifstream& file)
+{
+	using namespace std;
+	string line;
+	while(file.good()) {
+		getline(file, line);
+		if(line[0] != '#')
+			parseDeviceLine(line);
+	}
+}
+
 void PicBootloaderDriver::parseDeviceLine(const std::string& deviceLine)
 {
 	using std::string;
@@ -325,29 +343,34 @@ void PicBootloaderDriver::parseDeviceLine(const std::string& deviceLine)
 		return;
 	}
 
-	const string& devName = parts[0];
-	const uint32_t devID = stoi(parts[1]);
-	const uint32_t PID = stoi(parts[2]);
-	const string& famName = parts[3];
-	const uint32_t configPage = stoi(parts[4]);
-	const bool smallRAM = (stoi(parts[5]) != 0);
+	try {
+		const string& devName = parts[0];
+		const uint32_t devID = stoi(parts[1], 0, 16);
+		const uint32_t PID = stoi(parts[2]);
+		const string& famName = parts[3];
+		const uint32_t configPage = stoi(parts[4], 0, 16);
+		const bool smallRAM = (stoi(parts[5]) != 0);
 
-	static const std::map<string, PicDevice::Family> map = {
-		{"dsPIC30F", PicDevice::Family::dsPIC30F},
-		{"dsPIC33F", PicDevice::Family::dsPIC33F},
-		{"PIC24H",   PicDevice::Family::PIC24H},
-		{"PIC24F",   PicDevice::Family::PIC24F},
-		{"PIC24FK",  PicDevice::Family::PIC24FK},
-		{"PIC24E",   PicDevice::Family::PIC24E},
-		{"dsPIC33E", PicDevice::Family::dsPIC33E}
-	};
-	const auto familyIter = map.find(famName);
-	if(familyIter == std::end(map)) {
-		std::cerr << "Unrecognized device: " << famName << std::endl;
+		static const std::map<string, PicDevice::Family> map = {
+			{"dsPIC30F", PicDevice::Family::dsPIC30F},
+			{"dsPIC33F", PicDevice::Family::dsPIC33F},
+			{"PIC24H",   PicDevice::Family::PIC24H},
+			{"PIC24F",   PicDevice::Family::PIC24F},
+			{"PIC24FK",  PicDevice::Family::PIC24FK},
+			{"PIC24E",   PicDevice::Family::PIC24E},
+			{"dsPIC33E", PicDevice::Family::dsPIC33E}
+		};
+		const auto familyIter = map.find(famName);
+		if(familyIter == std::end(map)) {
+			std::cerr << "Unrecognized device: " << famName << std::endl;
+			return;
+		}
+
+		this->devices.emplace_back(devName, devID, PID, get<1>(*familyIter), configPage, smallRAM);
+	} catch(std::exception& e) {
+		std::cerr << "Error while parsing device line \"" << deviceLine << "\": " << e.what() << std::endl;
 		return;
 	}
-
-	this->devices.emplace_back(devName, devID, PID, get<1>(*familyIter), configPage, smallRAM);
 }
 
 }

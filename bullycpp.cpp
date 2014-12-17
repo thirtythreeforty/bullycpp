@@ -14,21 +14,22 @@ int main(int argc, char** argv)
 		std::cout << "Opening tty... ";
 
 		SerialPort tty("/dev/ttyUSB0");
-
 		tty.setSpeed(230400);
 		tty.open();
+
+		std::cout << "OK\nInitializing PicBootloaderDriver... ";
+
+		bullycpp::PicBootloaderDriver bootloader(tty);
+		bootloader.parseDeviceFile("devices.txt");
+
+		std::cout << "OK\n";
+
 		tty.setRTS(true);
 		tty.setDTR(true);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		tty.setRTS(false);
 		tty.setDTR(false);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-		std::cout << "OK\nInitializing PicBootloaderDriver... ";
-
-		bullycpp::PicBootloaderDriver bootloader(tty);
-
-		std::cout << "OK\n";
 
 		bootloader.readDevice();
 

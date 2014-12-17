@@ -32,7 +32,8 @@ public:
 	const boost::optional<PicDevice>& readDevice();
 
 	void programHexFile(const std::string& path);
-	void parseDeviceLine(const std::string& deviceLine);
+	void parseDeviceFile(const std::string& path);
+	void parseDeviceFile(std::ifstream& file);
 
 	void setConfigBitsEnabled(bool value) { configBitsEnabled = value; }
 	bool getConfigBitsEnabled() { return configBitsEnabled; }
@@ -40,6 +41,7 @@ public:
 	void getVersion();
 
 private:
+	void parseDeviceLine(const std::string& deviceLine);
 	bool checkAddressClash(const unsigned int address, const PicDevice::Family family) {return false;}
 	bool checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family) {return false;}
 	bool checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family, const unsigned int configPage, const unsigned int configWord) {return false;}
