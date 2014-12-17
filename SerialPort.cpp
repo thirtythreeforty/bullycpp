@@ -107,3 +107,8 @@ void SerialPort::write(const unsigned char c)
 	qserialport.putChar(c);
 	qserialport.waitForBytesWritten(-1);
 }
+
+void SerialPort::clear()
+{
+	qserialport.clear();
+}

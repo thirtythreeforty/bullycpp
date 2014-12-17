@@ -36,6 +36,8 @@ public:
 	virtual void write(const std::vector<uint8_t>& src);
 	virtual void write(const unsigned char c);
 
+	virtual void clear();
+
 	QSerialPort& getQSerialPort() { return qserialport; }
 private:
 	QSerialPort qserialport;

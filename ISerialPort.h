@@ -28,6 +28,8 @@ public:
 	virtual void write(const std::vector<uint8_t>&) = 0;
 	virtual void write(const unsigned char) = 0;
 
+	virtual void clear() = 0;
+
 protected:
 	ISerialPort() = default;
 };

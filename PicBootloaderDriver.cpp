@@ -30,6 +30,8 @@ const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 	std::array<uint8_t, 8> inputData;
 	uint16_t deviceID = 0, revision = 0, processID = 0;
 
+	this->port.clear();
+
 	this->port << Command::READ_ID;
 	this->port >> inputData;
 
