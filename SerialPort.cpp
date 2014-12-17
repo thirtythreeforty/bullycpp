@@ -73,8 +73,8 @@ void SerialPort::read(uint8_t* dest, size_t size)
 {
 	unsigned int read = 0;
 	do {
-		if(!qserialport.bytesAvailable())
-			do {} while(!qserialport.waitForReadyRead(-1));
+		while(!qserialport.bytesAvailable())
+			qserialport.waitForReadyRead(10);
 		read += qserialport.read(reinterpret_cast<char*>(dest) + read, size - read);
 	} while(read != size);
 }
@@ -82,8 +82,8 @@ void SerialPort::read(uint8_t* dest, size_t size)
 unsigned char SerialPort::read()
 {
 	char c;
-	if(!qserialport.bytesAvailable())
-		do {} while(!qserialport.waitForReadyRead(-1));
+	while(!qserialport.bytesAvailable())
+		qserialport.waitForReadyRead(10);
 	qserialport.getChar(&c);
 	return c;
 }

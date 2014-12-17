@@ -166,6 +166,10 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 		// TODO pass line iterators around
 		std::string line;
 		std::getline(hexFile, line);
+
+		if(line.empty())
+			continue;
+
 		std::istringstream lineStream(std::move(line));
 
 		lineStream.ignore(1); // Ignore ':'
@@ -183,8 +187,8 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 			}
 			for(unsigned int charCount = 0; charCount < byteCount * 2; charCount += 4, ++address) {
 				bool inserted = false;
+				uint16_t data = parseHex<uint16_t>(lineStream);
 				for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
-					uint16_t data = parseHex<uint16_t>(lineStream);
 					if(!checkAddressClash(address, data, family)) {
 						std::cerr << "Program data in hex file clashes with bootloader.\n"
 						          << "Aborting.  Recompile target code with appropriate linker file."

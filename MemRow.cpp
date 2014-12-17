@@ -97,6 +97,7 @@ void MemRow::sendData(ISerialPort& port) const
 {
 	typedef PicBootloaderDriver::Command Command;
 	std::array<uint8_t, 4> buffer = {0, 0, 0, 0};
+	uint8_t reply = Command::NACK;
 
 	if(this->empty && this->type != MemType::Configuration)
 		return;
@@ -105,7 +106,7 @@ void MemRow::sendData(ISerialPort& port) const
 	if(this->type == MemType::Configuration && this->family == PicDevice::Family::PIC24F)
 		return;
 
-	while(buffer[0] != Command::ACK) {
+	while(reply != Command::ACK) {
 		switch(this->type) {
 		case MemType::Program:
 			buffer = {Command::WRITE_PM,
@@ -130,33 +131,45 @@ void MemRow::sendData(ISerialPort& port) const
 
 			break;
 		case MemType::Configuration:
-			buffer = {Command::WRITE_CM,
-			          static_cast<uint8_t>(this->empty ? 1 : 0),
-			          this->buffer[0],
-			          this->buffer[1]
-			         };
+			if(this->rowNumber == 0) {
+				// Send the WRITE_CM command as well as the data
+				buffer = {Command::WRITE_CM,
+						static_cast<uint8_t>(this->empty ? 1 : 0),
+						this->buffer[0],
+						this->buffer[1]
+						};
 
-			port << buffer;
+				port << buffer;
+			}
+			else {
+				// Only send the data
+				if(this->family == PicDevice::Family::dsPIC30F && this->rowNumber == 7)
+					return;
+				port << std::array<uint8_t, 3> {
+						static_cast<uint8_t>(this->empty ? 1 : 0),
+						this->buffer[0],
+						this->buffer[1]
+					};
+			}
+
+			break;
 		}
-		port >> buffer;
+		port >> reply;
 	}
 }
 
 bool MemRow::readData(ISerialPort& port)
 {
-	typedef PicBootloaderDriver::Command Command;
-
 	if(this->empty && this->type != MemType::Configuration)
 		return true;
 
-	std::array<uint8_t, 4> buffer;
-
 	if(this->type == MemType::Program) {
-		buffer = {Command::READ_PM,
-		          nthByte<0>(this->address),
-		          nthByte<1>(this->address),
-		          nthByte<2>(this->address)
-		         };
+		const std::array<uint8_t, 4> buffer = {
+			PicBootloaderDriver::Command::READ_PM,
+			nthByte<0>(this->address),
+			nthByte<1>(this->address),
+			nthByte<2>(this->address)
+		};
 
 		port << buffer;
 		port >> this->buffer;

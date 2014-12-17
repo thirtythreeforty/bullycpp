@@ -10,6 +10,12 @@
 int main(int argc, char** argv)
 {
 	QCoreApplication app(argc, argv);
+
+	if(argc != 2) {
+		std::cerr << "Please specify a hex file to flash." << std::endl;
+		return 1;
+	}
+
 	try {
 		std::cout << "Opening tty... ";
 
@@ -29,11 +35,13 @@ int main(int argc, char** argv)
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		tty.setRTS(false);
 		tty.setDTR(false);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 		bootloader.readDevice();
 
 		bootloader.getVersion();
+
+		bootloader.programHexFile(argv[1]);
 	}
 	catch(std::logic_error e) {
 		std::cout << "Caught exception: " << e.what() << std::endl;
