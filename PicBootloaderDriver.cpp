@@ -109,17 +109,17 @@ void PicBootloaderDriver::getVersion() {
 
 	this->firmwareVersion = majorVersion;
 
-	std::array<uint8_t, 2> minorVersion;
-	this->port >> minorVersion;
+	uint8_t minorVersion, ack;
+	this->port >> minorVersion >> ack;
+
+	if(ack != Command::ACK) {
+		return;
+	}
 
 	std::cout << "Firmware version: "
-	          << static_cast<unsigned int>(majorVersion) << "." << static_cast<unsigned int>(minorVersion[0])
-	          << ", config bits programming ";
-	if(this->configBitsEnabled)
-		std::cout << "enabled.";
-	else
-		std::cout << "disabled.";
-	std::cout << std::endl;
+	          << static_cast<unsigned int>(majorVersion) << "." << static_cast<unsigned int>(minorVersion)
+	          << ", config bits programming " << (this->configBitsEnabled ? "enabled." : "disabled.")
+	          << std::endl;
 
 	if(this->firmwareVersion >= 3) {
 		std::cout << "Firmware v3.0 or later detected.\n"
@@ -166,7 +166,6 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 	}
 
 	while(hexFile.good()) {
-		// TODO pass line iterators around
 		std::string line;
 		std::getline(hexFile, line);
 
@@ -258,15 +257,15 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 	std::vector<MemRow> ppMemoryVerify(ppMemory);
 
 	std::cout << "Programming device..." << std::endl;
-	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
-		if(ppMemory[row].getType() == MemRow::MemType::Configuration && !this->configBitsEnabled)
+	for(const auto& row: ppMemory) {
+		if(row.getType() == MemRow::MemType::Configuration && !this->configBitsEnabled)
 			continue;
-		if(!shouldSkipRow(ppMemory[row], family))
-			ppMemory[row].sendData(this->port);
-		if(ppMemory[row].getType() == MemRow::MemType::Configuration
-		   && ppMemory[row].getRowNumber() == 0
+		if(!shouldSkipRow(row, family))
+			row.sendData(this->port);
+		if(row.getType() == MemRow::MemType::Configuration
+		   && row.getRowNumber() == 0
 		   && family == PicDevice::Family::PIC24H)
-			std::cout << "config bits sent. ";
+			std::cout << "Config bits sent." << std::endl;
 	}
 
 	std::cout << "\nVerifying..." << std::endl;
@@ -309,9 +308,9 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 	// before a reset (if programming the config bits)
 
 	if(this->configBitsEnabled) {
-		for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
-			if(ppMemory[row].getType() == MemRow::MemType::Configuration)
-				ppMemory[row].sendData(this->port);
+		for(const auto& row: ppMemory) {
+			if(row.getType() == MemRow::MemType::Configuration)
+				row.sendData(this->port);
 		}
 	}
 

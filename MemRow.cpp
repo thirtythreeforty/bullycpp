@@ -96,8 +96,7 @@ void MemRow::formatData()
 void MemRow::sendData(ISerialPort& port) const
 {
 	typedef PicBootloaderDriver::Command Command;
-	std::array<uint8_t, 4> buffer = {0, 0, 0, 0};
-	uint8_t reply = Command::NACK;
+	uint8_t reply;
 
 	if(this->empty && this->type != MemType::Configuration)
 		return;
@@ -106,56 +105,47 @@ void MemRow::sendData(ISerialPort& port) const
 	if(this->type == MemType::Configuration && this->family == PicDevice::Family::PIC24F)
 		return;
 
-	while(reply != Command::ACK) {
+	do {
 		switch(this->type) {
 		case MemType::Program:
-			buffer = {Command::WRITE_PM,
-			          nthByte<0>(this->address),
-			          nthByte<1>(this->address),
-			          nthByte<2>(this->address)
-			         };
+			port << Command::WRITE_PM
+			     << nthByte<0>(this->address)
+			     << nthByte<1>(this->address)
+			     << nthByte<2>(this->address);
 
-			port << buffer << this->buffer;
+			port << this->buffer;
 
 			std::cout << "Mem Address: 0x" << std::hex << this->address << std::endl;
 
 			break;
 		case MemType::EEProm:
-			buffer = {Command::WRITE_EE,
-			          nthByte<0>(this->address),
-			          nthByte<1>(this->address),
-			          nthByte<2>(this->address)
-			         };
+			port << Command::WRITE_EE
+			     << nthByte<0>(this->address)
+			     << nthByte<1>(this->address)
+			     << nthByte<2>(this->address);
 
-			port << buffer << this->buffer;
+			port << this->buffer;
 
 			break;
 		case MemType::Configuration:
 			if(this->rowNumber == 0) {
 				// Send the WRITE_CM command as well as the data
-				buffer = {Command::WRITE_CM,
-						static_cast<uint8_t>(this->empty ? 1 : 0),
-						this->buffer[0],
-						this->buffer[1]
-						};
-
-				port << buffer;
+				port << Command::WRITE_CM;
 			}
 			else {
 				// Only send the data
 				if(this->family == PicDevice::Family::dsPIC30F && this->rowNumber == 7)
 					return;
-				port << std::array<uint8_t, 3> {
-						static_cast<uint8_t>(this->empty ? 1 : 0),
-						this->buffer[0],
-						this->buffer[1]
-					};
 			}
+
+			port << static_cast<uint8_t>(this->empty ? 1 : 0)
+			     << this->buffer[0]
+			     << this->buffer[1];
 
 			break;
 		}
 		port >> reply;
-	}
+	} while(reply != Command::ACK);
 }
 
 bool MemRow::readData(ISerialPort& port)
@@ -164,14 +154,11 @@ bool MemRow::readData(ISerialPort& port)
 		return true;
 
 	if(this->type == MemType::Program) {
-		const std::array<uint8_t, 4> buffer = {
-			PicBootloaderDriver::Command::READ_PM,
-			nthByte<0>(this->address),
-			nthByte<1>(this->address),
-			nthByte<2>(this->address)
-		};
+		port << PicBootloaderDriver::Command::READ_PM
+		     << nthByte<0>(this->address)
+		     << nthByte<1>(this->address)
+		     << nthByte<2>(this->address);
 
-		port << buffer;
 		port >> this->buffer;
 
 		std::cout << "Mem Address: 0x" << std::hex << this->address << std::endl;
