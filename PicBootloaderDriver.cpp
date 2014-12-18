@@ -19,13 +19,7 @@ PicBootloaderDriver::PicBootloaderDriver(ISerialPort& port)
 	, configBitsEnabled(true)
 	, firmwareVersion(0)
 	, currentDevice()
-{
-// 	if(!this->port.good()) {
-// 		if(this->port.bad())
-// 			std::perror("Bad stream");
-// 		throw std::invalid_argument("stream not good!");
-// 	}
-}
+{}
 
 const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 {

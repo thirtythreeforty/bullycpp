@@ -35,13 +35,6 @@ protected:
 };
 
 template<size_t Size>
-inline ISerialPort& operator<<(ISerialPort& out, const std::array<uint8_t, Size>& array)
-{
-	out.write(&array[0], Size);
-	return out;
-}
-
-template<size_t Size>
 inline ISerialPort& operator>>(ISerialPort& in, std::array<uint8_t, Size>& array)
 {
 	in.read(&array[0], Size);
