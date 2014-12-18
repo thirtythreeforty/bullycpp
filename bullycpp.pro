@@ -1,6 +1,8 @@
 PROJECT = bullycpp
-CONFIG += qt c++11
+CONFIG += qt c++11 console
 QT += serialport
+
+LIBS += -lboost_program_options
 
 SOURCES += bullycpp.cpp
 
