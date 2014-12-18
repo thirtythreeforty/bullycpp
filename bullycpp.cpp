@@ -30,11 +30,9 @@ int main(int argc, char** argv)
 
 		std::cout << "OK\n";
 
-		tty.setRTS(true);
-		tty.setDTR(true);
+		bootloader.setMCLR(true);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		tty.setRTS(false);
-		tty.setDTR(false);
+		bootloader.setMCLR(false);
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 		if(bootloader.readDevice())

@@ -31,6 +31,8 @@ public:
 	PicBootloaderDriver(ISerialPort& port);
 	const boost::optional<PicDevice>& readDevice();
 
+	void setMCLR(bool mclr);
+
 	void programHexFile(const std::string& path);
 	void programHexFile(std::ifstream& hexFile);
 	void parseDeviceFile(const std::string& path);

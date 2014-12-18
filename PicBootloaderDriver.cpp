@@ -59,6 +59,12 @@ const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 	return currentDevice;
 }
 
+void PicBootloaderDriver::setMCLR(bool mclr)
+{
+	this->port.setRTS(mclr);
+	this->port.setDTR(mclr);
+}
+
 bool PicBootloaderDriver::shouldSkipRow(const MemRow& thisRow, const PicDevice::Family family)
 {
 	uint32_t i = thisRow.getAddress();
