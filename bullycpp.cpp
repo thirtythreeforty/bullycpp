@@ -81,8 +81,8 @@ int main(int argc, char** argv)
 		if(bootloader.readDevice())
 			bootloader.programHexFile(varmap["hexfile"].as<std::string>());
 	}
-	catch(std::logic_error e) {
-		std::cout << argv[0] << ": Caught exception: " << e.what() << std::endl;
+	catch(std::exception& e) {
+		std::cout << argv[0] << ": " << e.what() << std::endl;
 	}
 
 	return 0;
