@@ -9,7 +9,7 @@
 
 #include "ISerialPort.h"
 
-class SerialPort : public ISerialPort {
+class SerialPort : public bullycpp::ISerialPort {
 public:
 	explicit SerialPort();
 	explicit SerialPort(const char* name);

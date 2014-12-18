@@ -3,6 +3,9 @@
 
 #include <array>
 
+namespace bullycpp
+{
+
 class ISerialPort {
 public:
 	ISerialPort(ISerialPort& other) = delete;
@@ -62,5 +65,7 @@ inline ISerialPort& operator>>(ISerialPort& in, unsigned char& c) {
 	c = in.read();
 	return in;
 }
+
+} // namespace
 
 #endif
