@@ -31,8 +31,6 @@ public slots:
 	void setMCLR(bool mclr);
 	void setMCLROnProgram(bool set);
 	void setConfigBitsEnabled(bool set);
-
-private:
 	void openSerialPort();
 
 private slots:

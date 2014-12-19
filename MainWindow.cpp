@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialErrorWidget, SLOT(setHidden(bool)));
 	connect(&picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->mclrButton, SLOT(setEnabled(bool)));
 	connect(&picDriver, SIGNAL(serialPortErrorChanged(QString)), ui->serialStatusLabel, SLOT(setText(QString)));
+	connect(ui->retrySerialButton, SIGNAL(clicked()), &picDriver, SLOT(openSerialPort()));
 	for(const auto& port: QSerialPortInfo::availablePorts()) {
 		ui->serialPortComboBox->addItem(port.portName());
 	}
