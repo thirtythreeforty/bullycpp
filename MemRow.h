@@ -46,7 +46,7 @@ public:
 	MemType getType() const { return type; }
 	uint32_t getAddress() const { return address; }
 	bool isEmpty() const { return empty; }
-	bool getRowNumber() const { return rowNumber; }
+	uint32_t getRowNumber() const { return rowNumber; }
 
 private:
 	std::vector<uint16_t> data;

@@ -1,8 +1,8 @@
 #ifndef PICBOOTLOADERDRIVER_H
 #define PICBOOTLOADERDRIVER_H
 
+#include <cstdint>
 #include <string>
-#include <boost/optional.hpp>
 
 #include "ISerialPort.h"
 #include "MemRow.h"
@@ -29,7 +29,7 @@ public:
 
 public:
 	PicBootloaderDriver(ISerialPort& port);
-	const boost::optional<PicDevice>& readDevice();
+	const PicDevice* readDevice();
 
 	void setMCLR(bool mclr);
 
@@ -40,7 +40,7 @@ public:
 
 	void setConfigBitsEnabled(bool value) { configBitsEnabled = value; }
 	bool getConfigBitsEnabled() { return configBitsEnabled; }
-	const boost::optional<PicDevice>& getCurrentDevice() { return currentDevice; }
+	const PicDevice* getCurrentDevice() { return currentDevice; }
 	void getVersion();
 
 private:
@@ -58,7 +58,7 @@ private:
 	unsigned int firmwareVersion;
 
 	std::vector<PicDevice> devices;
-	boost::optional<PicDevice> currentDevice;
+	PicDevice* currentDevice;
 
 	static const uint32_t PROGRAM_START = 0xC00;
 };

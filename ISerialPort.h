@@ -2,6 +2,8 @@
 #define ISERIALPORT_H
 
 #include <array>
+#include <cstdint>
+#include <vector>
 
 namespace bullycpp
 {

@@ -8,8 +8,6 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <boost/algorithm/string.hpp>
-
 #include "util.h"
 
 namespace bullycpp {
@@ -21,7 +19,7 @@ PicBootloaderDriver::PicBootloaderDriver(ISerialPort& port)
 	, currentDevice()
 {}
 
-const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
+const PicDevice* PicBootloaderDriver::readDevice()
 {
 	std::array<uint8_t, 8> inputData;
 	uint16_t deviceID = 0, revision = 0, processID = 0;
@@ -35,22 +33,22 @@ const boost::optional<PicDevice>& PicBootloaderDriver::readDevice()
 	processID = inputData[5] >> 4;
 	revision = (inputData[5] << 8) | inputData[4];
 
-	for(const auto& device: this->devices) {
+	for(auto& device: this->devices) {
 		if(device.id == deviceID && device.processID == processID) {
 			// found device
-			currentDevice = device;
-			currentDevice->revision = revision;
-			return currentDevice;
+			this->currentDevice = &device;
+			this->currentDevice->revision = revision;
+			return this->currentDevice;
 		}
 	}
 
-	currentDevice.reset();
+	this->currentDevice = nullptr;
 	std::cerr << "Device ID: 0x" << std::hex << deviceID << "\n"
 	          << "Process ID: 0x" << std::hex << processID << "\n"
 	          << "Refusing to program unknown device.  Check device or baud rate."
 	          << std::endl;
 
-	return currentDevice;
+	return this->currentDevice;
 }
 
 void PicBootloaderDriver::setMCLR(bool mclr)
@@ -187,7 +185,7 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 				          << std::endl;
 				return;
 			}
-			for(unsigned int charCount = 0; charCount < byteCount * 2; charCount += 4, ++address) {
+			for(uint8_t charCount = 0; charCount < byteCount * 2; charCount += 4, ++address) {
 				bool inserted = false;
 				uint16_t data = parseHex<uint16_t>(lineStream);
 				for(auto& row: ppMemory) {
@@ -334,7 +332,13 @@ void PicBootloaderDriver::parseDeviceFile(std::ifstream& deviceFile)
 	string line;
 	while(deviceFile.good()) {
 		getline(deviceFile, line);
-		boost::trim(line);
+		// Trim line
+		size_t pos = line.find_last_not_of(" \t\n");
+		if(pos != string::npos)
+			line = line.substr(0, pos + 1);
+		pos = line.find_first_not_of(" \t\n");
+		if(pos != string::npos)
+			line = line.substr(pos);
 		if(!line.empty() && line[0] != '#')
 			parseDeviceLine(line);
 	}
@@ -348,7 +352,13 @@ void PicBootloaderDriver::parseDeviceLine(const std::string& deviceLine)
 
 	std::vector<string> parts;
 	parts.reserve(6);
-	boost::split(parts, deviceLine, boost::is_any_of(","));
+
+	// Split deviceLine on ','s
+	std::stringstream ss(deviceLine);
+	std::string item;
+	while(std::getline(ss, item, ','))
+		parts.push_back(item);
+	
 	if(parts.size() != 6) {
 		std::cerr << "Bad device line: " << deviceLine << std::endl;
 		return;

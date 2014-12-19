@@ -1,6 +1,5 @@
+#include "PicDevice.h"
 #include "QtPicBootloaderDriver.h"
-
-#include <boost/optional.hpp>
 
 QtPicBootloaderDriver::QtPicBootloaderDriver(bullycpp::ISerialPort& serialPort,QObject *parent)
 	: QObject(parent)
@@ -37,7 +36,7 @@ void QtPicBootloaderDriver::setMCLR(bool mclr)
 
 bool QtPicBootloaderDriver::readDevice()
 {
-	const auto& optionalDevice = driver.readDevice();
+	const bullycpp::PicDevice* optionalDevice = driver.readDevice();
 	if(optionalDevice) {
 		emit deviceChanged(optionalDevice->name.c_str());
 		return true;
