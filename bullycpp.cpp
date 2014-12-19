@@ -4,14 +4,15 @@
 
 #include <boost/program_options.hpp>
 
-#include <QCoreApplication>
+#include <QApplication>
 
+#include "MainWindow.h"
 #include "PicBootloaderDriver.h"
 #include "SerialPort.h"
 
 int main(int argc, char** argv)
 {
-	QCoreApplication app(argc, argv);
+	QApplication app(argc, argv);
 
 	// Parse options
 
@@ -25,6 +26,7 @@ int main(int argc, char** argv)
 			("device,D", po::value<std::string>()->default_value("/dev/ttyUSB0"), "Serial device to use")
 			("baud,b", po::value<int>()->default_value(230400), "Serial port speed")
 			("piclist", po::value<std::vector<std::string>>()->default_value({"devices.txt"}, "devices.txt"), "PIC device file to read")
+			("gui", "Use the experimental GUI")
 			("help", "Print this help message")
 		;
 		allopts.add(desc);
@@ -48,12 +50,18 @@ int main(int argc, char** argv)
 		return 2;
 	}
 
-	// Do flash
+	if(varmap.count("gui")) {
+		MainWindow w;
+		w.show();
 
-	if(varmap.count("help") || !varmap.count("hexfile")) {
+		return app.exec();
+	}
+	else if(varmap.count("help") || !varmap.count("hexfile")) {
 		std::cout << desc << std::endl;
 		return 1;
 	}
+
+	// Do flash
 
 	try {
 		std::cout << "Opening tty... ";

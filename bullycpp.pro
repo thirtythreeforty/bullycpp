@@ -1,22 +1,29 @@
 PROJECT = bullycpp
-CONFIG += qt c++11 console
-QT += serialport
+CONFIG += qt c++11
+QT += core serialport gui widgets
 
 LIBS += -lboost_program_options
 
-SOURCES += bullycpp.cpp
+SOURCES += \
+    bullycpp.cpp \
+    MainWindow.cpp \
+    QtPicBootloaderDriver.cpp \
+    QtPicDriver.cpp \
+    MemRow.cpp \
+    PicBootloaderDriver.cpp \
+    SerialPort.cpp
 
-SOURCES += PicBootloaderDriver.cpp
-HEADERS += PicBootloaderDriver.h
+HEADERS += \
+    MainWindow.h \
+    InterceptQPlainTextEdit.h \
+    QtPicBootloaderDriver.h \
+    QtPicDriver.h \
+    ISerialPort.h \
+    MemRow.h \
+    PicBootloaderDriver.h \
+    PicDevice.h \
+    SerialPort.h
 
-HEADERS += ISerialPort.h
+FORMS += mainwindow.ui
 
-SOURCES += SerialPort.cpp
-HEADERS += SerialPort.h
-
-SOURCES += MemRow.cpp
-HEADERS += MemRow.h
-
-HEADERS += PicDevice.h
-
-TARGET = bullycpp.bin
+TARGET = bullycpp

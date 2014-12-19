@@ -5,15 +5,20 @@
 
 #include <QString>
 
-SerialPort::SerialPort()
+SerialPort::SerialPort(QObject *parent)
+	: qserialport(parent)
 {}
 
-SerialPort::SerialPort(const std::string& name)
-	: qserialport(QString(name.c_str()))
+SerialPort::SerialPort(const std::string& name, QObject *parent)
+	: qserialport(QString(name.c_str()), parent)
 {}
 
-SerialPort::SerialPort(const char* name)
-	: qserialport(QString(name))
+SerialPort::SerialPort(const char* name, QObject *parent)
+	: qserialport(QString(name), parent)
+{}
+
+SerialPort::SerialPort(const QString &name, QObject *parent)
+	: qserialport(name, parent)
 {}
 
 SerialPort::~SerialPort()

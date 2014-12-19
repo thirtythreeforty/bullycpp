@@ -11,9 +11,10 @@
 
 class SerialPort : public bullycpp::ISerialPort {
 public:
-	explicit SerialPort();
-	explicit SerialPort(const char* name);
-	explicit SerialPort(const std::string& name);
+	explicit SerialPort(QObject *parent = Q_NULLPTR);
+	explicit SerialPort(const char* name, QObject *parent = Q_NULLPTR);
+	explicit SerialPort(const std::string& name, QObject *parent = Q_NULLPTR);
+	explicit SerialPort(const QString& name, QObject *parent = Q_NULLPTR);
 	virtual ~SerialPort();
 
 	virtual void setName(const std::string& name);
