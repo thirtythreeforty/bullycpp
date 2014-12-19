@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-QtPicDriver::QtPicDriver(QObject *parent)
+QtPicDriver::QtPicDriver(QObject *parent, const QStringList& deviceFiles)
 	: QObject(parent)
 	, serialPort(this)
 	, bootloaderDriver(serialPort)
@@ -11,10 +11,15 @@ QtPicDriver::QtPicDriver(QObject *parent)
 {
 	serialPort.setSpeed(230400);
 	openSerialPort();
-	bootloaderDriver.parseDeviceFile("devices.txt");
+	for(const auto& deviceFile: deviceFiles)
+		bootloaderDriver.parseDeviceFile(deviceFile);
 	connect(&serialPort.getQSerialPort(), SIGNAL(readyRead()), SLOT(onReadyRead()));
 	connect(&bootloaderDriver, SIGNAL(deviceChanged(QString)), SLOT(onDeviceChanged(QString)));
 }
+
+QtPicDriver::QtPicDriver(const QStringList& deviceFiles, QObject *parent)
+	: QtPicDriver(parent, deviceFiles)
+{}
 
 QtPicDriver::~QtPicDriver()
 {

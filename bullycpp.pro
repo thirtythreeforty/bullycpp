@@ -2,8 +2,6 @@ PROJECT = bullycpp
 CONFIG += qt c++11
 QT += core serialport gui widgets
 
-LIBS += -lboost_program_options
-
 SOURCES += \
     bullycpp.cpp \
     MainWindow.cpp \

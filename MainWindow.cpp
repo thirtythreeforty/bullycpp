@@ -5,7 +5,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+	ui(new Ui::MainWindow),
+	picDriver(0)
 {
 	ui->setupUi(this);
 	ui->progressWidget->hide();
