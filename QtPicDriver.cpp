@@ -37,6 +37,8 @@ void QtPicDriver::programHexFile(const QString path)
 {
 	forwardData = false;
 
+	emit programmingStateChanged(true);
+
 	if(mclrOnProgram) {
 		setMCLR(true);
 		QThread::msleep(1);
@@ -48,6 +50,8 @@ void QtPicDriver::programHexFile(const QString path)
 	if(bootloaderDriver.readDevice())
 		bootloaderDriver.programHexFile(path);
 
+	emit programmingStateChanged(false);
+
 	forwardData = true;
 }
 
@@ -56,6 +60,20 @@ void QtPicDriver::setSerialPort(const QString name)
 	serialPort.close();
 	serialPort.setName(name.toStdString());
 	openSerialPort();
+}
+
+void QtPicDriver::setBaudRate(const QString baud)
+{
+	serialPort.close();
+	unsigned int intBaud = baud.toInt();
+	if(intBaud) {
+		serialPort.setSpeed(intBaud);
+		openSerialPort();
+	}
+	else {
+		emit serialPortStatusChanged(false);
+		emit serialPortErrorChanged("Invalid baud rate");
+	}
 }
 
 void QtPicDriver::setMCLR(bool mclr)

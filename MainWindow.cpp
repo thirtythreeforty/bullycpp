@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(onHexFileTextChanged(QString)));
 	connect(this, SIGNAL(programHexFile(QString)), picDriver, SLOT(programHexFile(QString)));
 	connect(picDriver, SIGNAL(deviceChanged(QString)), ui->deviceInfoLabel, SLOT(setText(QString)));
+	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
+	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 
 	connect(ui->chooseHexFileButton, SIGNAL(clicked()), &fileDialog, SLOT(open()));
 	connect(&fileDialog, SIGNAL(fileSelected(QString)), ui->hexFileNameEdit, SLOT(setText(QString)));
@@ -39,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->clearSerialButton, SIGNAL(clicked()), ui->serialText, SLOT(clear()));
 
 	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), picDriver, SLOT(setSerialPort(QString)));
+	connect(ui->baudComboBox, SIGNAL(currentTextChanged(QString)), picDriver, SLOT(setBaudRate(QString)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialText, SLOT(setEnabled(bool)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialErrorWidget, SLOT(setHidden(bool)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->mclrButton, SLOT(setEnabled(bool)));
@@ -47,7 +50,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	for(const auto& port: QSerialPortInfo::availablePorts()) {
 		ui->serialPortComboBox->addItem(port.portName());
 	}
-
+	for(const auto& baud: QSerialPortInfo::standardBaudRates()) {
+		QString baudAsString;
+		baudAsString.setNum(baud);
+		ui->baudComboBox->addItem(baudAsString);
+	}
+	ui->baudComboBox->addItem("230400");
+	ui->baudComboBox->setCurrentText("230400");
 }
 
 MainWindow::~MainWindow()

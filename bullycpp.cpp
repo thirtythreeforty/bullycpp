@@ -53,6 +53,8 @@ int main(int argc, char** argv)
 		std::cout << "Initializing... ";
 
 		QtPicDriver driver(parser.values("piclist"));
+		driver.setSerialPort(parser.value("device"));
+		driver.setBaudRate(parser.value("baud"));
 		driver.setMCLROnProgram(parser.isSet("mclr"));
 		driver.setConfigBitsEnabled(parser.isSet("configbits"));
 

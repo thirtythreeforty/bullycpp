@@ -23,11 +23,13 @@ signals:
 	void mclrChanged(bool);
 	void serialPortStatusChanged(bool);
 	void serialPortErrorChanged(QString);
+	void programmingStateChanged(bool);
 
 public slots:
 	void sendSerialData(const QByteArray data);
 	void programHexFile(const QString path);
 	void setSerialPort(const QString name);
+	void setBaudRate(const QString baud);
 	void setMCLR(bool mclr);
 	void setMCLROnProgram(bool set);
 	void setConfigBitsEnabled(bool set);

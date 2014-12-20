@@ -18,21 +18,25 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QComboBox" name="serialPortComboBox"/>
+       <widget class="QComboBox" name="serialPortComboBox">
+        <property name="insertPolicy">
+         <enum>QComboBox::InsertAlphabetically</enum>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="baudLineEdit">
+       <widget class="QComboBox" name="baudComboBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maxLength">
-         <number>7</number>
+        <property name="editable">
+         <bool>true</bool>
         </property>
-        <property name="placeholderText">
-         <string>Baud rate</string>
+        <property name="insertPolicy">
+         <enum>QComboBox::InsertAlphabetically</enum>
         </property>
        </widget>
       </item>
@@ -259,18 +263,9 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QProgressBar" name="programmingProgressBar"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="abortButton">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Abort</string>
+           <widget class="QProgressBar" name="programmingProgressBar">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
