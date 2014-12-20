@@ -24,11 +24,12 @@ signals:
 	void sendSerialData(QByteArray);
 	void programHexFile(QString);
 
-public slots:
+private slots:
 	void onProgramButtonClicked();
 	void onSerialTextSend(QString text);
 	void onSerialTextReceived(QByteArray data);
-	void onHexFileTextChanged(QString text);
+	void onHexFileTextChanged(QString);
+	void tryEnableProgramButton();
 
 private:
 	Ui::MainWindow *ui;

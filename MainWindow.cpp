@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialErrorWidget, SLOT(setHidden(bool)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->mclrButton, SLOT(setEnabled(bool)));
 	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), ui->serialStatusLabel, SLOT(setText(QString)));
+	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), SLOT(tryEnableProgramButton()));
 	connect(ui->retrySerialButton, SIGNAL(clicked()), picDriver, SLOT(openSerialPort()));
 	for(const auto& port: QSerialPortInfo::availablePorts()) {
 		ui->serialPortComboBox->addItem(port.portName());
@@ -85,8 +86,16 @@ void MainWindow::onSerialTextReceived(QByteArray data)
 	ui->serialText->moveCursor(QTextCursor::End);
 }
 
-void MainWindow::onHexFileTextChanged(QString text)
+void MainWindow::onHexFileTextChanged(QString)
+{
+	tryEnableProgramButton();
+}
+
+void MainWindow::tryEnableProgramButton()
 {
 	// Only makes sense to enable the programButton if serial is enabled
-	ui->programButton->setEnabled(text.size() != 0 && ui->serialText->isEnabled());
+	// and a filename is in the box
+	ui->programButton->setEnabled(
+		ui->hexFileNameEdit->text().size() != 0 && ui->serialText->isEnabled()
+	);
 }
