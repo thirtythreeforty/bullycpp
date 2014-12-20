@@ -1,5 +1,6 @@
 #include "PicBootloaderDriver.h"
 
+#include <algorithm>
 #include <array>
 #include <cctype>
 #include <fstream>
