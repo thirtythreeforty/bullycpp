@@ -33,7 +33,7 @@ public slots:
 private:
 	Ui::MainWindow *ui;
 	QThread thread;
-	QtPicDriver picDriver;
+	QtPicDriver *picDriver;
 	QFileDialog fileDialog;
 };
 
