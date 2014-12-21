@@ -1,12 +1,16 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include <algorithm>
+
+#include <QList>
+#include <QIntValidator>
 #include <QSerialPortInfo>
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	picDriver(new QtPicDriver(nullptr))
+	picDriver(new QtPicDriver(parser.values("piclist")))
 {
 	ui->setupUi(this);
 
@@ -14,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	thread.start();
 	picDriver->moveToThread(&thread);
-
-	fileDialog.setNameFilters({"Intel Hex files (*.hex)", "All files (*)"});
 
 	connect(ui->programButton, SIGNAL(clicked()), SLOT(onProgramButtonClicked()));
 	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(onHexFileTextChanged(QString)));
@@ -27,9 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->chooseHexFileButton, SIGNAL(clicked()), &fileDialog, SLOT(open()));
 	connect(&fileDialog, SIGNAL(fileSelected(QString)), ui->hexFileNameEdit, SLOT(setText(QString)));
 
-	connect(ui->mclrCheckBox, SIGNAL(clicked(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
+	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
 
-	connect(ui->configBitCheckBox, SIGNAL(clicked(bool)), picDriver, SLOT(setConfigBitsEnabled(bool)));
+	connect(ui->configBitCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setConfigBitsEnabled(bool)));
 
 	connect(ui->mclrButton, SIGNAL(clicked(bool)), picDriver, SLOT(setMCLR(bool)));
 	connect(picDriver, SIGNAL(mclrChanged(bool)), ui->mclrButton, SLOT(setChecked(bool)));
@@ -48,16 +50,47 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), ui->serialStatusLabel, SLOT(setText(QString)));
 	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), SLOT(tryEnableProgramButton()));
 	connect(ui->retrySerialButton, SIGNAL(clicked()), picDriver, SLOT(openSerialPort()));
-	for(const auto& port: QSerialPortInfo::availablePorts()) {
-		ui->serialPortComboBox->addItem(port.portName());
+
+	using std::begin; using std::end;
+	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+	QStringList portStrings;
+	std::transform(begin(ports), end(ports), std::back_inserter(portStrings),
+	               [](QSerialPortInfo& i){ return i.portName(); });
+	ui->serialPortComboBox->addItems(portStrings);
+	if(parser.isSet("device")) {
+		auto it = std::find(begin(portStrings), end(portStrings), parser.value("device"));
+		if(it == end(portStrings)) {
+			ui->serialPortComboBox->addItem(parser.value("device"));
+			// Custom value inserted at end of list
+			ui->serialPortComboBox->setCurrentIndex(portStrings.size());
+		}
+		else
+			ui->serialPortComboBox->setCurrentIndex(it - begin(portStrings));
 	}
-	for(const auto& baud: QSerialPortInfo::standardBaudRates()) {
-		QString baudAsString;
-		baudAsString.setNum(baud);
-		ui->baudComboBox->addItem(baudAsString);
+
+	QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
+	QStringList baudStrings;
+	std::transform(begin(bauds), end(bauds), std::back_inserter(baudStrings),
+	               [](qint32 baud){ QString s; s.setNum(baud); return s; });
+	ui->baudComboBox->addItems(baudStrings);
+	// baud is always set (default option is present)
+	auto it = std::find(begin(baudStrings), end(baudStrings), parser.value("baud"));
+	if(it == end(baudStrings)) {
+		ui->baudComboBox->addItem(parser.value("baud"));
+		ui->baudComboBox->setCurrentIndex(baudStrings.size());
 	}
-	ui->baudComboBox->addItem("230400");
-	ui->baudComboBox->setCurrentText("230400");
+	else
+		ui->baudComboBox->setCurrentIndex(it - begin(baudStrings));
+	ui->baudComboBox->setValidator(new QIntValidator(ui->baudComboBox));
+
+	ui->mclrCheckBox->setChecked(parser.isSet("mclr"));
+
+	ui->configBitCheckBox->setChecked(parser.isSet("configbits"));
+
+	if(parser.positionalArguments().size())
+		ui->hexFileNameEdit->setText(parser.positionalArguments()[0]);
+
+	fileDialog.setNameFilters({"Intel Hex files (*.hex)", "All files (*)"});
 }
 
 MainWindow::~MainWindow()

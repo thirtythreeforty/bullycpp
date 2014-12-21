@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCommandLineParser>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QThread>
@@ -17,7 +18,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(const QCommandLineParser& parser, QWidget* parent = 0);
 	virtual ~MainWindow();
 
 signals:

@@ -29,8 +29,9 @@ int main(int argc, char** argv)
 	parser.addOption(QCommandLineOption({"b", "baud"},
 		"Serial port speed",
 		"baud", "230400"));
-	parser.addOption(QCommandLineOption("piclist",
-		"PIC device file to read", "devices.txt"));
+	QCommandLineOption piclistOption("piclist", "PIC device file to read");
+	piclistOption.setDefaultValues({"devices.txt"});
+	parser.addOption(piclistOption);
 	parser.addOption(QCommandLineOption("no-gui",
 		"Do not show GUI"));
 	parser.addPositionalArgument("hexfile",
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 	parser.process(app);
 
 	if(!parser.isSet("no-gui")) {
-		MainWindow w;
+		MainWindow w(parser);
 		w.show();
 
 		return app.exec();

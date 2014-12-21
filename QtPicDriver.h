@@ -12,8 +12,7 @@ class QtPicDriver : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QtPicDriver(QObject *parent, const QStringList& deviceFiles = {"devices.txt"});
-	explicit QtPicDriver(const QStringList& deviceFiles = {"devices.txt"}, QObject *parent = 0);
+	explicit QtPicDriver(const QStringList& deviceFiles, QObject *parent = 0);
 	virtual ~QtPicDriver();
 
 signals:
