@@ -27,6 +27,7 @@ signals:
 
 private slots:
 	void onProgramButtonClicked();
+	void onSaveSerial(QString path);
 	void onSerialTextSend(QString text);
 	void onSerialTextReceived(QByteArray data);
 	void onHexFileTextChanged(QString);
@@ -36,7 +37,8 @@ private:
 	Ui::MainWindow *ui;
 	QThread thread;
 	QtPicDriver *picDriver;
-	QFileDialog fileDialog;
+	QFileDialog hexFileDialog;
+	QFileDialog saveLogDialog;
 };
 
 #endif // MAINWINDOW_H

@@ -3,8 +3,10 @@
 
 #include <algorithm>
 
+#include <QFile>
 #include <QList>
 #include <QIntValidator>
+#include <QMessageBox>
 #include <QSerialPortInfo>
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
@@ -26,8 +28,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 
-	connect(ui->chooseHexFileButton, SIGNAL(clicked()), &fileDialog, SLOT(open()));
-	connect(&fileDialog, SIGNAL(fileSelected(QString)), ui->hexFileNameEdit, SLOT(setText(QString)));
+	connect(ui->chooseHexFileButton, SIGNAL(clicked()), &hexFileDialog, SLOT(open()));
+	connect(&hexFileDialog, SIGNAL(fileSelected(QString)), ui->hexFileNameEdit, SLOT(setText(QString)));
 
 	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
 
@@ -41,6 +43,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(this, SIGNAL(sendSerialData(QByteArray)), picDriver, SLOT(sendSerialData(QByteArray)));
 
 	connect(ui->clearSerialButton, SIGNAL(clicked()), ui->serialText, SLOT(clear()));
+
+	connect(ui->saveSerialButton, SIGNAL(clicked()), &saveLogDialog, SLOT(open()));
+	connect(&saveLogDialog, SIGNAL(fileSelected(QString)), SLOT(onSaveSerial(QString)));
 
 	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), picDriver, SLOT(setSerialPort(QString)));
 	connect(ui->baudComboBox, SIGNAL(currentTextChanged(QString)), picDriver, SLOT(setBaudRate(QString)));
@@ -90,7 +95,11 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	if(parser.positionalArguments().size())
 		ui->hexFileNameEdit->setText(parser.positionalArguments()[0]);
 
-	fileDialog.setNameFilters({"Intel Hex files (*.hex)", "All files (*)"});
+	hexFileDialog.setNameFilters({"Intel Hex files (*.hex)", "All files (*)"});
+	hexFileDialog.setFileMode(QFileDialog::ExistingFile);
+
+	saveLogDialog.setNameFilter("Text files (*.txt)");
+	saveLogDialog.setDefaultSuffix("txt");
 }
 
 MainWindow::~MainWindow()
@@ -105,6 +114,18 @@ MainWindow::~MainWindow()
 void MainWindow::onProgramButtonClicked()
 {
 	emit programHexFile(ui->hexFileNameEdit->text());
+}
+
+void MainWindow::onSaveSerial(QString path)
+{
+	QFile file(path);
+	if(file.open(QFile::WriteOnly)) {
+		file.write(ui->serialText->toPlainText().toLatin1());
+		file.close();
+	}
+	else {
+		QMessageBox::critical(this, "Error", "Could not write log file!");
+	}
 }
 
 void MainWindow::onSerialTextSend(QString text)
