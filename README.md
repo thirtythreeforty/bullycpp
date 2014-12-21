@@ -10,6 +10,8 @@ It is difficult to use under Linux and Mac OS X.
 In contrast, BullyCPP is written in C++11 using Qt 5, making it usable on all major platforms, especially Linux.
 The code was initially translated from the open-source code of the legacy driver, but has been modified to use more standard C++ idioms and practices.
 
+![BullyCPP screenshot](https://github.com/thirtythreeforty/bullycpp/raw/master/screenshot.png)
+
 Building
 --------
 BullyCPP depends on Qt 5.2 or later.  Qt is cross-platform, so BullyCPP should work on any platform with Qt support and a C++11 compiler.
