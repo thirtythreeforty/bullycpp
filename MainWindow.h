@@ -32,6 +32,7 @@ private slots:
 	void onSerialTextReceived(QByteArray data);
 	void onHexFileTextChanged(QString);
 	void tryEnableProgramButton();
+	void showAbout();
 
 private:
 	Ui::MainWindow *ui;

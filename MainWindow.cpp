@@ -47,6 +47,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->saveSerialButton, SIGNAL(clicked()), &saveLogDialog, SLOT(open()));
 	connect(&saveLogDialog, SIGNAL(fileSelected(QString)), SLOT(onSaveSerial(QString)));
 
+	connect(ui->aboutButton, SIGNAL(clicked()), SLOT(showAbout()));
+
 	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), picDriver, SLOT(setSerialPort(QString)));
 	connect(ui->baudComboBox, SIGNAL(currentTextChanged(QString)), picDriver, SLOT(setBaudRate(QString)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialText, SLOT(setEnabled(bool)));
@@ -152,4 +154,22 @@ void MainWindow::tryEnableProgramButton()
 	ui->programButton->setEnabled(
 		ui->hexFileNameEdit->text().size() != 0 && ui->serialText->isEnabled()
 	);
+}
+
+void MainWindow::showAbout()
+{
+	QMessageBox::about(this, QStringLiteral("About BullyCPP"), QStringLiteral(
+	                   "<p align='center'>"
+	                   "<h2>BullyCPP v0.2</h2><br>"
+	                   "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
+	                   "<p align='center'>"
+	                   "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
+	                   "for updates and source code."
+	                   "<p>"
+	                   "BullyCPP is a serial console and a driver for the open source Bully Bootloader for the PIC24 and dsPIC33.  "
+	                   "See <a href='http://www.reesemicro.com/'>www.reesemicro.com</a> for the microcontroller firmware."
+	                   "<p>"
+	                   "This program is free software; you can redistribute it and/or modify it under the terms of "
+	                   "the GNU General Public License v3 or later, as published by the Free Software Foundation."
+	));
 }
