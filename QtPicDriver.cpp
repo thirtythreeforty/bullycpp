@@ -14,7 +14,7 @@ QtPicDriver::QtPicDriver(const QStringList& deviceFiles, QObject *parent)
 		bootloaderDriver.parseDeviceFile(deviceFile);
 	connect(&serialPort.getQSerialPort(), SIGNAL(readyRead()), SLOT(onReadyRead()));
 	connect(&bootloaderDriver, SIGNAL(deviceChanged(QString)), SLOT(onDeviceChanged(QString)));
-	connect(&bootloaderDriver, SIGNAL(programmingStatusChanged(IProgressCallback::Status,int)), SLOT(onProgrammingStatusChanged(IProgressCallback::Status,int)));
+	connect(&bootloaderDriver, SIGNAL(programmingStatusChanged(bullycpp::IProgressCallback::Status,int)), SLOT(onProgrammingStatusChanged(bullycpp::IProgressCallback::Status,int)));
 }
 
 QtPicDriver::~QtPicDriver()
@@ -113,9 +113,9 @@ void QtPicDriver::onDeviceChanged(const QString device)
 	emit deviceChanged(device);
 }
 
-void QtPicDriver::onProgrammingStatusChanged(IProgressCallback::Status status, int percent)
+void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status status, int percent)
 {
-	typedef QtPicBootloaderDriver::Status Status;
+	typedef bullycpp::IProgressCallback::Status Status;
 	const static QMap<Status, QString> map = {
 		{Status::Idle,        QStringLiteral("")},
 		{Status::Busy,        QStringLiteral("Working...")},

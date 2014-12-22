@@ -1,6 +1,9 @@
 #ifndef IPROGRESSCALLBACK
 #define IPROGRESSCALLBACK
 
+namespace bullycpp
+{
+
 class IProgressCallback {
 public:
 	enum class Status {
@@ -12,5 +15,7 @@ public:
 	};
 	virtual void onProgress(Status, int) = 0;
 };
+
+} // bullycpp
 
 #endif // IPROGRESSCALLBACK

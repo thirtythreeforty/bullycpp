@@ -40,7 +40,7 @@ public slots:
 private slots:
 	void onReadyRead();
 	void onDeviceChanged(const QString device);
-	void onProgrammingStatusChanged(IProgressCallback::Status status, int percent);
+	void onProgrammingStatusChanged(bullycpp::IProgressCallback::Status status, int percent);
 
 private:
 	SerialPort serialPort;

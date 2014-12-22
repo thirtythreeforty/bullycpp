@@ -8,7 +8,7 @@
 #include "ISerialPort.h"
 #include "PicBootloaderDriver.h"
 
-class QtPicBootloaderDriver : public QObject, public IProgressCallback
+class QtPicBootloaderDriver : public QObject, public bullycpp::IProgressCallback
 {
 	Q_OBJECT
 public:
@@ -22,7 +22,7 @@ public:
 signals:
 	void configBitsEnabledChanged(bool);
 	void deviceChanged(QString);
-	void programmingStatusChanged(IProgressCallback::Status, int);
+	void programmingStatusChanged(bullycpp::IProgressCallback::Status, int);
 
 public slots:
 	void programHexFile(const QString path);
