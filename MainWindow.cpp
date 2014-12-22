@@ -62,6 +62,12 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
 
+	// Set the serial window's font to be a monospace font.
+	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.
+	QFont monoFont("Monospace");
+	monoFont.setStyleHint(QFont::TypeWriter);
+	ui->serialText->setFont(std::move(monoFont));
+
 	using std::begin; using std::end;
 	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
 	QStringList portStrings;
