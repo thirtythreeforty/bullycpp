@@ -245,7 +245,7 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 		this->port << Command::READ_PM << 0x00 << 0x00 << 0x00;
 		this->port >> data;
 
-		throw new std::logic_error("TODO: I have no idea what's going on here.");
+		throw std::logic_error("TODO: I have no idea what's going on here.");
 	}
 
 	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
