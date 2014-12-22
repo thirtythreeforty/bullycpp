@@ -9,6 +9,7 @@ It is difficult to use under Linux and Mac OS X.
 
 In contrast, BullyCPP is written in C++11 using Qt 5, making it usable on all major platforms, especially Linux.
 The code was initially translated from the open-source code of the legacy driver, but has been modified to use more standard C++ idioms and practices.
+Furthermore, the backend is completely independent of Qt, allowing it to be retargeted very easily.
 
 ![BullyCPP screenshot](https://github.com/thirtythreeforty/bullycpp/raw/master/screenshot.png)
 
@@ -16,6 +17,11 @@ Building
 --------
 BullyCPP depends on Qt 5.2 or later.  Qt is cross-platform, so BullyCPP should work on any platform with Qt support and a C++11 compiler.
 
+If you have Qt Creator installed, you can simply import the project and click Build.
+This is the recommended way to build on Windows.
+(Note that you will have to compile and use a static version of Qt if you wish to redistribute the executable to Windows users who do not have Qt installed.)
+
+On Linux and Mac OS X, you can build with Qt Creator as described above, or you can build manually.
 Begin by cloning the repository:
 
     git clone github.com/thirtythreeforty/bullycpp.git
@@ -69,7 +75,8 @@ For example:
 
 Licensing
 ---------
-BullyCPP is free software, released under the GNU GPLv3 or later.
-The license can be found in the LICENSE file.
+BullyCPP is free software, released under the GNU General Public License version 3 or later, as published by the Free Software Foundation.
+Modification and redistribution are permitted (and encouraged) according to the terms of the GPL.
+The license can be found in the `LICENSE` file.
 
 [Pull requests](https://www.github.com/thirtythreeforty/bullycpp/pulls) and [bug reports](https://www.github.com/thirtythreeforty/bullycpp/issues) are welcome!
