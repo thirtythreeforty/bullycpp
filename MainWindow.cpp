@@ -58,6 +58,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), SLOT(tryEnableProgramButton()));
 	connect(ui->retrySerialButton, SIGNAL(clicked()), picDriver, SLOT(openSerialPort()));
 
+	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
+	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
+	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
+
 	using std::begin; using std::end;
 	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
 	QStringList portStrings;
@@ -145,6 +149,12 @@ void MainWindow::onSerialTextReceived(QByteArray data)
 void MainWindow::onHexFileTextChanged(QString)
 {
 	tryEnableProgramButton();
+}
+
+void MainWindow::onProgrammingProgressChanged(QString progress, int percent)
+{
+	ui->programmingProgressBar->setFormat(progress);
+	ui->programmingProgressBar->setValue(percent);
 }
 
 void MainWindow::tryEnableProgramButton()

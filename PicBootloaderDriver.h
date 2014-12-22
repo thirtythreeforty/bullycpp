@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 
+#include "IProgressCallback.h"
 #include "ISerialPort.h"
 #include "MemRow.h"
 #include "PicDevice.h"
@@ -11,6 +12,7 @@
 namespace bullycpp {
 
 class PicBootloaderDriver {
+	using Status = IProgressCallback::Status;
 public:
 	enum Command : uint8_t {
 		NACK         = 0x00,
@@ -28,7 +30,7 @@ public:
 	};
 
 public:
-	PicBootloaderDriver(ISerialPort& port);
+	PicBootloaderDriver(ISerialPort& port, IProgressCallback* progressCallback = nullptr);
 	const PicDevice* readDevice();
 
 	void setMCLR(bool mclr);
@@ -50,9 +52,11 @@ private:
 	bool checkAddressClash(const unsigned int address, const uint16_t data, const PicDevice::Family family,
 	                       const unsigned int configPage, const unsigned int configWord);
 	bool shouldSkipRow(const MemRow& thisRow, const PicDevice::Family family);
+	void giveProgress(IProgressCallback::Status status, int percent);
 
 private:
 	ISerialPort& port;
+	IProgressCallback* progressCallback;
 
 	bool configBitsEnabled;
 	unsigned int firmwareVersion;

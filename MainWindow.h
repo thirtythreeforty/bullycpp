@@ -27,6 +27,7 @@ signals:
 
 private slots:
 	void onProgramButtonClicked();
+	void onProgrammingProgressChanged(QString progress, int percent);
 	void onSaveSerial(QString path);
 	void onSerialTextSend(QString text);
 	void onSerialTextReceived(QByteArray data);

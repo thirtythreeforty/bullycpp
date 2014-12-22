@@ -4,10 +4,11 @@
 #include <QObject>
 #include <QString>
 
+#include "IProgressCallback.h"
 #include "ISerialPort.h"
 #include "PicBootloaderDriver.h"
 
-class QtPicBootloaderDriver : public QObject
+class QtPicBootloaderDriver : public QObject, public IProgressCallback
 {
 	Q_OBJECT
 public:
@@ -16,9 +17,12 @@ public:
 
 	bool configBitsEnabled();
 
+	virtual void onProgress(Status status, int percent);
+
 signals:
 	void configBitsEnabledChanged(bool);
 	void deviceChanged(QString);
+	void programmingStatusChanged(IProgressCallback::Status, int);
 
 public slots:
 	void programHexFile(const QString path);

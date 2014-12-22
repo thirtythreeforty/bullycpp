@@ -20,7 +20,8 @@ HEADERS += \
     MemRow.h \
     PicBootloaderDriver.h \
     PicDevice.h \
-    SerialPort.h
+    SerialPort.h \
+    IProgressCallback.h
 
 FORMS += mainwindow.ui
 

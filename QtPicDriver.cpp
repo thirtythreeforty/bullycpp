@@ -14,6 +14,7 @@ QtPicDriver::QtPicDriver(const QStringList& deviceFiles, QObject *parent)
 		bootloaderDriver.parseDeviceFile(deviceFile);
 	connect(&serialPort.getQSerialPort(), SIGNAL(readyRead()), SLOT(onReadyRead()));
 	connect(&bootloaderDriver, SIGNAL(deviceChanged(QString)), SLOT(onDeviceChanged(QString)));
+	connect(&bootloaderDriver, SIGNAL(programmingStatusChanged(IProgressCallback::Status,int)), SLOT(onProgrammingStatusChanged(IProgressCallback::Status,int)));
 }
 
 QtPicDriver::~QtPicDriver()
@@ -110,4 +111,48 @@ void QtPicDriver::onReadyRead()
 void QtPicDriver::onDeviceChanged(const QString device)
 {
 	emit deviceChanged(device);
+}
+
+void QtPicDriver::onProgrammingStatusChanged(IProgressCallback::Status status, int percent)
+{
+	typedef QtPicBootloaderDriver::Status Status;
+	const static QMap<Status, QString> map = {
+		{Status::Idle,        QStringLiteral("")},
+		{Status::Busy,        QStringLiteral("Working...")},
+		{Status::Programming, QStringLiteral("Programming (%1%)")},
+		{Status::Verifying,   QStringLiteral("Verifying (%1%)")},
+		{Status::Error,       QStringLiteral("An error occured")}
+	};
+
+	QString strStatus = map[status];
+	int scaledPercent = 0;
+
+	switch(status) {
+	case Status::Idle:
+		emit programmingStateChanged(false);
+		emit programmingErrorChanged(false);
+		scaledPercent = 100;
+		break;
+	case Status::Busy:
+		emit programmingStateChanged(true);
+		emit programmingErrorChanged(false);
+		break;
+	case Status::Programming:
+		emit programmingStateChanged(true);
+		emit programmingErrorChanged(false);
+		strStatus = strStatus.arg(percent);
+		scaledPercent = percent / 2;
+		break;
+	case Status::Verifying:
+		emit programmingStateChanged(true);
+		emit programmingErrorChanged(false);
+		strStatus = strStatus.arg(percent);
+		scaledPercent = percent / 2 + 50;
+		break;
+	case Status::Error:
+		emit programmingStateChanged(false);
+		emit programmingErrorChanged(true);
+		break;
+	}
+	emit programmingProgressChanged(strStatus, scaledPercent);
 }

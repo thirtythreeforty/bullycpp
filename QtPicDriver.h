@@ -5,6 +5,7 @@
 
 #include <QObject>
 
+#include "IProgressCallback.h"
 #include "SerialPort.h"
 #include "QtPicBootloaderDriver.h"
 
@@ -23,6 +24,8 @@ signals:
 	void serialPortStatusChanged(bool);
 	void serialPortErrorChanged(QString);
 	void programmingStateChanged(bool);
+	void programmingErrorChanged(bool);
+	void programmingProgressChanged(QString, int percent);
 
 public slots:
 	void sendSerialData(const QByteArray data);
@@ -37,6 +40,7 @@ public slots:
 private slots:
 	void onReadyRead();
 	void onDeviceChanged(const QString device);
+	void onProgrammingStatusChanged(IProgressCallback::Status status, int percent);
 
 private:
 	SerialPort serialPort;

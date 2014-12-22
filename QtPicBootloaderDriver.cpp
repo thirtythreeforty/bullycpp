@@ -1,9 +1,11 @@
+#include <QMap>
+
 #include "PicDevice.h"
 #include "QtPicBootloaderDriver.h"
 
 QtPicBootloaderDriver::QtPicBootloaderDriver(bullycpp::ISerialPort& serialPort,QObject *parent)
 	: QObject(parent)
-	, driver(serialPort)
+	, driver(serialPort, this)
 {}
 
 QtPicBootloaderDriver::~QtPicBootloaderDriver()
@@ -38,8 +40,13 @@ bool QtPicBootloaderDriver::readDevice()
 {
 	const bullycpp::PicDevice* optionalDevice = driver.readDevice();
 	if(optionalDevice) {
-		emit deviceChanged(optionalDevice->name.c_str());
+		emit deviceChanged(QString::fromStdString(optionalDevice->name));
 		return true;
 	}
 	else return false;
+}
+
+void QtPicBootloaderDriver::onProgress(Status status, int percent)
+{
+	emit programmingStatusChanged(status, percent);
 }

@@ -13,8 +13,9 @@
 
 namespace bullycpp {
 
-PicBootloaderDriver::PicBootloaderDriver(ISerialPort& port)
+PicBootloaderDriver::PicBootloaderDriver(ISerialPort& port, IProgressCallback* progressCallback)
 	: port(port)
+	, progressCallback(progressCallback)
 	, configBitsEnabled(true)
 	, firmwareVersion(0)
 	, currentDevice()
@@ -248,8 +249,17 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 		throw std::logic_error("TODO: I have no idea what's going on here.");
 	}
 
-	for(unsigned int row = 0; row < MemRow::PM_SIZE + MemRow::EE_SIZE + MemRow::CM_SIZE; ++row) {
-		ppMemory[row].formatData();
+	int nonEmptyProgramRows = 0, nonEmptyProgramRowCount = 0;
+	int nonEmptyRows = 0, nonEmptyRowCount = 0;
+
+	// Format data and count nonempty rows
+	for(auto& row: ppMemory) {
+		row.formatData();
+		if(!row.isEmpty()) {
+			++nonEmptyRows;
+			if(row.getType() == MemRow::MemType::Program)
+				++nonEmptyProgramRows;
+		}
 	}
 
 	// Keep a copy for verification
@@ -257,6 +267,8 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 
 	std::cout << "Programming device..." << std::endl;
 	for(const auto& row: ppMemory) {
+		if(!row.isEmpty())
+			giveProgress(Status::Programming, 100 * ++nonEmptyRowCount / nonEmptyRows);
 		if(row.getType() == MemRow::MemType::Configuration && !this->configBitsEnabled)
 			continue;
 		if(!shouldSkipRow(row, family))
@@ -273,6 +285,9 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 
 	// only verify program memory
 	for(unsigned int row = 0; row < MemRow::PM_SIZE; ++row) {
+		if(!ppMemory[row].isEmpty()) {
+			giveProgress(Status::Verifying, 100 * ++nonEmptyProgramRowCount / nonEmptyProgramRows);
+		}
 		if(shouldSkipRow(ppMemory[row], family))
 			continue;
 		if(ppMemory[row].readData(this->port)) {
@@ -300,8 +315,10 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 		if(!verifyOK)
 			break;
 	}
-	if(!verifyOK)
+	if(!verifyOK) {
 		std::cerr << "Verification failed." << std::endl;
+		giveProgress(Status::Error, 0);
+	}
 
 	// Because of the way the firmware is written, we need to resend the config bytes
 	// before a reset (if programming the config bits)
@@ -319,6 +336,8 @@ void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
 		this->port << Command::POR_RESET;
 
 	std::cout << "Done!" << std::endl;
+	if(verifyOK)
+		giveProgress(Status::Idle, 100);
 }
 
 void PicBootloaderDriver::parseDeviceFile(const std::string& path)
@@ -443,5 +462,10 @@ bool PicBootloaderDriver::checkAddressClash(const unsigned int address, const ui
 	return true;
 }
 
+void PicBootloaderDriver::giveProgress(IProgressCallback::Status status, int percent)
+{
+	if(this->progressCallback)
+		this->progressCallback->onProgress(status, percent);
+}
 
 }
