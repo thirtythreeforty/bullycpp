@@ -168,7 +168,7 @@ void MainWindow::tryEnableProgramButton()
 
 void MainWindow::showAbout()
 {
-	QMessageBox::about(this, QStringLiteral("About BullyCPP"), QStringLiteral(
+	QMessageBox::about(this, QStringLiteral("About BullyCPP"),
 	                   "<p align='center'>"
 	                   "<h2>BullyCPP v0.2</h2><br>"
 	                   "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
@@ -181,5 +181,5 @@ void MainWindow::showAbout()
 	                   "<p>"
 	                   "This program is free software; you can redistribute it and/or modify it under the terms of "
 	                   "the GNU General Public License v3 or later, as published by the Free Software Foundation."
-	));
+	);
 }
