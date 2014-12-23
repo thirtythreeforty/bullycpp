@@ -131,7 +131,6 @@ void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status
 	case Status::Idle:
 		emit programmingStateChanged(false);
 		emit programmingErrorChanged(false);
-		scaledPercent = 100;
 		break;
 	case Status::Busy:
 		emit programmingStateChanged(true);
