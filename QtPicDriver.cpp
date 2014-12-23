@@ -37,11 +37,13 @@ void QtPicDriver::programHexFile(const QString path)
 
 	if(mclrOnProgram) {
 		setMCLR(true);
-		QThread::msleep(1);
+		QThread::msleep(50);
 	}
 	setMCLR(false);
 	emit mclrChanged(false);
-	QThread::msleep(10);
+	QThread::msleep(50);
+
+	serialPort.clear();
 
 	if(bootloaderDriver.readDevice())
 		bootloaderDriver.programHexFile(path);
