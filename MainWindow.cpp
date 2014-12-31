@@ -176,7 +176,7 @@ void MainWindow::showAbout()
 {
 	QMessageBox::about(this, QStringLiteral("About BullyCPP"),
 	                   "<p align='center'>"
-	                   "<h2>BullyCPP v0.2</h2><br>"
+	                   "<h2>BullyCPP v0.3</h2><br>"
 	                   "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
 	                   "<p align='center'>"
 	                   "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
