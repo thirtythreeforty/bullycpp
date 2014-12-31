@@ -3,26 +3,27 @@ CONFIG += qt c++11
 QT += core serialport gui widgets
 
 SOURCES += \
+    bullycpp/MemRow.cpp \
+    bullycpp/PicBootloaderDriver.cpp \
     bullycpp.cpp \
     MainWindow.cpp \
     QtPicBootloaderDriver.cpp \
     QtPicDriver.cpp \
-    MemRow.cpp \
-    PicBootloaderDriver.cpp \
     SerialPort.cpp
 
 HEADERS += \
-    MainWindow.h \
+    bullycpp/IProgressCallback.h \
+    bullycpp/ISerialPort.h \
+    bullycpp/MemRow.h \
+    bullycpp/PicBootloaderDriver.h \
+    bullycpp/PicDevice.h \
+    bullycpp/util.h \
     InterceptQPlainTextEdit.h \
+    MainWindow.h \
     QtPicBootloaderDriver.h \
     QtPicDriver.h \
-    ISerialPort.h \
-    MemRow.h \
-    PicBootloaderDriver.h \
-    PicDevice.h \
-    SerialPort.h \
-    IProgressCallback.h
+    SerialPort.h
 
 FORMS += mainwindow.ui
 
-TARGET = bullycpp
+TARGET = bullycpp.bin

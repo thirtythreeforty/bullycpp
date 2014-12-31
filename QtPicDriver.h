@@ -5,7 +5,7 @@
 
 #include <QObject>
 
-#include "IProgressCallback.h"
+#include "bullycpp/IProgressCallback.h"
 #include "SerialPort.h"
 #include "QtPicBootloaderDriver.h"
 

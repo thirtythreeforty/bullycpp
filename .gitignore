@@ -1,5 +1,5 @@
 *.o
-bullycpp
+bullycpp.bin
 Makefile*
 *.user
 ui_*

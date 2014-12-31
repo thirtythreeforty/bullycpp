@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QtSerialPort/QtSerialPort>
 
-#include "ISerialPort.h"
+#include "bullycpp/ISerialPort.h"
 
 class SerialPort : public bullycpp::ISerialPort {
 public:

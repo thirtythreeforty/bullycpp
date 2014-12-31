@@ -1,6 +1,6 @@
 #include <QMap>
 
-#include "PicDevice.h"
+#include "bullycpp/PicDevice.h"
 #include "QtPicBootloaderDriver.h"
 
 QtPicBootloaderDriver::QtPicBootloaderDriver(bullycpp::ISerialPort& serialPort,QObject *parent)

@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QString>
 
-#include "IProgressCallback.h"
-#include "ISerialPort.h"
-#include "PicBootloaderDriver.h"
+#include "bullycpp/IProgressCallback.h"
+#include "bullycpp/ISerialPort.h"
+#include "bullycpp/PicBootloaderDriver.h"
 
 class QtPicBootloaderDriver : public QObject, public bullycpp::IProgressCallback
 {
