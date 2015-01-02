@@ -11,8 +11,9 @@
 
 int main(int argc, char** argv)
 {
+	QCoreApplication::setOrganizationName("thirtythreeforty");
+	QCoreApplication::setApplicationName("BullyCPP");
 	QApplication app(argc, argv);
-	app.setApplicationName("BullyCPP");
 
 	// Parse options
 

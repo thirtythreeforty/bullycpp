@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QThread>
+#include <QSettings>
 
 #include "GitHubUpdateChecker.h"
 #include "InterceptQPlainTextEdit.h"
@@ -44,6 +45,7 @@ private:
 	QFileDialog hexFileDialog;
 	QFileDialog saveLogDialog;
 	GitHubUpdateChecker checker;
+	QSettings settings;
 };
 
 #endif // MAINWINDOW_H

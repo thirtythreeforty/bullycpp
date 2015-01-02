@@ -3,11 +3,14 @@
 
 #include <algorithm>
 
+#include <QCheckBox>
 #include <QFile>
 #include <QList>
 #include <QIntValidator>
 #include <QMessageBox>
 #include <QSerialPortInfo>
+
+#define AUTO_UPDATE_KEY (QStringLiteral("autoUpdate"))
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
@@ -116,7 +119,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	saveLogDialog.setNameFilter("Text files (*.txt)");
 	saveLogDialog.setDefaultSuffix("txt");
 
-	checker.checkForUpdate();
+	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
+		checker.checkForUpdate();
 }
 
 MainWindow::~MainWindow()
@@ -185,18 +189,30 @@ void MainWindow::tryEnableProgramButton()
 
 void MainWindow::showAbout()
 {
-	QMessageBox::about(this, QStringLiteral("About BullyCPP"),
-	                   "<p align='center'>"
-	                   "<h2>BullyCPP v0.3</h2><br>"
-	                   "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
-	                   "<p align='center'>"
-	                   "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
-	                   "for updates and source code."
-	                   "<p>"
-	                   "BullyCPP is a serial console and a driver for the open source Bully Bootloader for the PIC24 and dsPIC33.  "
-	                   "See <a href='http://www.reesemicro.com/'>www.reesemicro.com</a> for the microcontroller firmware."
-	                   "<p>"
-	                   "This program is free software; you can redistribute it and/or modify it under the terms of "
-	                   "the GNU General Public License v3 or later, as published by the Free Software Foundation."
+	QMessageBox aboutBox(QMessageBox::NoIcon,
+	                     QStringLiteral("About BullyCPP"),
+	                     "<p align='center'>"
+	                     "<h2>BullyCPP v0.3</h2><br>"
+	                     "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
+	                     "<p align='center'>"
+	                     "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
+	                     "for updates and source code."
+	                     "<p>"
+	                     "BullyCPP is a serial console and a driver for the open source Bully Bootloader for the PIC24 and dsPIC33.  "
+	                     "See <a href='http://www.reesemicro.com/'>www.reesemicro.com</a> for the microcontroller firmware."
+	                     "<p>"
+	                     "This program is free software; you can redistribute it and/or modify it under the terms of "
+	                     "the GNU General Public License v3 or later, as published by the Free Software Foundation.",
+	                     QMessageBox::Ok,
+	                     this
 	);
+	QCheckBox* cb = new QCheckBox("Check for updates automatically");
+
+	cb->setChecked(settings.value(AUTO_UPDATE_KEY, true).toBool());
+
+	aboutBox.setCheckBox(cb);
+	aboutBox.exec();
+
+	settings.setValue(AUTO_UPDATE_KEY, cb->isChecked());
+	settings.sync();
 }
