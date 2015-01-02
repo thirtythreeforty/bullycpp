@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QThread>
 
+#include "GitHubUpdateChecker.h"
 #include "InterceptQPlainTextEdit.h"
 #include "QtPicDriver.h"
 
@@ -32,6 +33,7 @@ private slots:
 	void onSerialTextSend(QString text);
 	void onSerialTextReceived(QByteArray data);
 	void onHexFileTextChanged(QString);
+	void onUpdateAvailable(QString version, QString url);
 	void tryEnableProgramButton();
 	void showAbout();
 
@@ -41,6 +43,7 @@ private:
 	QtPicDriver *picDriver;
 	QFileDialog hexFileDialog;
 	QFileDialog saveLogDialog;
+	GitHubUpdateChecker checker;
 };
 
 #endif // MAINWINDOW_H

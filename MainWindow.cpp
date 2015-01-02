@@ -12,7 +12,8 @@
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	picDriver(new QtPicDriver(parser.values("piclist")))
+	picDriver(new QtPicDriver(parser.values("piclist"))),
+	checker("thirtythreeforty", "bullycpp", "v0.3")
 {
 	ui->setupUi(this);
 
@@ -61,6 +62,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
+
+	connect(&checker, SIGNAL(updateAvailable(QString,QString)), SLOT(onUpdateAvailable(QString,QString)));
 
 	// Set the serial window's font to be a monospace font.
 	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.
@@ -112,6 +115,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	saveLogDialog.setNameFilter("Text files (*.txt)");
 	saveLogDialog.setDefaultSuffix("txt");
+
+	checker.checkForUpdate();
 }
 
 MainWindow::~MainWindow()
@@ -161,6 +166,12 @@ void MainWindow::onProgrammingProgressChanged(QString progress, int percent)
 {
 	ui->programmingProgressBar->setFormat(progress);
 	ui->programmingProgressBar->setValue(percent);
+}
+
+void MainWindow::onUpdateAvailable(QString version, QString url)
+{
+	const QString& newReleaseMessage = QStringLiteral("A new release, %1, is available.  <a href=\"%2\">Click here</a> to download it.<p>You can turn off update checking in the About screen.");
+	QMessageBox::information(this, "New Release Available", newReleaseMessage.arg(version, url));
 }
 
 void MainWindow::tryEnableProgramButton()

@@ -1,11 +1,12 @@
 PROJECT = bullycpp
 CONFIG += qt c++11
-QT += core serialport gui widgets
+QT += core gui network serialport widgets
 
 SOURCES += \
     bullycpp/MemRow.cpp \
     bullycpp/PicBootloaderDriver.cpp \
     bullycpp.cpp \
+    GitHubUpdateChecker.cpp \
     MainWindow.cpp \
     QtPicBootloaderDriver.cpp \
     QtPicDriver.cpp \
@@ -18,6 +19,7 @@ HEADERS += \
     bullycpp/PicBootloaderDriver.h \
     bullycpp/PicDevice.h \
     bullycpp/util.h \
+    GitHubUpdateChecker.h \
     InterceptQPlainTextEdit.h \
     MainWindow.h \
     QtPicBootloaderDriver.h \
