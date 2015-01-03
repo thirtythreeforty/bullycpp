@@ -16,7 +16,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	picDriver(new QtPicDriver(parser.values("piclist"))),
-	checker("thirtythreeforty", "bullycpp", "v0.3")
+	checker("thirtythreeforty", "bullycpp", "v0.4")
 {
 	ui->setupUi(this);
 
@@ -192,7 +192,7 @@ void MainWindow::showAbout()
 	QMessageBox aboutBox(QMessageBox::NoIcon,
 	                     QStringLiteral("About BullyCPP"),
 	                     "<p align='center'>"
-	                     "<h2>BullyCPP v0.3</h2><br>"
+	                     "<h2>BullyCPP v0.4</h2><br>"
 	                     "Copyright &#0169; 2014 George Hilliard (\"thirtythreeforty\")"
 	                     "<p align='center'>"
 	                     "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
