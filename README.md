@@ -19,7 +19,7 @@ BullyCPP depends on Qt 5.2 or later.  Qt is cross-platform, so BullyCPP should w
 
 If you have Qt Creator installed, you can simply import the project and click Build.
 This is the recommended way to build on Windows.
-(Note that you will have to compile and use a static version of Qt if you wish to redistribute the executable to Windows users who do not have Qt installed.)
+(Note that you will have to compile and use a static version of Qt if you wish to redistribute the executable to users who do not have Qt installed.)
 
 On Linux and Mac OS X, you can build with Qt Creator as described above, or you can build manually.
 Begin by cloning the repository:
@@ -36,6 +36,11 @@ Now build (you can pass `-j` if you have a multicore processor):
     make
 
 The executable `bullycpp` will be generated.
+
+Note:  If you want to redistribute the resulting application, you will need to use a statically linked Qt, which you must compile yourself.
+The configure line used to build the provided Windows precompiled versions is
+
+	configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
 
 Usage
 -----

@@ -70,9 +70,9 @@ void GitHubUpdateChecker::onRequestFinished(QNetworkReply* reply)
 	// and that has a valid semantic version string in the name.
 	for(const auto& val: array) {
 		QJsonObject topRelease = val.toObject();
-		QJsonValue name = topRelease[QStringLiteral("name")];
-		QJsonValue html_url = topRelease[QStringLiteral("html_url")];
-		QJsonValue prerelease = topRelease[QStringLiteral("prerelease")];
+		QJsonValue name = topRelease["name"];
+		QJsonValue html_url = topRelease["html_url"];
+		QJsonValue prerelease = topRelease["prerelease"];
 
 		if(name.type() != QJsonValue::String ||
 		   html_url.type() != QJsonValue::String ||
@@ -105,7 +105,7 @@ void GitHubUpdateChecker::onRequestFinished(QNetworkReply* reply)
 
 bool GitHubUpdateChecker::parseSemanticVersionString(const QString &str, unsigned int &major, unsigned int &minor, unsigned int &patch) const
 {
-	QRegularExpression re(QStringLiteral(R"(v?(\d+)\.(\d+)(?:\.(\d+))?)"));
+	QRegularExpression re(R"(v?(\d+)\.(\d+)(?:\.(\d+))?)");
 	QRegularExpressionMatch match = re.match(str);
 	if(match.hasMatch()) {
 		major = match.captured(1).toUInt();
