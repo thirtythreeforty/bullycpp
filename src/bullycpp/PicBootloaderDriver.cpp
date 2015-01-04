@@ -148,7 +148,7 @@ void PicBootloaderDriver::programHexFile(const std::string& path) {
 	programHexFile(hexFile);
 }
 
-void PicBootloaderDriver::programHexFile(std::ifstream& hexFile)
+void PicBootloaderDriver::programHexFile(std::istream& hexFile)
 {
 	std::vector<uint8_t> buffer;
 	int32_t extAddr = 0;
@@ -362,7 +362,7 @@ void PicBootloaderDriver::parseDeviceFile(const std::string& path)
 	parseDeviceFile(deviceFile);
 }
 
-void PicBootloaderDriver::parseDeviceFile(std::ifstream& deviceFile)
+void PicBootloaderDriver::parseDeviceFile(std::istream& deviceFile)
 {
 	using namespace std;
 	string line;

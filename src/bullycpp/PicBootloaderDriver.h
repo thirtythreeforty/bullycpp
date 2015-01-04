@@ -18,6 +18,7 @@
 #define PICBOOTLOADERDRIVER_H
 
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 #include "IProgressCallback.h"
@@ -52,9 +53,9 @@ public:
 	void setMCLR(bool mclr);
 
 	void programHexFile(const std::string& path);
-	void programHexFile(std::ifstream& hexFile);
+	void programHexFile(std::istream& hexFile);
 	void parseDeviceFile(const std::string& path);
-	void parseDeviceFile(std::ifstream& deviceFile);
+	void parseDeviceFile(std::istream& deviceFile);
 
 	void setConfigBitsEnabled(bool value) { configBitsEnabled = value; }
 	bool getConfigBitsEnabled() { return configBitsEnabled; }
