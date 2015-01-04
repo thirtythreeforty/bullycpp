@@ -31,10 +31,12 @@
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
+	appIcon(":/bullycpp.png"),
 	picDriver(new QtPicDriver(parser.values("piclist"))),
 	checker("thirtythreeforty", "bullycpp", "v0.4")
 {
 	ui->setupUi(this);
+	setWindowIcon(appIcon);
 
 	ui->progressWidget->hide();
 
@@ -222,6 +224,9 @@ void MainWindow::showAbout()
 	                     QMessageBox::Ok,
 	                     this
 	);
+
+	aboutBox.setIconPixmap(appIcon.pixmap(128, 128));
+
 	QCheckBox* cb = new QCheckBox("Check for updates automatically");
 
 	cb->setChecked(settings.value(AUTO_UPDATE_KEY, true).toBool());

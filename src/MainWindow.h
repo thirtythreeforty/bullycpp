@@ -19,6 +19,7 @@
 
 #include <QCommandLineParser>
 #include <QFileDialog>
+#include <QIcon>
 #include <QMainWindow>
 #include <QThread>
 #include <QSettings>
@@ -57,6 +58,7 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	QThread thread;
+	QIcon appIcon;
 	QtPicDriver *picDriver;
 	QFileDialog hexFileDialog;
 	QFileDialog saveLogDialog;

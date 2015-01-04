@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>devices.txt</file>
+        <file>bullycpp.png</file>
     </qresource>
 </RCC>
