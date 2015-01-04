@@ -14,6 +14,8 @@
  **     along with BullyCPP.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+namespace bullycpp {
+
 class MemRow {
 public:
 	enum class MemType {
@@ -24,3 +26,5 @@ public:
 
 	MemRow()
 };
+
+}
