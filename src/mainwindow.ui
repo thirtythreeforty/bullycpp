@@ -59,7 +59,7 @@
       <item>
        <widget class="QPushButton" name="mclrButton">
         <property name="text">
-         <string>MCLR</string>
+         <string>MCL&amp;R</string>
         </property>
         <property name="shortcut">
          <string>Ctrl+R</string>
@@ -95,7 +95,7 @@
       <item>
        <widget class="QPushButton" name="saveSerialButton">
         <property name="text">
-         <string>Save log</string>
+         <string>&amp;Save log</string>
         </property>
         <property name="shortcut">
          <string>Ctrl+S</string>
@@ -264,7 +264,7 @@
           <item>
            <widget class="QPushButton" name="chooseHexFileButton">
             <property name="text">
-             <string>Open...</string>
+             <string>&amp;Open...</string>
             </property>
             <property name="shortcut">
              <string>Ctrl+O</string>
@@ -290,7 +290,10 @@
              </size>
             </property>
             <property name="text">
-             <string>Program!</string>
+             <string>&amp;Program!</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+P</string>
             </property>
            </widget>
           </item>
