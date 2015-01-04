@@ -24,8 +24,11 @@ HEADERS += \
     MainWindow.h \
     QtPicBootloaderDriver.h \
     QtPicDriver.h \
-    SerialPort.h
+    SerialPort.h \
+    QStdStreamBuf.h
 
 FORMS += mainwindow.ui
+
+RESOURCES += bullycpp.qrc
 
 TARGET = bullycpp.bin

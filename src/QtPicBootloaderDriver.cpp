@@ -16,8 +16,10 @@
 
 #include "QtPicBootloaderDriver.h"
 
+#include <QFile>
 #include <QMap>
 
+#include "QStdStreamBuf.h"
 #include "bullycpp/PicDevice.h"
 
 QtPicBootloaderDriver::QtPicBootloaderDriver(bullycpp::ISerialPort& serialPort,QObject *parent)
@@ -45,7 +47,11 @@ void QtPicBootloaderDriver::programHexFile(const QString path)
 
 void QtPicBootloaderDriver::parseDeviceFile(const QString path)
 {
-	driver.parseDeviceFile(path.toStdString());
+	QFile file(path);
+	if(file.open(QIODevice::ReadOnly)) {
+		QStdIStream stream(&file);
+		driver.parseDeviceFile(stream);
+	}
 }
 
 void QtPicBootloaderDriver::setMCLR(bool mclr)

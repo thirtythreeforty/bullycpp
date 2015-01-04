@@ -4,3 +4,4 @@ Makefile*
 *.user
 ui_*
 moc_*
+qrc_*
