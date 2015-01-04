@@ -37,10 +37,10 @@ public slots:
 	void checkForUpdate();
 
 private slots:
-	void performCheck();
 	void onRequestFinished(QNetworkReply* reply);
 
 private:
+	void performCheck();
 	bool parseSemanticVersionString(const QString& str, unsigned int& major, unsigned int& minor, unsigned int& patch) const;
 
 private:
