@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	parser.addOption(QCommandLineOption({"b", "baud"},
 		"Serial port speed",
 		"baud", "230400"));
-	QCommandLineOption piclistOption("piclist", "PIC device file to read");
+	QCommandLineOption piclistOption("piclist", "PIC device file to read", "piclist");
 	piclistOption.setDefaultValues({":/devices.txt"});
 	parser.addOption(piclistOption);
 	parser.addOption(QCommandLineOption("no-gui",
