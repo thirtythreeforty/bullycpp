@@ -1,8 +1,10 @@
-#Used by winbootloader.exe to specify devices
-# Even though dsPIC30/dsPIC33 are in this list, the current version only supports PIC24F/PIC24H devices.
-#device_name : devid : Process ID (upper byte of revision) : family_name : hex address of lowest config word (PIC24F only) : Small RAM flag (1 if RAM < 2K, 0 otherwise)
-# The hex address with config bits is only used for the 24F, prevents the last page of program memory from being written as it contains a packed version of the config bits
-# if the small RAM flag is set, only half a page is transferred/programmed at time for 24H family.
+# Used by BullyCPP to specify devices.  The format is:
+#
+#  device_name,devid,Process ID (upper byte of revision),family_name,hex address of lowest config word (PIC24F only),Small RAM flag (1 if RAM < 2K, 0 otherwise)
+#
+# The hex address with config bits is only used for the 24F; it prevents the last page of program memory from being written\
+# (as it contains a packed version of the config bits).
+# If the small RAM flag is set, only half a page is transferred/programmed at time for 24H family.
 dsPIC30F2010,0040,1,dsPIC30F,0,0
 dsPIC30F2011,00C0,1,dsPIC30F,0,0
 dsPIC30F2011,0240,1,dsPIC30F,0,0

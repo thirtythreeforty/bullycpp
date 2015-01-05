@@ -1,7 +1,7 @@
 BullyCPP
 ========
 BullyCPP is a PC-side driver for the [Bully Bootloader](http://www.reesemicro.com/), a bootloader for the PIC24 and dsPIC33 series of microcontrollers.
-The Bully Bootloader provides an excellent framework to download application code to these devices without needing to use an ICSP programmer such as a PicKit.
+The Bully Bootloader provides an excellent framework to download application code to these devices without needing to use an ICSP programmer such as a PICKit.
 Instead, any UART serial adapter may be used.
 
 Unfortunately, the stock/legacy Bully Bootloader driver program is a GUI .NET application written in C++/CLI, so it is constrained to the Windows platform.
@@ -13,11 +13,13 @@ Furthermore, the backend is completely independent of Qt, allowing it to be reta
 
 ![BullyCPP screenshot](https://github.com/thirtythreeforty/bullycpp/raw/master/screenshot.png)
 
+Casual users will probably be interested in Windows binaries, which can be found on the [GitHub Releases](https://github.com/thirtythreeforty/bullycpp/releases) page.
+
 Building
 --------
 BullyCPP depends on Qt 5.2 or later.  Qt is cross-platform, so BullyCPP should work on any platform with Qt support and a C++11 compiler.
 
-If you have Qt Creator installed, you can simply import the project and click Build.
+If you have Qt Creator installed, you can simply import the QMake project and click Build.
 This is the recommended way to build on Windows.
 (Note that you will have to compile and use a static version of Qt if you wish to redistribute the executable to users who do not have Qt installed.)
 
@@ -38,7 +40,7 @@ Now build (you can pass `-j` if you have a multicore processor):
 The executable `bullycpp` will be generated.
 
 Note:  If you want to redistribute the resulting application, you will need to use a statically linked Qt, which you must compile yourself.
-The configure line used to build the provided Windows precompiled versions is
+The Qt `configure` line used to build the provided Windows precompiled versions is
 
 	configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
 
@@ -78,10 +80,17 @@ For example:
 
     bullycpp --baud 115200 ~/target_code.hex
 
+Updates
+-------
+By default, BullyCPP will check for updates when it is launched in GUI mode (assuming it has an Internet connection).
+It uses the GitHub API to perform this check; no identifying information is sent.
+If a new release is found, a dialog will appear with a link to the new release.
+You can disable this behavior in the About dialog if you wish.
+
 Licensing
 ---------
 BullyCPP is free software, released under the GNU General Public License version 3 or later, as published by the Free Software Foundation.
-Modification and redistribution are permitted (and encouraged) according to the terms of the GPL.
+Modification and redistribution are permitted according to the terms of the GPL.
 The license can be found in the `LICENSE` file.
 
 [Pull requests](https://www.github.com/thirtythreeforty/bullycpp/pulls) and [bug reports](https://www.github.com/thirtythreeforty/bullycpp/issues) are welcome!
