@@ -27,13 +27,14 @@
 #include <QSerialPortInfo>
 
 #define AUTO_UPDATE_KEY (QStringLiteral("autoUpdate"))
+#define VERSION_STRING "v0.5"
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	appIcon(":/bullycpp.png"),
 	picDriver(new QtPicDriver(parser.values("piclist"))),
-	checker("thirtythreeforty", "bullycpp", "v0.4")
+	checker("thirtythreeforty", "bullycpp", VERSION_STRING)
 {
 	ui->setupUi(this);
 	setWindowIcon(appIcon);
@@ -210,7 +211,7 @@ void MainWindow::showAbout()
 	QMessageBox aboutBox(QMessageBox::NoIcon,
 	                     QStringLiteral("About BullyCPP"),
 	                     "<p align='center'>"
-	                     "<h2>BullyCPP v0.4</h2><br>"
+	                     "<h2>BullyCPP " VERSION_STRING "</h2><br>"
 	                     "Copyright &#0169; 2014 - 2015 George Hilliard (\"thirtythreeforty\")"
 	                     "<p align='center'>"
 	                     "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
