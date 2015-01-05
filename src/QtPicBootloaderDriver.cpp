@@ -47,11 +47,16 @@ void QtPicBootloaderDriver::programHexFile(const QString path)
 
 void QtPicBootloaderDriver::parseDeviceFile(const QString path)
 {
-	QFile file(path);
-	if(file.open(QIODevice::ReadOnly)) {
-		QStdIStream stream(&file);
-		driver.parseDeviceFile(stream);
+	// Special case for QRC resources, which begin with ":/"
+	if(path.startsWith(QStringLiteral(":/"))) {
+		QFile file(path);
+		if(file.open(QIODevice::ReadOnly)) {
+			QStdIStream stream(&file);
+			driver.parseDeviceFile(stream);
+		}
 	}
+	else
+		driver.parseDeviceFile(path.toStdString());
 }
 
 void QtPicBootloaderDriver::setMCLR(bool mclr)
