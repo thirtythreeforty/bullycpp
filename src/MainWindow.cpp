@@ -65,7 +65,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(serialDataReceived(QByteArray)), SLOT(onSerialTextReceived(QByteArray)));
 	connect(this, SIGNAL(sendSerialData(QByteArray)), picDriver, SLOT(sendSerialData(QByteArray)));
 
-	connect(ui->clearSerialButton, SIGNAL(clicked()), ui->serialText, SLOT(clear()));
+	connect(ui->clearSerialButton, SIGNAL(clicked()), SLOT(onClearSerialClicked()));
 
 	connect(ui->saveSerialButton, SIGNAL(clicked()), &saveLogDialog, SLOT(open()));
 	connect(&saveLogDialog, SIGNAL(fileSelected(QString)), SLOT(onSaveSerial(QString)));
@@ -151,6 +151,12 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+void MainWindow::onClearSerialClicked()
+{
+	ui->serialText->clear();
+	rawSerialBuffer.clear();
+}
+
 void MainWindow::onProgramButtonClicked()
 {
 	emit programHexFile(ui->hexFileNameEdit->text());
@@ -160,7 +166,7 @@ void MainWindow::onSaveSerial(QString path)
 {
 	QFile file(path);
 	if(file.open(QFile::WriteOnly)) {
-		file.write(ui->serialText->toPlainText().toLatin1());
+		file.write(rawSerialBuffer);
 		file.close();
 	}
 	else {
@@ -175,6 +181,12 @@ void MainWindow::onSerialTextSend(QString text)
 
 void MainWindow::onSerialTextReceived(QByteArray data)
 {
+	// Keep a copy of the data for saving.
+	rawSerialBuffer.append(data);
+
+	// Strip null characters from the data we display.
+	data.replace('\0', "");
+
 	ui->serialText->moveCursor(QTextCursor::End);
 	ui->serialText->insertPlainText(data);
 	ui->serialText->moveCursor(QTextCursor::End);

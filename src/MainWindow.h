@@ -17,6 +17,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QByteArray>
 #include <QCommandLineParser>
 #include <QFileDialog>
 #include <QIcon>
@@ -45,6 +46,7 @@ signals:
 	void programHexFile(QString);
 
 private slots:
+	void onClearSerialClicked();
 	void onProgramButtonClicked();
 	void onProgrammingProgressChanged(QString progress, int percent);
 	void onSaveSerial(QString path);
@@ -64,6 +66,7 @@ private:
 	QFileDialog saveLogDialog;
 	GitHubUpdateChecker checker;
 	QSettings settings;
+	QByteArray rawSerialBuffer;
 };
 
 #endif // MAINWINDOW_H
