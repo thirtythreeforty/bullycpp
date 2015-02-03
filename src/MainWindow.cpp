@@ -51,8 +51,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 
-	connect(ui->chooseHexFileButton, SIGNAL(clicked()), &hexFileDialog, SLOT(open()));
-	connect(&hexFileDialog, SIGNAL(fileSelected(QString)), ui->hexFileNameEdit, SLOT(setText(QString)));
+	connect(ui->chooseHexFileButton, SIGNAL(clicked()), SLOT(onChooseHexFileClicked()));
 
 	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
 
@@ -66,9 +65,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(this, SIGNAL(sendSerialData(QByteArray)), picDriver, SLOT(sendSerialData(QByteArray)));
 
 	connect(ui->clearSerialButton, SIGNAL(clicked()), SLOT(onClearSerialClicked()));
-
-	connect(ui->saveSerialButton, SIGNAL(clicked()), &saveLogDialog, SLOT(open()));
-	connect(&saveLogDialog, SIGNAL(fileSelected(QString)), SLOT(onSaveSerial(QString)));
+	connect(ui->saveSerialButton, SIGNAL(clicked()), SLOT(onSaveSerialClicked()));
 
 	connect(ui->aboutButton, SIGNAL(clicked()), SLOT(showAbout()));
 
@@ -132,12 +129,6 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	if(parser.positionalArguments().size())
 		ui->hexFileNameEdit->setText(parser.positionalArguments()[0]);
 
-	hexFileDialog.setNameFilters({"Intel Hex files (*.hex)", "All files (*)"});
-	hexFileDialog.setFileMode(QFileDialog::ExistingFile);
-
-	saveLogDialog.setNameFilter("Text files (*.txt)");
-	saveLogDialog.setDefaultSuffix("txt");
-
 	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
 		checker.checkForUpdate();
 }
@@ -157,20 +148,39 @@ void MainWindow::onClearSerialClicked()
 	rawSerialBuffer.clear();
 }
 
+void MainWindow::onChooseHexFileClicked()
+{
+	const QString fileName = QFileDialog::getOpenFileName(this,
+		"Choose Hex File",                       // caption
+		QString(),                               // dir (default)
+		"Intel Hex files (*.hex);;All files (*)" // filter
+	);
+	if(!fileName.isNull())
+		ui->hexFileNameEdit->setText(fileName);
+}
+
 void MainWindow::onProgramButtonClicked()
 {
 	emit programHexFile(ui->hexFileNameEdit->text());
 }
 
-void MainWindow::onSaveSerial(QString path)
+void MainWindow::onSaveSerialClicked()
 {
-	QFile file(path);
-	if(file.open(QFile::WriteOnly)) {
-		file.write(rawSerialBuffer);
-		file.close();
-	}
-	else {
-		QMessageBox::critical(this, "Error", "Could not write log file!");
+	const QString path = QFileDialog::getSaveFileName(this,
+		QString(),           // caption (default)
+		QString(),           // dir (default)
+		"Text files (*.txt)" // filter
+	);
+
+	if(!path.isNull()) {
+		QFile file(path);
+		if(file.open(QFile::WriteOnly)) {
+			file.write(rawSerialBuffer);
+			file.close();
+		}
+		else {
+			QMessageBox::critical(this, "Error", "Could not write log file!");
+		}
 	}
 }
 

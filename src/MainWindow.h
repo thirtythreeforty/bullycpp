@@ -47,9 +47,10 @@ signals:
 
 private slots:
 	void onClearSerialClicked();
+	void onChooseHexFileClicked();
 	void onProgramButtonClicked();
 	void onProgrammingProgressChanged(QString progress, int percent);
-	void onSaveSerial(QString path);
+	void onSaveSerialClicked();
 	void onSerialTextSend(QString text);
 	void onSerialTextReceived(QByteArray data);
 	void onHexFileTextChanged(QString);
@@ -62,8 +63,6 @@ private:
 	QThread thread;
 	QIcon appIcon;
 	QtPicDriver *picDriver;
-	QFileDialog hexFileDialog;
-	QFileDialog saveLogDialog;
 	GitHubUpdateChecker checker;
 	QSettings settings;
 	QByteArray rawSerialBuffer;
