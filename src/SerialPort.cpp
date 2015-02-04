@@ -94,8 +94,7 @@ void SerialPort::read(uint8_t* dest, size_t size)
 {
 	unsigned int read = 0;
 	do {
-		while(!qserialport.bytesAvailable())
-			qserialport.waitForReadyRead(10);
+		waitForReadable();
 		read += qserialport.read(reinterpret_cast<char*>(dest) + read, size - read);
 	} while(read != size);
 }
@@ -103,8 +102,7 @@ void SerialPort::read(uint8_t* dest, size_t size)
 unsigned char SerialPort::read()
 {
 	char c;
-	while(!qserialport.bytesAvailable())
-		qserialport.waitForReadyRead(10);
+	waitForReadable();
 	qserialport.getChar(&c);
 	return c;
 }
@@ -114,7 +112,7 @@ void SerialPort::write(const uint8_t* src, size_t size)
 	unsigned int written = 0;
 	do {
 		written += qserialport.write(reinterpret_cast<const char*>(src), size);
-		qserialport.waitForBytesWritten(-1);
+		waitForWritten();
 	} while(written != size);
 }
 
@@ -126,10 +124,24 @@ void SerialPort::write(const std::vector<uint8_t>& src)
 void SerialPort::write(const unsigned char c)
 {
 	qserialport.putChar(c);
-	qserialport.waitForBytesWritten(-1);
+	waitForWritten();
 }
 
 void SerialPort::clear()
 {
 	qserialport.clear();
+}
+
+void SerialPort::waitForReadable()
+{
+	if(qserialport.bytesAvailable() == 0)
+		if(!qserialport.waitForReadyRead(timeout))
+			throw TimeoutException();
+}
+
+void SerialPort::waitForWritten()
+{
+	if(qserialport.bytesToWrite() != 0)
+		if(!qserialport.waitForBytesWritten(timeout))
+			throw TimeoutException();
 }

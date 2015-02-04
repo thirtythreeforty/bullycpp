@@ -21,12 +21,19 @@
 #include <vector>
 
 #include <QObject>
-#include <QtSerialPort/QtSerialPort>
+#include <QException>
+#include <QtSerialPort>
 
 #include "bullycpp/ISerialPort.h"
 
 class SerialPort : public bullycpp::ISerialPort {
 public:
+	class TimeoutException : public QException {
+	public:
+		void raise() const { throw *this; }
+		QException* clone() const { return new TimeoutException(*this); }
+	};
+
 	explicit SerialPort(QObject *parent = Q_NULLPTR);
 	explicit SerialPort(const char* name, QObject *parent = Q_NULLPTR);
 	explicit SerialPort(const std::string& name, QObject *parent = Q_NULLPTR);
@@ -57,7 +64,14 @@ public:
 
 	QSerialPort& getQSerialPort() { return qserialport; }
 private:
+	// These functions throw on timeout (or return normally).
+	void waitForReadable();
+	void waitForWritten();
+
 	QSerialPort qserialport;
+
+	// Timeout in milliseconds
+	const int timeout = 2000;
 };
 
 #endif

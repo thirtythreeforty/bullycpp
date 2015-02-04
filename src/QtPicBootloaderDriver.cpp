@@ -20,6 +20,7 @@
 #include <QMap>
 
 #include "QStdStreamBuf.h"
+#include "SerialPort.h"
 #include "bullycpp/PicDevice.h"
 
 QtPicBootloaderDriver::QtPicBootloaderDriver(bullycpp::ISerialPort& serialPort,QObject *parent)
@@ -42,7 +43,13 @@ bool QtPicBootloaderDriver::configBitsEnabled()
 
 void QtPicBootloaderDriver::programHexFile(const QString path)
 {
-	driver.programHexFile(path.toStdString());
+	// Our ISerialPort implementation may throw its TimeoutException
+	try {
+		driver.programHexFile(path.toStdString());
+	}
+	catch(SerialPort::TimeoutException& e) {
+		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
+	}
 }
 
 void QtPicBootloaderDriver::parseDeviceFile(const QString path)
@@ -66,7 +73,16 @@ void QtPicBootloaderDriver::setMCLR(bool mclr)
 
 bool QtPicBootloaderDriver::readDevice()
 {
-	const bullycpp::PicDevice* optionalDevice = driver.readDevice();
+	const bullycpp::PicDevice* optionalDevice = nullptr;
+
+	// Our ISerialPort implementation may throw its TimeoutException
+	try {
+		optionalDevice = driver.readDevice();
+	}
+	catch(SerialPort::TimeoutException& e) {
+		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
+	}
+
 	if(optionalDevice) {
 		emit deviceChanged(QString::fromStdString(optionalDevice->name));
 		return true;

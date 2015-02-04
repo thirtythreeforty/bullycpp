@@ -139,7 +139,7 @@ void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status
 		{Status::Busy,        QStringLiteral("Working...")},
 		{Status::Programming, QStringLiteral("Programming (%1%)")},
 		{Status::Verifying,   QStringLiteral("Verifying (%1%)")},
-		{Status::Error,       QStringLiteral("An error occured")}
+		{Status::Error,       QStringLiteral("An error occured!")}
 	};
 
 	QString strStatus = map[status];

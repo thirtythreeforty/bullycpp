@@ -40,6 +40,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	setWindowIcon(appIcon);
 
 	ui->progressWidget->hide();
+	ui->programmingErrorLabel->hide();
 
 	thread.start();
 	picDriver->moveToThread(&thread);
@@ -80,6 +81,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
+	connect(picDriver, SIGNAL(programmingErrorChanged(bool)), ui->programmingErrorLabel, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
 
 	connect(&checker, SIGNAL(updateAvailable(QString,QString)), SLOT(onUpdateAvailable(QString,QString)));
@@ -211,6 +213,7 @@ void MainWindow::onProgrammingProgressChanged(QString progress, int percent)
 {
 	ui->programmingProgressBar->setFormat(progress);
 	ui->programmingProgressBar->setValue(percent);
+	ui->programmingErrorLabel->setText(progress);
 }
 
 void MainWindow::onUpdateAvailable(QString version, QString url)
