@@ -47,7 +47,7 @@ void QtPicBootloaderDriver::programHexFile(const QString path, const bool rethro
 	try {
 		driver.programHexFile(path.toStdString());
 	}
-	catch(SerialPort::TimeoutException& e) {
+	catch(SerialPort::TimeoutException&) {
 		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
 		// Serial console wants us to throw the error so it can display it.
 		if(rethrow) throw;
@@ -81,7 +81,7 @@ bool QtPicBootloaderDriver::readDevice(const bool rethrow)
 	try {
 		optionalDevice = driver.readDevice();
 	}
-	catch(SerialPort::TimeoutException& e) {
+	catch(SerialPort::TimeoutException&) {
 		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
 		if(rethrow) throw;
 	}

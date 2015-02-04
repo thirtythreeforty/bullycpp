@@ -34,7 +34,7 @@ public:
 		TimeoutException(const char* reason) : reason(reason) {}
 		void raise() const { throw *this; }
 		QException* clone() const { return new TimeoutException(*this); }
-		virtual const char* what() const noexcept { return reason ? reason : std::exception::what(); }
+		virtual const char* what() const Q_DECL_NOEXCEPT { return reason ? reason : std::exception::what(); }
 	private:
 		const char* reason = nullptr;
 	};
