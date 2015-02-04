@@ -45,7 +45,7 @@ void QtPicDriver::sendSerialData(const QByteArray data)
 	serialPort.getQSerialPort().write(data);
 }
 
-void QtPicDriver::programHexFile(const QString path)
+void QtPicDriver::programHexFile(const QString path, const bool rethrow)
 {
 	forwardData = false;
 
@@ -61,8 +61,8 @@ void QtPicDriver::programHexFile(const QString path)
 
 	serialPort.clear();
 
-	if(bootloaderDriver.readDevice())
-		bootloaderDriver.programHexFile(path);
+	if(bootloaderDriver.readDevice(rethrow))
+		bootloaderDriver.programHexFile(path, rethrow);
 
 	emit programmingStateChanged(false);
 

@@ -30,8 +30,13 @@ class SerialPort : public bullycpp::ISerialPort {
 public:
 	class TimeoutException : public QException {
 	public:
+		TimeoutException() {}
+		TimeoutException(const char* reason) : reason(reason) {}
 		void raise() const { throw *this; }
 		QException* clone() const { return new TimeoutException(*this); }
+		virtual const char* what() const noexcept { return reason ? reason : std::exception::what(); }
+	private:
+		const char* reason = nullptr;
 	};
 
 	explicit SerialPort(QObject *parent = Q_NULLPTR);

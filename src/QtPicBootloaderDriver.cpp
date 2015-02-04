@@ -41,7 +41,7 @@ bool QtPicBootloaderDriver::configBitsEnabled()
 	return driver.getConfigBitsEnabled();
 }
 
-void QtPicBootloaderDriver::programHexFile(const QString path)
+void QtPicBootloaderDriver::programHexFile(const QString path, const bool rethrow)
 {
 	// Our ISerialPort implementation may throw its TimeoutException
 	try {
@@ -49,6 +49,8 @@ void QtPicBootloaderDriver::programHexFile(const QString path)
 	}
 	catch(SerialPort::TimeoutException& e) {
 		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
+		// Serial console wants us to throw the error so it can display it.
+		if(rethrow) throw;
 	}
 }
 
@@ -71,7 +73,7 @@ void QtPicBootloaderDriver::setMCLR(bool mclr)
 	driver.setMCLR(mclr);
 }
 
-bool QtPicBootloaderDriver::readDevice()
+bool QtPicBootloaderDriver::readDevice(const bool rethrow)
 {
 	const bullycpp::PicDevice* optionalDevice = nullptr;
 
@@ -81,10 +83,12 @@ bool QtPicBootloaderDriver::readDevice()
 	}
 	catch(SerialPort::TimeoutException& e) {
 		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
+		if(rethrow) throw;
 	}
 
 	if(optionalDevice) {
 		emit deviceChanged(QString::fromStdString(optionalDevice->name));
+		// Serial console wants us to throw the error so it can display it.
 		return true;
 	}
 	else return false;

@@ -27,7 +27,7 @@
 #include <QSerialPortInfo>
 
 #define AUTO_UPDATE_KEY (QStringLiteral("autoUpdate"))
-#define VERSION_STRING "v0.5.1"
+#define VERSION_STRING "v0.6"
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),

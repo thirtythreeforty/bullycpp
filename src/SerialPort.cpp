@@ -136,12 +136,12 @@ void SerialPort::waitForReadable()
 {
 	if(qserialport.bytesAvailable() == 0)
 		if(!qserialport.waitForReadyRead(timeout))
-			throw TimeoutException();
+			throw TimeoutException("Timeout while reading serial port");
 }
 
 void SerialPort::waitForWritten()
 {
 	if(qserialport.bytesToWrite() != 0)
 		if(!qserialport.waitForBytesWritten(timeout))
-			throw TimeoutException();
+			throw TimeoutException("Timeout while writing serial port");
 }

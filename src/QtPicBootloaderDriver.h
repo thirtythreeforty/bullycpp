@@ -41,11 +41,11 @@ signals:
 	void programmingStatusChanged(bullycpp::IProgressCallback::Status, int);
 
 public slots:
-	void programHexFile(const QString path);
+	void programHexFile(const QString path, const bool rethrow);
 	void parseDeviceFile(const QString path);
 	void setConfigBitsEnabled(bool enabled);
 	void setMCLR(bool mclr);
-	bool readDevice();
+	bool readDevice(const bool rethrow);
 
 private:
 	bullycpp::PicBootloaderDriver driver;
