@@ -31,4 +31,6 @@ FORMS += mainwindow.ui
 
 RESOURCES += bullycpp.qrc
 
+ICON = bullycpp.icns
+
 TARGET = bullycpp.bin
