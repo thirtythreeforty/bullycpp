@@ -33,4 +33,4 @@ RESOURCES += bullycpp.qrc
 
 ICON = bullycpp.icns
 
-TARGET = bullycpp.bin
+TARGET = BullyCPP
