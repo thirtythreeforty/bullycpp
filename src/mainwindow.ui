@@ -62,7 +62,7 @@
          <string>MCL&amp;R</string>
         </property>
         <property name="shortcut">
-         <string>Ctrl+R</string>
+         <string>Alt+R</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -98,7 +98,7 @@
          <string>&amp;Save log</string>
         </property>
         <property name="shortcut">
-         <string>Ctrl+S</string>
+         <string>Alt+S</string>
         </property>
        </widget>
       </item>
@@ -277,7 +277,7 @@
              <string>&amp;Open...</string>
             </property>
             <property name="shortcut">
-             <string>Ctrl+O</string>
+             <string>Alt+O</string>
             </property>
            </widget>
           </item>
@@ -303,7 +303,7 @@
              <string>&amp;Program!</string>
             </property>
             <property name="shortcut">
-             <string>Ctrl+P</string>
+             <string>Alt+P</string>
             </property>
            </widget>
           </item>
