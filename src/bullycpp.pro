@@ -19,6 +19,8 @@ HEADERS += \
     bullycpp/PicBootloaderDriver.h \
     bullycpp/PicDevice.h \
     bullycpp/util.h \
+    dataxfer/IDataXferCallbacks.h \
+    dataxfer/DataXfer.h \
     GitHubUpdateChecker.h \
     InterceptQPlainTextEdit.h \
     MainWindow.h \
