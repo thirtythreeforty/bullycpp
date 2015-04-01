@@ -26,7 +26,12 @@
 #include <QMessageBox>
 #include <QSerialPortInfo>
 
-#define AUTO_UPDATE_KEY (QStringLiteral("autoUpdate"))
+#define AUTO_UPDATE_KEY       QStringLiteral("autoUpdate")
+#define SERIAL_PORT_NAME_KEY  QStringLiteral("serialPortName")
+#define MCLR_ON_PROGRAM_KEY   QStringLiteral("mclrOnProgram")
+#define PROGRAM_CONFIG_KEY    QStringLiteral("programConfigBits")
+#define HEX_FILE_NAME_KEY     QStringLiteral("hexFileName")
+
 #define VERSION_STRING "v0.6"
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
@@ -47,6 +52,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	connect(ui->programButton, SIGNAL(clicked()), SLOT(onProgramButtonClicked()));
 	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(onHexFileTextChanged(QString)));
+	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(saveHexFilePref(QString)));
 	connect(this, SIGNAL(programHexFile(QString)), picDriver, SLOT(programHexFile(QString)));
 	connect(picDriver, SIGNAL(deviceChanged(QString)), ui->deviceInfoLabel, SLOT(setText(QString)));
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
@@ -55,8 +61,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->chooseHexFileButton, SIGNAL(clicked()), SLOT(onChooseHexFileClicked()));
 
 	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
+	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), SLOT(saveMclrPref(bool)));
 
 	connect(ui->configBitCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setConfigBitsEnabled(bool)));
+	connect(ui->configBitCheckBox, SIGNAL(toggled(bool)), SLOT(saveConfigBitsPref(bool)));
 
 	connect(ui->mclrButton, SIGNAL(clicked(bool)), picDriver, SLOT(setMCLR(bool)));
 	connect(picDriver, SIGNAL(mclrChanged(bool)), ui->mclrButton, SLOT(setChecked(bool)));
@@ -71,6 +79,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->aboutButton, SIGNAL(clicked()), SLOT(showAbout()));
 
 	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), picDriver, SLOT(setSerialPort(QString)));
+	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), SLOT(saveSerialPortPref(QString)));
 	connect(ui->baudComboBox, SIGNAL(currentTextChanged(QString)), picDriver, SLOT(setBaudRate(QString)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialText, SLOT(setEnabled(bool)));
 	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialErrorWidget, SLOT(setHidden(bool)));
@@ -97,39 +106,38 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QStringList portStrings;
 	std::transform(begin(ports), end(ports), std::back_inserter(portStrings),
 	               [](QSerialPortInfo& i){ return i.portName(); });
+	int chosenSerialPortIndex = -1;
+	if(settings.contains(SERIAL_PORT_NAME_KEY))
+		chosenSerialPortIndex = getPositionIfPresent(portStrings, settings.value(SERIAL_PORT_NAME_KEY).toString(), chosenSerialPortIndex);
+	if(parser.isSet("device"))
+		chosenSerialPortIndex = addIfNotPresent(portStrings, parser.value("device"));
 	ui->serialPortComboBox->addItems(portStrings);
-	if(parser.isSet("device")) {
-		auto it = std::find(begin(portStrings), end(portStrings), parser.value("device"));
-		if(it == end(portStrings)) {
-			ui->serialPortComboBox->addItem(parser.value("device"));
-			// Custom value inserted at end of list
-			ui->serialPortComboBox->setCurrentIndex(portStrings.size());
-		}
-		else
-			ui->serialPortComboBox->setCurrentIndex(it - begin(portStrings));
-	}
+	if(chosenSerialPortIndex != -1)
+		ui->serialPortComboBox->setCurrentIndex(chosenSerialPortIndex);
 
 	QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
 	QStringList baudStrings;
 	std::transform(begin(bauds), end(bauds), std::back_inserter(baudStrings),
 	               [](qint32 baud){ QString s; s.setNum(baud); return s; });
+	// Baud is always set in parser (default option is present).
+	// Because of this fact, it is difficult to determine the "most wanted"
+	// value, so we don't save this one.
+	int chosenBaudIndex = addIfNotPresent(baudStrings, parser.value("baud"));
 	ui->baudComboBox->addItems(baudStrings);
-	// baud is always set (default option is present)
-	auto it = std::find(begin(baudStrings), end(baudStrings), parser.value("baud"));
-	if(it == end(baudStrings)) {
-		ui->baudComboBox->addItem(parser.value("baud"));
-		ui->baudComboBox->setCurrentIndex(baudStrings.size());
-	}
-	else
-		ui->baudComboBox->setCurrentIndex(it - begin(baudStrings));
+	ui->baudComboBox->setCurrentIndex(chosenBaudIndex);
 	ui->baudComboBox->setValidator(new QIntValidator(ui->baudComboBox));
 
-	ui->mclrCheckBox->setChecked(parser.isSet("mclr"));
+	if(parser.isSet("mclr") || settings.value(MCLR_ON_PROGRAM_KEY, false).toBool())
+		ui->mclrCheckBox->setChecked(true);
 
-	ui->configBitCheckBox->setChecked(parser.isSet("configbits"));
+	if(parser.isSet("configbits") || settings.value(PROGRAM_CONFIG_KEY, false).toBool())
+		ui->configBitCheckBox->setChecked(true);
 
+	QString savedHexFileName;
 	if(parser.positionalArguments().size())
 		ui->hexFileNameEdit->setText(parser.positionalArguments()[0]);
+	else if((savedHexFileName = settings.value(HEX_FILE_NAME_KEY, "").toString()).size())
+		ui->hexFileNameEdit->setText(savedHexFileName);
 
 	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
 		checker.checkForUpdate();
@@ -262,4 +270,46 @@ void MainWindow::showAbout()
 
 	settings.setValue(AUTO_UPDATE_KEY, cb->isChecked());
 	settings.sync();
+}
+
+void MainWindow::saveSerialPortPref(QString name)
+{
+	settings.setValue(SERIAL_PORT_NAME_KEY, name);
+}
+
+void MainWindow::saveHexFilePref(QString name)
+{
+	settings.setValue(HEX_FILE_NAME_KEY, name);
+}
+
+void MainWindow::saveMclrPref(bool newState)
+{
+	settings.setValue(MCLR_ON_PROGRAM_KEY, newState);
+}
+
+void MainWindow::saveConfigBitsPref(bool newState)
+{
+	settings.setValue(PROGRAM_CONFIG_KEY, newState);
+}
+
+int MainWindow::getPositionIfPresent(QStringList& list, const QString& value, int oldPosition)
+{
+	using std::begin; using std::end;
+	auto it = std::find(begin(list), end(list), value);
+	if(it != end(list))
+		return it - begin(list);
+	return oldPosition;
+}
+
+int MainWindow::addIfNotPresent(QStringList& list, const QString& value)
+{
+	using std::begin; using std::end;
+	auto it = std::find(begin(list), end(list), value);
+	if(it == end(list)) {
+		int position = list.size();
+		list.append(value);
+		return position;
+	}
+	else
+		return it - begin(list);
 }

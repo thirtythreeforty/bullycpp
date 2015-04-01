@@ -56,9 +56,18 @@ private slots:
 	void onHexFileTextChanged(QString);
 	void onUpdateAvailable(QString version, QString url);
 	void tryEnableProgramButton();
+
 	void showAbout();
 
+	void saveSerialPortPref(QString);
+	void saveHexFilePref(QString);
+	void saveMclrPref(bool);
+	void saveConfigBitsPref(bool);
+
 private:
+	int getPositionIfPresent(QStringList&, const QString&, int);
+	int addIfNotPresent(QStringList&, const QString&);
+
 	Ui::MainWindow *ui;
 	QThread thread;
 	QIcon appIcon;
