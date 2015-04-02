@@ -27,7 +27,8 @@ HEADERS += \
     QtPicBootloaderDriver.h \
     QtPicDriver.h \
     SerialPort.h \
-    QStdStreamBuf.h
+    QStdStreamBuf.h \
+    CollapsingQTabWidget.h
 
 FORMS += mainwindow.ui
 

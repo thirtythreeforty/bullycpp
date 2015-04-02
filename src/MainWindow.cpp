@@ -47,6 +47,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	ui->progressWidget->hide();
 	ui->programmingErrorLabel->hide();
 
+	ui->dataXferTable->hide();
+
 	thread.start();
 	picDriver->moveToThread(&thread);
 
@@ -92,6 +94,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
 	connect(picDriver, SIGNAL(programmingErrorChanged(bool)), ui->programmingErrorLabel, SLOT(setVisible(bool)));
 	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
+
+	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, ui->dataXferTable, &QWidget::setVisible);
+	connect(ui->mclrButton, &QAbstractButton::pressed, ui->dataXferTable, &QTableWidget::reset);
 
 	connect(&checker, SIGNAL(updateAvailable(QString,QString)), SLOT(onUpdateAvailable(QString,QString)));
 
