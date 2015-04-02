@@ -8,7 +8,7 @@
 class DataXfer {
 public:
     DataXfer(IDataXferCallbacks*);
-    void onDataIn(const std::string& bytes);
+    void onDataIn(const std::string& bytes, const unsigned int currentMilliseconds);
     std::string onDataOut(const std::string& typed);
     void variableEdited(const unsigned int index, const std::string& newValue, bool editable);
 };
