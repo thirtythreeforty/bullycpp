@@ -50,50 +50,53 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	thread.start();
 	picDriver->moveToThread(&thread);
 
-	connect(ui->programButton, SIGNAL(clicked()), SLOT(onProgramButtonClicked()));
-	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(onHexFileTextChanged(QString)));
-	connect(ui->hexFileNameEdit, SIGNAL(textChanged(QString)), SLOT(saveHexFilePref(QString)));
-	connect(this, SIGNAL(programHexFile(QString)), picDriver, SLOT(programHexFile(QString)));
-	connect(picDriver, SIGNAL(deviceChanged(QString)), ui->deviceInfoLabel, SLOT(setText(QString)));
-	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
-	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
+	connect(ui->programButton, &QAbstractButton::clicked, this, &MainWindow::onProgramButtonClicked);
+	connect(ui->hexFileNameEdit, &QLineEdit::textChanged, this, &MainWindow::onHexFileTextChanged);
+	connect(ui->hexFileNameEdit, &QLineEdit::textChanged, this, &MainWindow::saveHexFilePref);
+	connect(this, &MainWindow::programHexFile,
+	        picDriver, static_cast<void (QtPicDriver::*)(QString)>(&QtPicDriver::programHexFile));
+	connect(picDriver, &QtPicDriver::deviceChanged, ui->deviceInfoLabel, &QLabel::setText);
+	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->progressWidget, &QWidget::setVisible);
+	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->programmingWidget, &QWidget::setHidden);
 
-	connect(ui->chooseHexFileButton, SIGNAL(clicked()), SLOT(onChooseHexFileClicked()));
+	connect(ui->chooseHexFileButton, &QAbstractButton::clicked, this, &MainWindow::onChooseHexFileClicked);
 
-	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setMCLROnProgram(bool)));
-	connect(ui->mclrCheckBox, SIGNAL(toggled(bool)), SLOT(saveMclrPref(bool)));
+	connect(ui->mclrCheckBox, &QAbstractButton::toggled, picDriver, &QtPicDriver::setMCLROnProgram);
+	connect(ui->mclrCheckBox, &QAbstractButton::toggled, this, &MainWindow::saveMclrPref);
 
-	connect(ui->configBitCheckBox, SIGNAL(toggled(bool)), picDriver, SLOT(setConfigBitsEnabled(bool)));
-	connect(ui->configBitCheckBox, SIGNAL(toggled(bool)), SLOT(saveConfigBitsPref(bool)));
+	connect(ui->configBitCheckBox, &QAbstractButton::toggled, picDriver, &QtPicDriver::setConfigBitsEnabled);
+	connect(ui->configBitCheckBox, &QAbstractButton::toggled, this, &MainWindow::saveConfigBitsPref);
 
-	connect(ui->mclrButton, SIGNAL(clicked(bool)), picDriver, SLOT(setMCLR(bool)));
-	connect(picDriver, SIGNAL(mclrChanged(bool)), ui->mclrButton, SLOT(setChecked(bool)));
+	connect(ui->mclrButton, &QAbstractButton::clicked, picDriver, &QtPicDriver::setMCLR);
+	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &QAbstractButton::setChecked);
 
-	connect(ui->serialText, SIGNAL(keyPressed(QString)), SLOT(onSerialTextSend(QString)));
-	connect(picDriver, SIGNAL(serialDataReceived(QByteArray)), SLOT(onSerialTextReceived(QByteArray)));
-	connect(this, SIGNAL(sendSerialData(QByteArray)), picDriver, SLOT(sendSerialData(QByteArray)));
+	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, this, &MainWindow::onSerialTextSend);
+	connect(picDriver, &QtPicDriver::serialDataReceived, this, &MainWindow::onSerialTextReceived);
+	connect(this, &MainWindow::sendSerialData, picDriver, &QtPicDriver::sendSerialData);
 
-	connect(ui->clearSerialButton, SIGNAL(clicked()), SLOT(onClearSerialClicked()));
-	connect(ui->saveSerialButton, SIGNAL(clicked()), SLOT(onSaveSerialClicked()));
+	connect(ui->clearSerialButton, &QAbstractButton::clicked, this, &MainWindow::onClearSerialClicked);
+	connect(ui->saveSerialButton, &QAbstractButton::clicked, this, &MainWindow::onSaveSerialClicked);
 
-	connect(ui->aboutButton, SIGNAL(clicked()), SLOT(showAbout()));
+	connect(ui->aboutButton, &QAbstractButton::clicked, this, &MainWindow::showAbout);
 
-	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), picDriver, SLOT(setSerialPort(QString)));
-	connect(ui->serialPortComboBox, SIGNAL(currentIndexChanged(QString)), SLOT(saveSerialPortPref(QString)));
-	connect(ui->baudComboBox, SIGNAL(currentTextChanged(QString)), picDriver, SLOT(setBaudRate(QString)));
-	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialText, SLOT(setEnabled(bool)));
-	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->serialErrorWidget, SLOT(setHidden(bool)));
-	connect(picDriver, SIGNAL(serialPortStatusChanged(bool)), ui->mclrButton, SLOT(setEnabled(bool)));
-	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), ui->serialStatusLabel, SLOT(setText(QString)));
-	connect(picDriver, SIGNAL(serialPortErrorChanged(QString)), SLOT(tryEnableProgramButton()));
-	connect(ui->retrySerialButton, SIGNAL(clicked()), picDriver, SLOT(openSerialPort()));
+	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	        picDriver, &QtPicDriver::setSerialPort);
+	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	        this, &MainWindow::saveSerialPortPref);
+	connect(ui->baudComboBox, &QComboBox::currentTextChanged, picDriver, &QtPicDriver::setBaudRate);
+	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->serialText, &QWidget::setEnabled);
+	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->serialErrorWidget, &QWidget::setHidden);
+	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->mclrButton, &QWidget::setEnabled);
+	connect(picDriver, &QtPicDriver::serialPortErrorChanged, ui->serialStatusLabel, &QLabel::setText);
+	connect(picDriver, &QtPicDriver::serialPortErrorChanged, this, &MainWindow::tryEnableProgramButton);
+	connect(ui->retrySerialButton, &QAbstractButton::clicked, picDriver, &QtPicDriver::openSerialPort);
 
-	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->progressWidget, SLOT(setVisible(bool)));
-	connect(picDriver, SIGNAL(programmingStateChanged(bool)), ui->programmingWidget, SLOT(setHidden(bool)));
-	connect(picDriver, SIGNAL(programmingErrorChanged(bool)), ui->programmingErrorLabel, SLOT(setVisible(bool)));
-	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
+	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->progressWidget, &QWidget::setVisible);
+	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->programmingWidget, &QWidget::setHidden);
+	connect(picDriver, &QtPicDriver::programmingErrorChanged, ui->programmingErrorLabel, &QWidget::setVisible);
+	connect(picDriver, &QtPicDriver::programmingProgressChanged, this, &MainWindow::onProgrammingProgressChanged);
 
-	connect(&checker, SIGNAL(updateAvailable(QString,QString)), SLOT(onUpdateAvailable(QString,QString)));
+	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 
 	// Set the serial window's font to be a monospace font.
 	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.

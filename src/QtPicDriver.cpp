@@ -28,9 +28,9 @@ QtPicDriver::QtPicDriver(const QStringList& deviceFiles, QObject *parent)
 	openSerialPort();
 	for(const auto& deviceFile: deviceFiles)
 		bootloaderDriver.parseDeviceFile(deviceFile);
-	connect(&serialPort.getQSerialPort(), SIGNAL(readyRead()), SLOT(onReadyRead()));
-	connect(&bootloaderDriver, SIGNAL(deviceChanged(QString)), SLOT(onDeviceChanged(QString)));
-	connect(&bootloaderDriver, SIGNAL(programmingStatusChanged(bullycpp::IProgressCallback::Status,int)), SLOT(onProgrammingStatusChanged(bullycpp::IProgressCallback::Status,int)));
+	connect(&serialPort.getQSerialPort(), &QIODevice::readyRead, this, &QtPicDriver::onReadyRead);
+	connect(&bootloaderDriver, &QtPicBootloaderDriver::deviceChanged, this, &QtPicDriver::onDeviceChanged);
+	connect(&bootloaderDriver, &QtPicBootloaderDriver::programmingStatusChanged, this, &QtPicDriver::onProgrammingStatusChanged);
 }
 
 QtPicDriver::~QtPicDriver()

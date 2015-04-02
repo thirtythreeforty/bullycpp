@@ -42,7 +42,7 @@ GitHubUpdateChecker::GitHubUpdateChecker(const QString& maintainer, const QStrin
 	if(!url.isValid())
 		throw std::invalid_argument("Bad maintainer or repo; must be valid url part");
 
-	connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), SLOT(onRequestFinished(QNetworkReply*)));
+	connect(networkAccessManager, &QNetworkAccessManager::finished, this, &GitHubUpdateChecker::onRequestFinished);
 }
 
 GitHubUpdateChecker::~GitHubUpdateChecker()

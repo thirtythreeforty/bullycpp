@@ -45,7 +45,8 @@ signals:
 
 public slots:
 	void sendSerialData(const QByteArray data);
-	void programHexFile(const QString path, const bool rethrow = false);
+	void programHexFile(const QString path) { programHexFile(path, false); }
+	void programHexFile(const QString path, const bool rethrow);
 	void setSerialPort(const QString name);
 	void setBaudRate(const QString baud);
 	void setMCLR(bool mclr);
