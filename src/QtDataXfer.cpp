@@ -90,8 +90,9 @@ void QtDataXfer::processInboundBytes(QByteArray inbound)
 
 void QtDataXfer::enable(bool enable)
 {
+	if(enable != enabled)
+		emit enabledChanged(enable);
 	enabled = enable;
-	emit enabledChanged(enable);
 }
 
 void QtDataXfer::updateItemVariable(QTableWidgetItem *item)
