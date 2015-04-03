@@ -48,6 +48,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	ui->programmingErrorLabel->hide();
 
 	ui->dataXferTable->hide();
+	qtDataXfer.setTableWidget(ui->dataXferTable);
 
 	thread.start();
 	picDriver->moveToThread(&thread);
@@ -71,9 +72,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->mclrButton, SIGNAL(clicked(bool)), picDriver, SLOT(setMCLR(bool)));
 	connect(picDriver, SIGNAL(mclrChanged(bool)), ui->mclrButton, SLOT(setChecked(bool)));
 
-	connect(ui->serialText, SIGNAL(keyPressed(QString)), SLOT(onSerialTextSend(QString)));
-	connect(picDriver, SIGNAL(serialDataReceived(QByteArray)), SLOT(onSerialTextReceived(QByteArray)));
-	connect(this, SIGNAL(sendSerialData(QByteArray)), picDriver, SLOT(sendSerialData(QByteArray)));
+	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });
+	connect(&qtDataXfer, &QtDataXfer::sendRawBytes, picDriver, &QtPicDriver::sendSerialData);
+	connect(picDriver, &QtPicDriver::serialDataReceived, &qtDataXfer, &QtDataXfer::processInboundBytes);
+	connect(&qtDataXfer, &QtDataXfer::inboundBytesReady, this, &MainWindow::onSerialTextReceived);
 
 	connect(ui->clearSerialButton, SIGNAL(clicked()), SLOT(onClearSerialClicked()));
 	connect(ui->saveSerialButton, SIGNAL(clicked()), SLOT(onSaveSerialClicked()));
@@ -96,7 +98,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, SIGNAL(programmingProgressChanged(QString,int)), SLOT(onProgrammingProgressChanged(QString,int)));
 
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, ui->dataXferTable, &QWidget::setVisible);
-	connect(ui->mclrButton, &QAbstractButton::pressed, ui->dataXferTable, &QTableWidget::reset);
+	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
+	connect(ui->mclrButton, &QAbstractButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
 	connect(&checker, SIGNAL(updateAvailable(QString,QString)), SLOT(onUpdateAvailable(QString,QString)));
 

@@ -9,6 +9,7 @@ SOURCES += \
     dataxfer/DataXfer.cpp \
     GitHubUpdateChecker.cpp \
     MainWindow.cpp \
+    QtDataXfer.cpp \
     QtPicBootloaderDriver.cpp \
     QtPicDriver.cpp \
     SerialPort.cpp
@@ -22,14 +23,15 @@ HEADERS += \
     bullycpp/util.h \
     dataxfer/IDataXferCallbacks.h \
     dataxfer/DataXfer.h \
+    CollapsingQTabWidget.h \
     GitHubUpdateChecker.h \
     InterceptQPlainTextEdit.h \
     MainWindow.h \
+    QStdStreamBuf.h \
+    QtDataXfer.h \
     QtPicBootloaderDriver.h \
     QtPicDriver.h \
-    SerialPort.h \
-    QStdStreamBuf.h \
-    CollapsingQTabWidget.h
+    SerialPort.h
 
 FORMS += mainwindow.ui
 
