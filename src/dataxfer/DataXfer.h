@@ -7,10 +7,10 @@
 
 class DataXfer {
 public:
-    DataXfer(IDataXferCallbacks*);
-    void onDataIn(const std::string& bytes, const unsigned int currentMilliseconds);
-    void onDataOut(const std::string& typed);
-    void variableEdited(const unsigned int index, const std::string& newValue);
+	DataXfer(IDataXferCallbacks*);
+	void onDataIn(const std::string& bytes, const unsigned int currentMilliseconds);
+	void onDataOut(const std::string& typed);
+	void variableEdited(const unsigned int index, const std::string& newValue);
 };
 
 #endif
