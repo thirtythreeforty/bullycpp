@@ -6,6 +6,7 @@ SOURCES += \
     bullycpp/MemRow.cpp \
     bullycpp/PicBootloaderDriver.cpp \
     bullycpp.cpp \
+    dataxfer/DataXfer.cpp \
     GitHubUpdateChecker.cpp \
     MainWindow.cpp \
     QtPicBootloaderDriver.cpp \
