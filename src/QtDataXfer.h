@@ -6,10 +6,10 @@
 #include <QObject>
 #include <QTableWidget>
 
-#include "dataxfer/DataXfer.h"
-#include "dataxfer/IDataXferCallbacks.h"
+#include "dataxfer/DataXferWrap.h"
+#include "dataxfer/IDataXferWrapCallbacks.h"
 
-class QtDataXfer : public QObject, private IDataXferCallbacks
+class QtDataXfer : public QObject, private IDataXferWrapCallbacks
 {
 	Q_OBJECT
 public:
@@ -47,7 +47,7 @@ private slots:
 	void updateItemVariable(QTableWidgetItem* item);
 
 private:
-	DataXfer dataXfer;
+    DataXferWrap dataXferWrap;
 	QTableWidget* table;
 	bool enabled;
 };

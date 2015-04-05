@@ -8,7 +8,7 @@
 
 QtDataXfer::QtDataXfer(QObject *parent)
 	: QObject(parent)
-	, dataXfer(this)
+    , dataXferWrap(this)
 	, enabled(false)
 {
 }
@@ -75,7 +75,7 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 void QtDataXfer::processOutboundBytes(QByteArray outbound)
 {
 	if(enabled)
-		dataXfer.onDataOut(outbound.toStdString());
+        dataXferWrap.onDataOut(outbound.toStdString());
 	else
 		emit sendRawBytes(outbound);
 }
@@ -83,7 +83,7 @@ void QtDataXfer::processOutboundBytes(QByteArray outbound)
 void QtDataXfer::processInboundBytes(QByteArray inbound)
 {
 	if(enabled)
-		dataXfer.onDataIn(inbound.toStdString(), QDateTime::currentMSecsSinceEpoch());
+        dataXferWrap.onDataIn(inbound.toStdString(), QDateTime::currentMSecsSinceEpoch());
 	else
 		emit inboundBytesReady(inbound);
 }
@@ -97,5 +97,5 @@ void QtDataXfer::enable(bool enable)
 void QtDataXfer::updateItemVariable(QTableWidgetItem *item)
 {
 	const unsigned int index = item->data(Qt::UserRole).toUInt();
-	dataXfer.variableEdited(index, item->text().toStdString());
+    dataXferWrap.variableEdited(index, item->text().toStdString());
 }

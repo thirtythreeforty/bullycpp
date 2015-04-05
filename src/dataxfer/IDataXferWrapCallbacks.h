@@ -1,9 +1,9 @@
-#ifndef IDATAXFERCALLBACKS_H
-#define IDATAXFERCALLBACKS_H
+#ifndef IDATAXFERWRAPCALLBACKS_H
+#define IDATAXFERWRAPCALLBACKS_H
 
 #include <string>
 
-class IDataXferCallbacks {
+class IDataXferWrapCallbacks {
 public:
     virtual void sendRawData(const std::string& bytes) = 0;
     virtual void displayRawData(const std::string& bytes) = 0;

@@ -1,13 +1,13 @@
-#ifndef DATAXFER_H
-#define DATAXFER_H
+#ifndef DATAXFERWRAP_H
+#define DATAXFERWRAP_H
 
 #include <string>
 
-#include "IDataXferCallbacks.h"
+#include "IDataXferWrapCallbacks.h"
 
-class DataXfer {
+class DataXferWrap {
 public:
-    DataXfer(IDataXferCallbacks*);
+    DataXferWrap(IDataXferWrapCallbacks*);
     void onDataIn(const std::string& bytes, const unsigned int currentMilliseconds);
     void onDataOut(const std::string& typed);
     void variableEdited(const unsigned int index, const std::string& newValue);
