@@ -6,6 +6,8 @@ SOURCES += \
     bullycpp/MemRow.cpp \
     bullycpp/PicBootloaderDriver.cpp \
     bullycpp.cpp \
+    dataxfer/dataXfer.c \
+    dataxfer/dataXferImpl.c \
     dataxfer/DataXferWrap.cpp \
     GitHubUpdateChecker.cpp \
     MainWindow.cpp \
@@ -21,6 +23,8 @@ HEADERS += \
     bullycpp/PicBootloaderDriver.h \
     bullycpp/PicDevice.h \
     bullycpp/util.h \
+    dataxfer/dataXfer.h \
+    dataxfer/dataXferImpl.h \
     dataxfer/IDataXferCallbacksWrap.h \
     dataxfer/DataXferWrap.h \
     CollapsingQTabWidget.h \
