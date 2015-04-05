@@ -283,7 +283,7 @@ static BOOL validateLength(uint u_varLength) {
 #ifndef __PIC__
 /// Temporary storage for a variable spec being received, with
 /// enough additional space to terminate 3 unterminated strings for safety.
-static uint8_t au8_varSpecData[256 + 3];
+static uint8_t au8_varSpecData[(UINT8_MAX + 1) + 3];
 
 /// The length of the var spec data
 static uint u_specLength;

@@ -25,7 +25,7 @@ HEADERS += \
     bullycpp/util.h \
     dataxfer/dataXfer.h \
     dataxfer/dataXferImpl.h \
-    dataxfer/IDataXferCallbacksWrap.h \
+    dataxfer/IDataXferWrapCallbacks.h \
     dataxfer/DataXferWrap.h \
     CollapsingQTabWidget.h \
     GitHubUpdateChecker.h \

@@ -36,7 +36,7 @@ specifyVar(uint u_varIndex, volatile void* pv_data, uint u_size,
   // Make sure the data isn't NULL
   ASSERTM("specifyVar:nullData", pv_data != NULL);
   // Make sure the size is valid
-  ASSERTM("specifyVar:invalidSize", (u_size > 0) && (u_size <= 256));
+  ASSERTM("specifyVar:invalidSize", (u_size > 0) && (u_size <= (UINT8_MAX + 1));
 
   // Update data structure
   xferVar[u_varIndex].pu8_data = (uint8_t*) pv_data;
@@ -53,7 +53,7 @@ specifyVar(uint u_varIndex, volatile void* pv_data, uint u_size,
   // length of 1 is sent as 0, plus one for the variable size byte.
   u_len = strlen(psz_format) + strlen(psz_name) + strlen(psz_desc) + 3 - 1 + 1;
   // Allow a maximum string length of 255.
-  outCharXfer(u_len <= 255 ? u_len : 255);
+  outCharXfer(u_len <= UINT8_MAX ? u_len : UINT8_MAX);
 
   // Send the size of this variable, minus 1 since a size of 1 is sent as a 0.
   outCharXfer(u_size - 1);
@@ -113,17 +113,16 @@ sendVar(uint u_varIndex) {
   pu8_data = pXferVar->pu8_data;
   do {
     outCharXfer(*pu8_data++);
-  } while (u8_size--);
+  } while (--u8_size);
 }
 
 //@}
 
 #ifndef __PIC__
 int
-formatVar(uint u_varIndex, char* psz_buf) {
+formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
   XFER_VAR* pXferVar;
-  uint8_t u8_size;
-  unsigned long long ull_buf = 0;  // The biggest data type available
+  int i_ret;
 
   // Make sure this variable exists
   ASSERTM("formatVar:indexTooHigh", u_varIndex < NUM_XFER_VARS);
@@ -134,12 +133,11 @@ formatVar(uint u_varIndex, char* psz_buf) {
   // also declared above.
   pXferVar = xferVar + u_varIndex;
   ASSERTM("formatVar:indexNotSpecified", pXferVar->pu8_data != NULL);
-  u8_size = pXferVar->u8_size + 1;
 
-  // Copy the data over to the largest available var for formatting
-  ASSERT(u8_size <= sizeof(ull_buf));
-  memcpy(&ull_buf, pXferVar->pu8_data, u8_size);
-  return sprintf(psz_buf, pXferVar->psz_format, ull_buf);
+  // Copy the data over to the largest available var for formatting. Using the evil
+  // MSVC variant. Everybody else calls this snprintf.
+  i_ret = sprintf_s(psz_buf, s_len, pXferVar->psz_format, pXferVar->pu8_data);
+  return i_ret;
 }
 #endif
 
@@ -188,15 +186,15 @@ inCharXfer() {
 }
 
 #else
-BOOL receiveVar(char c_in, char* pc_out, uint16_t* pu16_index,
-                uint64_t u64_timeMs, char** psz_error) {
+BOOL receiveVar(char c_in, char* pc_out, uint* pu_index,
+                uint64_t u64_timeMs, const char** psz_error) {
 
-  static uint16_t u64_timeLastMs = 0;
+  static uint64_t u64_timeLastMs = 0;
   uint64_t u64_timeDeltaMs;
   RECEIVE_ERROR re;
 
   // Check for 100 ms timeout.
-  u64_timeDeltaMs = u64_time - u64_timeLastMs;
+  u64_timeDeltaMs = u64_timeMs - u64_timeLastMs;
   u64_timeLastMs = u64_timeMs;
   if (u64_timeDeltaMs > 100)
     notifyOfTimeout();
@@ -205,19 +203,19 @@ BOOL receiveVar(char c_in, char* pc_out, uint16_t* pu16_index,
   re = stepReceiveMachine(c_in);
   if (re != ERR_NONE) {
     *psz_error = getReceiveErrorString();
-    return false;
+    return FALSE;
   } else {
     *psz_error = NULL;
   }
   if (isReceiveMachineChar()) {
     *pc_out = getReceiveMachineOutChar();
-    *pu16_index = CHAR_RECEIVED_INDEX;
-    return true;
+    *pu_index = CHAR_RECEIVED_INDEX;
+    return TRUE;
   }
   if (isReceiveMachineData()) {
-    *pu16_index = getReceiveMachineIndex();
-    return true;
+    *pu_index = getReceiveMachineIndex();
+    return TRUE;
   }
-  return false;
+  return FALSE;
 }
 #endif

@@ -74,9 +74,10 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 
 void QtDataXfer::processOutboundBytes(QByteArray outbound)
 {
-	if(enabled)
-        dataXferWrap.onDataOut(outbound.toStdString());
-	else
+    if(enabled) {
+        std::string s = dataXferWrap.escapeDataOut(outbound.toStdString());
+        emit sendRawBytes(QByteArray::fromStdString(s));
+    } else
 		emit sendRawBytes(outbound);
 }
 

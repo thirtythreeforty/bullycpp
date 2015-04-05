@@ -112,18 +112,18 @@ sendVar(uint u_varIndex);
 
 #if !defined(__PIC__) || defined(__DOXYGEN__)
 /** Return a string with the data stored in the given variable formatted using
- *  the format string contained in the variable. Limitation: currently, use of
- *  a string (%s format) will probably crash the program. <b>PC only.</b>
+ *  the format string contained in the variable. <b>PC only.</b>
  *  \param u_varIndex The index of the variable to send; must be from 0 to
  *                    \ref NUM_XFER_VARS.
- *  \param psz_buf Buffer large enough to contain the formatted string.
+ *  \param psz_buf Buffer to contain the formatted string.
+ *  \param s_len Length of the buffer.
  *  \return On success, the total number of characters written is returned.
  *          This count does not include the additional null-character
  *          automatically appended at the end of the string.
  *          On failure, a negative number is returned.
  */
 int
-formatVar(uint u_varIndex, char* psz_buf);
+formatVar(uint u_varIndex, char* psz_buf, size_t s_len);
 #endif
 
 
@@ -153,16 +153,16 @@ inCharXfer();
   *  \param c_in  Character just received, which will be processed.
   *  \param pc_out Pointer to space for storing the received character, if
   *                a character was received (see pu16_index).
-  *  \param pu16_index A pointer to the index to the variable, if a variable was received;
+  *  \param pu_index A pointer to the index to the variable, if a variable was received;
   *                    \ref CHAR_RECEIVED_INDEX if a character was received.
   *  \param u64_timeMs Current system time, in ms.
   *  \param psz_error NULL if no error occurred; otherwise, a pointer to the
   *                  error string.
   *  \return True if a character or variable was received. True also implies that
-  *          pu16_index is valid.
+  *          pu_index is valid.
   */
-BOOL receiveVar(char c_in, char* pc_out, uint16_t* pu16_index,
-                uint64_t u64_timeMs, char** psz_error);
+BOOL receiveVar(char c_in, char* pc_out, uint* pu_index,
+                uint64_t u64_timeMs, const char** psz_error);
 #endif
 
 

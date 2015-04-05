@@ -94,13 +94,13 @@ else
  *  \author Bryan A. Jones, bjones AT ece DOT msstate DOT edu.
  */
 
+#include <stdint.h>
 #include <stdlib.h>
 
 // Determine if we're compiling for the PIC or not.
 #if defined(__PIC24H__) || defined(__PIC24F__) || defined(__dsPIC33F__) || defined(__PIC24FK__) || defined(__PIC24E__) || defined(__dsPIC33E__)
 #define __PIC__
 #include "pic24_unittest.h"
-#include "stdint.h"
 #endif
 
 
