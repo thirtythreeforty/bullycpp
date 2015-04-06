@@ -125,6 +125,8 @@ int
 formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
   XFER_VAR* pXferVar;
   int i_ret;
+  uint u_size;
+  uintmax_t um_buf;
 
   // Make sure this variable exists
   ASSERTM("formatVar:indexTooHigh", u_varIndex < NUM_XFER_VARS);
@@ -136,9 +138,15 @@ formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
   pXferVar = xferVar + u_varIndex;
   ASSERTM("formatVar:indexNotSpecified", pXferVar->pu8_data != NULL);
 
+  // Copy the data over to the largest available var for formatting.
+  // This means strings won't work. How to fix this?
+  u_size = pXferVar->u8_size + 1;
+  ASSERT(u_size <= sizeof(um_buf));
+  memcpy(&um_buf, pXferVar->pu8_data, u_size);
+
   // Copy the data over to the largest available var for formatting. Using the evil
   // MSVC variant. Everybody else calls this snprintf.
-  i_ret = sprintf_s(psz_buf, s_len, pXferVar->psz_format, pXferVar->pu8_data);
+  i_ret = sprintf_s(psz_buf, s_len, pXferVar->psz_format, um_buf);
   return i_ret;
 }
 #endif
