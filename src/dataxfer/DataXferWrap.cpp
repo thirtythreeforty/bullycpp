@@ -1,5 +1,6 @@
 #include "DataXferWrap.h"
 #include "dataXfer.h"
+#include <iostream>
 
 DataXferWrap::DataXferWrap(IDataXferWrapCallbacks *callbacks)
 {
@@ -28,8 +29,8 @@ void DataXferWrap::onDataIn(const std::string &bytes, const unsigned int current
                 bool isModifiable = isVarWriteable(u_index);
 
                 // Format the value per the specified format string.
-                char s_value[1024];
                 std::string value;
+                char s_value[1024];
                 int i_ret = formatVar(u_index, s_value, sizeof(s_value));
                 if (i_ret < 0) {
                     value = "Error: cannot format value.";
@@ -38,6 +39,7 @@ void DataXferWrap::onDataIn(const std::string &bytes, const unsigned int current
                 }
 
                 // Pass it to the GUI.
+                std::cout << "u_index = " << u_index << ", name = " << name << ", description = " << description << ", value = " << value << ", isModifiable = " << isModifiable << "\n";
                 this->iDataXferWrapCallbacks->variableUpdated(u_index, name, description,
                                                               value, isModifiable);
             }
