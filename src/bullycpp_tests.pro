@@ -2,7 +2,7 @@ PROJECT = bullycpp
 CONFIG += qt c++11
 QT += core gui network serialport widgets
 
-DEFINES += UNIT_TESTS
+DEFINES += OUT_CHAR
 
 SOURCES += \
     bullycpp/MemRow.cpp \
