@@ -30,11 +30,10 @@ void QtDataXfer::displayRawData(const std::string &bytes)
 }
 
 namespace {
-	QTableWidgetItem* createWidgetItem(const std::string& text, bool editable, int index) {
+    QTableWidgetItem* createWidgetItem(const std::string& text, bool editable) {
 		QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(text));
 		if(!editable)
 			item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-		item->setData(Qt::UserRole, QVariant(index));
 		return item;
 	}
 }
@@ -45,11 +44,13 @@ void QtDataXfer::variableUpdated(const unsigned int index,
                                  const std::string& value,
                                  const bool modifiable)
 {
-	int row = table->rowCount();
-	table->insertRow(row);
+    // Grow the table this this index if past the last row.
+    if (index >= table->rowCount()) {
+        table->setRowCount(index + 1);
+    }
 
 	// Name
-	table->setItem(row, 0, createWidgetItem(name, false, index));
+    table->setItem(index, 0, createWidgetItem(name, false));
 
 	// Mutable (checkbox)
 	// So this is irritating.  There's no good way to have an enabled, non-user-editable,
@@ -63,13 +64,13 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 	pWidget->setLayout(pLayout);
 	pCheckBox->setChecked(modifiable);
 	pCheckBox->setEnabled(false);
-	table->setCellWidget(row, 1, pWidget);
+    table->setCellWidget(index, 1, pWidget);
 
 	// Value
-	table->setItem(row, 2, createWidgetItem(value, modifiable, index));
+    table->setItem(index, 2, createWidgetItem(value, modifiable));
 
 	// Description
-	table->setItem(row, 3, createWidgetItem(description, false, index));
+    table->setItem(index, 3, createWidgetItem(description, false));
 }
 
 void QtDataXfer::processOutboundBytes(QByteArray outbound)
@@ -97,6 +98,6 @@ void QtDataXfer::enable(bool enable)
 
 void QtDataXfer::updateItemVariable(QTableWidgetItem *item)
 {
-	const unsigned int index = item->data(Qt::UserRole).toUInt();
+    const unsigned int index = item->row();
     dataXferWrap.variableEdited(index, item->text().toStdString());
 }
