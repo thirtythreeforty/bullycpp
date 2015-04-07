@@ -65,6 +65,7 @@ private slots:
 private:
 	DataXfer dataXfer;
 	QTableWidget* table;
+	bool passChangeSignals;
 	bool enabled;
 };
 

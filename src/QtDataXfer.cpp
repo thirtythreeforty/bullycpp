@@ -9,6 +9,7 @@
 QtDataXfer::QtDataXfer(QObject *parent)
 	: QObject(parent)
 	, dataXfer(this)
+	, passChangeSignals(true)
 	, enabled(false)
 {
 }
@@ -45,6 +46,9 @@ void QtDataXfer::variableUpdated(const unsigned int index,
                                  const std::string& value,
                                  const bool modifiable)
 {
+	// Don't pass itemChanged signals generated from the following code.
+	passChangeSignals = false;
+
 	int row = table->rowCount();
 	table->insertRow(row);
 
@@ -70,6 +74,8 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 
 	// Description
 	table->setItem(row, 3, createWidgetItem(description, false, index));
+
+	passChangeSignals = true;
 }
 
 void QtDataXfer::processOutboundBytes(QByteArray outbound)
@@ -97,6 +103,9 @@ void QtDataXfer::enable(bool enable)
 
 void QtDataXfer::updateItemVariable(QTableWidgetItem *item)
 {
+	if(!passChangeSignals)
+		return;
+
 	const unsigned int index = item->data(Qt::UserRole).toUInt();
 	dataXfer.variableEdited(index, item->text().toStdString());
 }
