@@ -8,6 +8,7 @@
 class DataXferWrap {
 public:
     DataXferWrap(IDataXferWrapCallbacks*);
+    ~DataXferWrap();
 
     // When data arrives from the uC, let the dataXfer routines inspect it first to
     // interpret any variables and escaped characters. Inside this, calls to

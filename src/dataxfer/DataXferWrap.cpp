@@ -8,6 +8,13 @@ DataXferWrap::DataXferWrap(IDataXferWrapCallbacks *callbacks)
     initDataXfer();
 }
 
+DataXferWrap::~DataXferWrap()
+{
+    // This frees memory associated with any variables during the
+    // initialization process.
+    initDataXfer();
+}
+
 void DataXferWrap::onDataIn(const std::string &bytes, const unsigned int currentMilliseconds)
 {
     for (auto c: bytes) {

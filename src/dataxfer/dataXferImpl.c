@@ -170,8 +170,29 @@ void clearReceiveMachineError() {
   receiveError = ERR_NONE;
 }
 
+#ifndef __PIC__
+/** Free memory associted with a variable.
+ *
+ *  \param u_varIndex    A value from 0-\ref NUM_XFER_VARS, unique for each var.
+ */
+static void freeVariable(uint u_index) {
+  if (xferVar[u_index].pu8_data != NULL) {
+    free(xferVar[u_index].pu8_data);
+    free(xferVar[u_index].psz_format);
+    free(xferVar[u_index].psz_name);
+    free(xferVar[u_index].psz_desc);
+  }
+}
+#endif
 
 void clearReceiveStruct() {
+#ifndef __PIC__
+  // Free all memory allocated for receive variables.
+  uint u_index;
+  for (u_index = 0; u_index < NUM_XFER_VARS; ++u_index) {
+    freeVariable(u_index);
+  }
+#endif
   memset(xferVar, 0, sizeof(xferVar));
   memset(au8_xferVarWriteable, 0, sizeof(au8_xferVarWriteable));
 }
@@ -298,12 +319,7 @@ static void parseVarSpec() {
   char* psz_s;
 
   // Free old memory associated with this variable
-  if (pXferVar->pu8_data != NULL) {
-    free(pXferVar->pu8_data);
-    free(pXferVar->psz_format);
-    free(pXferVar->psz_name);
-    free(pXferVar->psz_desc);
-  }
+  freeVariable(u_index);
 
   // Determine the size of this variable then allocate it. Note that
   // the size stored is the actual size minus one!

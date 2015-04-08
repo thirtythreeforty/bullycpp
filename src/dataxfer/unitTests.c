@@ -179,16 +179,21 @@ void setupXferData(
   // Length (in bytes) of data to be received
   uint u_len) {
 
-  // A place to store the max amount of data.
-  static uint8_t au_data[256];
-
   // Check params
   ASSERT(u_index < NUM_XFER_VARS);
   ASSERT(u_len <= 256);
 
-  // Set up structure
+  // Set up structure.
   xferVar[u_index].u8_size = u_len - 1;  // Value is length-1
-  xferVar[u_index].pu8_data = au_data;
+#ifdef __PIC__
+  // On a microcontroller, provide a statically-allocated buffer
+  // to hold received data.
+  static uint8_t au8_data[256];
+  xferVar[u_index].pu8_data = au8_data;
+#else
+  // On the PC, dynamically allocate it; initDataXfer() will free this.
+  xferVar[u_index].pu8_data = (uint8_t*) malloc(u_len*sizeof(uint8_t));
+#endif
   assignBit(u_index, TRUE);
 }
 
@@ -726,8 +731,9 @@ void testSend256ByteVar() {
 
 // Specify an index that's too high
 void testSpecifyIndexTooHigh() {
-  // Dummy buffer to hold variable data
-  uint8_t au8_buf[1];
+  // Dummy buffer to hold variable data. Initialize it to something to
+  // avoid "unreferenced local variable" warnings.
+  uint8_t au8_buf[1] = {0};
   REQUIRE_ASSERT(specifyVar(NUM_XFER_VARS + 1, au8_buf, 1, TRUE, "", "", ""),
                  "specifyVar:indexTooHigh");
 }
@@ -740,8 +746,9 @@ void testSpecifyNullData() {
 
 // Specify with an invalid size
 void testSpecifyInvalidSize() {
-  // Dummy buffer to hold variable data
-  uint8_t au8_buf[1];
+    // Dummy buffer to hold variable data. Initialize it to something to
+    // avoid "unreferenced local variable" warnings.
+  uint8_t au8_buf[1] = {0};
   REQUIRE_ASSERT(specifyVar(0, au8_buf, 0, TRUE, "", "", ""),
                  "specifyVar:invalidSize");
   REQUIRE_ASSERT(specifyVar(0, au8_buf, 257, TRUE, "", "", ""),
@@ -868,13 +875,17 @@ void testSpecifyLongDesc() {
 
 // Send to a index that's too high
 void testFormatIndexTooHigh() {
-  char psz_buf[200];
+  // Dummy buffer to hold variable data. Initialize it to something to
+  // avoid "unreferenced local variable" warnings.
+  char psz_buf[200] = {0};
   REQUIRE_ASSERT(formatVar(NUM_XFER_VARS + 1, psz_buf), "formatVar:indexTooHigh");
 }
 
 // Send to an unconfigured index
 void testFormatIndexUnspecificed() {
-  char psz_buf[200];
+  // Dummy buffer to hold variable data. Initialize it to something to
+  // avoid "unreferenced local variable" warnings.
+  char psz_buf[200] = {0};
   REQUIRE_ASSERT(formatVar(0, psz_buf), "formatVar:indexNotSpecified");
 }
 
@@ -907,12 +918,13 @@ void (*afp_testList[])() = {
   sendLongToHighIndex,
   sendLongWithWrongSize,
   sendLongData,
+#ifdef __PIC__
   testSpecifyLongFormat,
   testSpecifyLongName,
   testSpecifyLongDesc,
-#ifdef __PIC__
   sendReadOnly,
   sendVarSpecPic,
+  testSpecifyMinimalVar,
 #else
   sendVarSpec,
   sendWriteableVarSpec,
@@ -934,7 +946,6 @@ void (*afp_testList[])() = {
   testSpecifyIndexTooHigh,
   testSpecifyNullData,
   testSpecifyInvalidSize,
-  testSpecifyMinimalVar,
   NULL
 };
 
@@ -958,5 +969,8 @@ void runAllTests() {
     runTest(u_index);
     printf("success.\n");
   }
+  // Free all memory used by the last test (for the PC; the PIC
+  // doesn't dynamically allocate memory.
+  initDataXfer();
   printf("All %d tests passed.\n", u_index);
 }
