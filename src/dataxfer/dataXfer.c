@@ -6,6 +6,13 @@
  *  \brief Implementation of the \ref index "uC data transfer protocol".
  */
 
+// MS compiler workaround for snprintf.
+#ifdef _MSC_VER
+# define SNPRINTF sprintf_s
+#else
+# define SNPRINTF snprintf
+#endif
+
 void
 initDataXfer() {
   resetReceiveMachine();
@@ -144,9 +151,9 @@ formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
   ASSERT(u_size <= sizeof(um_buf));
   memcpy(&um_buf, pXferVar->pu8_data, u_size);
 
-  // Copy the data over to the largest available var for formatting. Using the evil
-  // MSVC variant. Everybody else calls this snprintf.
-  i_ret = sprintf_s(psz_buf, s_len, pXferVar->psz_format, um_buf);
+  // Copy the data over to the largest available var for formatting. Using a
+  // #defined sprintf to work around MSVC's naming of that function.
+  i_ret = SNPRINTF(psz_buf, s_len, pXferVar->psz_format, um_buf);
   return i_ret;
 }
 #endif
