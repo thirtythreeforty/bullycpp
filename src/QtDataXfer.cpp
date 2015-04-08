@@ -49,7 +49,7 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 	passChangeSignals = false;
 
 	// Grow the table this this index if past the last row.
-	if (index >= table->rowCount()) {
+    if (static_cast<int>(index) >= table->rowCount()) {
 		table->setRowCount(index + 1);
 	}
 
