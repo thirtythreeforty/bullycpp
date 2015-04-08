@@ -316,7 +316,7 @@ extern "C" {
     /// Pointer to the data to be exchanged. NULL means this entry is not
     /// defined.
     uint8_t* pu8_data;
-    /// Size of data in bytes – 1: 0 = 1 byte, etc.
+    /// Size of data in bytes - 1: 0 = 1 byte, etc.
     uint8_t u8_size;
 #if !defined(__PIC__) || defined(__DOXYGEN__)
     /// printf format string to use in displaying the variable. <b>PC only.</b>
