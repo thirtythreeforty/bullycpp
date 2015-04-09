@@ -2,13 +2,16 @@ PROJECT = bullycpp
 CONFIG += qt c++11
 QT += core gui network serialport widgets
 
+DEFINES += OUT_CHAR
+
 SOURCES += \
     bullycpp/MemRow.cpp \
     bullycpp/PicBootloaderDriver.cpp \
-    bullycpp.cpp \
+    bullycpp_test.cpp \
     dataxfer/dataXfer.c \
     dataxfer/dataXferImpl.c \
     dataxfer/DataXferWrap.cpp \
+    dataxfer/unitTests.c \
     GitHubUpdateChecker.cpp \
     MainWindow.cpp \
     QtDataXfer.cpp \

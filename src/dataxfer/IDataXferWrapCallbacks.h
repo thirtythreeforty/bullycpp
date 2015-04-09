@@ -14,20 +14,20 @@
  **     along with BullyCPP.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include "DataXfer.h"
+#ifndef IDATAXFERWRAPCALLBACKS_H
+#define IDATAXFERWRAPCALLBACKS_H
 
-DataXfer::DataXfer(IDataXferCallbacks *callbacks)
-{
-}
+#include <string>
 
-void DataXfer::onDataIn(const std::string &bytes, const unsigned int currentMilliseconds)
-{
-}
+class IDataXferWrapCallbacks {
+public:
+	virtual void sendRawData(const std::string& bytes) = 0;
+	virtual void displayRawData(const std::string& bytes) = 0;
+	virtual void variableUpdated(const unsigned int index,
+	                             const std::string& name,
+	                             const std::string& description,
+	                             const std::string& value,
+	                             const bool modifiable) = 0;
+};
 
-void DataXfer::onDataOut(const std::string &typed)
-{
-}
-
-void DataXfer::variableEdited(const unsigned int index, const std::string &newValue)
-{
-}
+#endif
