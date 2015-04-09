@@ -47,6 +47,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	ui->progressWidget->hide();
 	ui->programmingErrorLabel->hide();
 
+	ui->dataXferTable->hide();
+	qtDataXfer.setTableWidget(ui->dataXferTable);
+
 	thread.start();
 	picDriver->moveToThread(&thread);
 
@@ -70,9 +73,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->mclrButton, &QAbstractButton::clicked, picDriver, &QtPicDriver::setMCLR);
 	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &QAbstractButton::setChecked);
 
-	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, this, &MainWindow::onSerialTextSend);
-	connect(picDriver, &QtPicDriver::serialDataReceived, this, &MainWindow::onSerialTextReceived);
-	connect(this, &MainWindow::sendSerialData, picDriver, &QtPicDriver::sendSerialData);
+	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });
+	connect(&qtDataXfer, &QtDataXfer::sendRawBytes, picDriver, &QtPicDriver::sendSerialData);
+	connect(picDriver, &QtPicDriver::serialDataReceived, &qtDataXfer, &QtDataXfer::processInboundBytes);
+	connect(&qtDataXfer, &QtDataXfer::inboundBytesReady, this, &MainWindow::onSerialTextReceived);
 
 	connect(ui->clearSerialButton, &QAbstractButton::clicked, this, &MainWindow::onClearSerialClicked);
 	connect(ui->saveSerialButton, &QAbstractButton::clicked, this, &MainWindow::onSaveSerialClicked);
@@ -95,6 +99,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->programmingWidget, &QWidget::setHidden);
 	connect(picDriver, &QtPicDriver::programmingErrorChanged, ui->programmingErrorLabel, &QWidget::setVisible);
 	connect(picDriver, &QtPicDriver::programmingProgressChanged, this, &MainWindow::onProgrammingProgressChanged);
+
+	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, ui->dataXferTable, &QWidget::setVisible);
+	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
+	connect(ui->mclrButton, &QAbstractButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 

@@ -27,6 +27,7 @@
 
 #include "GitHubUpdateChecker.h"
 #include "InterceptQPlainTextEdit.h"
+#include "QtDataXfer.h"
 #include "QtPicDriver.h"
 
 namespace Ui {
@@ -75,6 +76,7 @@ private:
 	GitHubUpdateChecker checker;
 	QSettings settings;
 	QByteArray rawSerialBuffer;
+	QtDataXfer qtDataXfer;
 };
 
 #endif // MAINWINDOW_H
