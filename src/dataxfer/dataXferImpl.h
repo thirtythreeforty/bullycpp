@@ -99,7 +99,7 @@ else
 
 // Determine if we're compiling for the PIC or not.
 #if defined(__PIC24H__) || defined(__PIC24F__) || defined(__dsPIC33F__) || defined(__PIC24FK__) || defined(__PIC24E__) || defined(__dsPIC33E__)
-#define __PIC__
+#define PIC
 #include "pic24_unittest.h"
 #endif
 
@@ -188,14 +188,14 @@ extern "C" {
 /// An abbreviation for an unsigned integer.
   typedef unsigned int uint;
 
-#ifndef __PIC__
+#ifndef PIC
 /// An abbreviation for an 8-bit unsigned integer.
   typedef unsigned char uint8_t;
 #endif
 
 
 // Unit testing: uncomment the following line to run PIC tests on PC.
-//#define __PIC__
+//#define PIC
 
 /// \name Command-finding state machine
 //@{
@@ -318,7 +318,7 @@ extern "C" {
     uint8_t* pu8_data;
     /// Size of data in bytes - 1: 0 = 1 byte, etc.
     uint8_t u8_size;
-#if !defined(__PIC__) || defined(__DOXYGEN__)
+#if !defined(PIC) || defined(__DOXYGEN__)
     /// printf format string to use in displaying the variable. <b>PC only.</b>
     char* psz_format;
     /// Name of this variable, typically the same as used
@@ -430,7 +430,7 @@ uint getReceiveMachineIndex();
 /// clears the error status.
 RECEIVE_ERROR getReceiveMachineError();
 
-#if !defined(__PIC__) || defined(__DOXYGEN__)
+#if !defined(PIC) || defined(__DOXYGEN__)
 /// Determine if the last data found by the receive state machine
 /// was a specification; if not, it was data.
 /// See \ref stepReceiveMachine for more information. <b>PC only.</b>
@@ -460,7 +460,7 @@ BOOL isReceiveMachineChar();
  */
 BOOL isReceiveMachineData();
 
-#if !defined(__PIC__) || defined(__DOXYGEN__)
+#if !defined(PIC) || defined(__DOXYGEN__)
 /** Determines if the receive state machine just received an updated specification.
  *  <b>PC only.</b>
  *  \return True when the machine just received an updated spec.

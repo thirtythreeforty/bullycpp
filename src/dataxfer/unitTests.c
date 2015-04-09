@@ -185,7 +185,7 @@ void setupXferData(
 
   // Set up structure.
   xferVar[u_index].u8_size = u_len - 1;  // Value is length-1
-#ifdef __PIC__
+#ifdef PIC
   // On a microcontroller, provide a statically-allocated buffer
   // to hold received data.
   static uint8_t au8_data[256];
@@ -444,7 +444,7 @@ void sendLongData() {
     ASSERT(xferVar[0].pu8_data[i] == i);
 }
 
-#ifdef __PIC__
+#ifdef PIC
 // Test sending data to a read-only variable. Only applies to the PIC.
 void sendReadOnly() {
   // Set up index 0 for 1 byte of data, read-only
@@ -470,7 +470,7 @@ void sendVarSpecPic() {
 }
 #endif
 
-#ifndef __PIC__
+#ifndef PIC
 // Used to create strings with commands in them below.
 #define CMD_TOKEN_STR "\xAA"
 #define CMD_SEND_ONLY_STR "\xFE"
@@ -655,7 +655,7 @@ void testSendIndexUnspecificed() {
 }
 
 // Send to a read-only variable (PC only)
-#ifndef __PIC__
+#ifndef PIC
 void testSendToReadOnly() {
   // Set up index 0 for 1 byte of data, read-only
   setupXferData(0, 1);
@@ -918,7 +918,7 @@ void (*afp_testList[])() = {
   sendLongToHighIndex,
   sendLongWithWrongSize,
   sendLongData,
-#ifdef __PIC__
+#ifdef PIC
   testSpecifyLongFormat,
   testSpecifyLongName,
   testSpecifyLongDesc,

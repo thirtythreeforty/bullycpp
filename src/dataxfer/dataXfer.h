@@ -68,7 +68,7 @@ void testOutChar(uint8_t c);
 void
 initDataXfer();
 
-#if defined(__PIC__) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
+#if defined(PIC) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
 /** Specify a variable to be sent or received. <b>uC only.</b>
  *  \param u_varIndex       A value from 0-\ref NUM_XFER_VARS, unique for each var
  *  \param pv_data          A pointer to the data to be sent
@@ -110,7 +110,7 @@ specifyVar(u_varIndex, &data, sizeof(data), isWriteable, format, #data, desc)
 void
 sendVar(uint u_varIndex);
 
-#if !defined(__PIC__) || defined(__DOXYGEN__)
+#if !defined(PIC) || defined(__DOXYGEN__)
 /** Return a string with the data stored in the given variable formatted using
  *  the format string contained in the variable. <b>PC only.</b>
  *  \param u_varIndex The index of the variable to send; must be from 0 to
@@ -127,7 +127,7 @@ formatVar(uint u_varIndex, char* psz_buf, size_t s_len);
 #endif
 
 
-#if defined(__PIC__) || defined(__DOXYGEN__)
+#if defined(PIC) || defined(__DOXYGEN__)
 /** Receive a character or a variable. Any errors that occur are
   *  reported via outString. <b>uC only.</b>
   *  \param c Pointer to space for storing the received character, if
