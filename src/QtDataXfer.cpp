@@ -68,7 +68,7 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 	pWidget->setLayout(pLayout);
 	pCheckBox->setChecked(modifiable);
 	pCheckBox->setEnabled(false);
-    table->setCellWidget(index, 1, pWidget);
+	table->setCellWidget(index, 1, pWidget);
 
 	// Value
 	table->setItem(index, 2, createWidgetItem(value, modifiable));

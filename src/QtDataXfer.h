@@ -63,7 +63,7 @@ private slots:
 	void updateItemVariable(QTableWidgetItem* item);
 
 private:
-    DataXferWrap dataXferWrap;
+	DataXferWrap dataXferWrap;
 	QTableWidget* table;
 	bool passChangeSignals;
 	bool enabled;
