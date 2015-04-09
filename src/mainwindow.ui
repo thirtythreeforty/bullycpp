@@ -364,7 +364,7 @@
       </widget>
       <widget class="QWidget" name="dataxfer_vars">
        <attribute name="title">
-        <string>DataXfer Variables</string>
+        <string>µC/PC Variables</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -385,7 +385,7 @@
           <item>
            <widget class="QCheckBox" name="useDataXferCheckBox">
             <property name="text">
-             <string>Use DataXfer variables</string>
+             <string>Use µC/PC variables</string>
             </property>
            </widget>
           </item>

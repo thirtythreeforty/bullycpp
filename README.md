@@ -34,19 +34,19 @@ Begin by cloning the repository:
 
 Initialize QMake:
 
-    qmake
+    qmake bullycpp.pro
 
 Now build (you can pass `-j` if you have a multicore processor):
 
     make
 
-The executable `bullycpp` will be generated.
+The executable `BullyCPP` will be generated.
 
 Note:  If you want to redistribute the resulting application, you will need to use a statically linked Qt, which you must compile yourself.
 The precompiled binaries are statically linked with Qt 5.4.0, built with MSVC 2013 Ultimate, and compressed with UPX.
 The Qt `configure` line used to build the provided Windows precompiled versions is
 
-	configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
+    configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
 
 Usage
 -----
@@ -83,6 +83,12 @@ If the device is configured to use a different speed, you can specify one with t
 For example:
 
     bullycpp --baud 115200 ~/target_code.hex
+
+DataXfer
+--------
+BullyCPP can use the [µC/PC data transfer protocol](http://www.ece.msstate.edu/courses/ece3724/main_pic24/docs/data_xfer.html) to mux serial data with variable transfer.
+To enable the protocol, select the µC/PC tab at the bottom of the BullyCPP window and click the Enable checkbox.
+Note that if you are not using this protocol, you should leave the checkbox disabled, as the protocol involves in-band filtering of inbound and outbound data.
 
 Updates
 -------
