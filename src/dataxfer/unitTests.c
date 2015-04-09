@@ -571,7 +571,8 @@ void sendVarSpecAndData() {
 
   ASSERT(isReceiveMachineData());
   ASSERT(getReceiveMachineIndex() == 0);
-  for (uint i = 0; i < 4; i++)
+  uint i;
+  for (i = 0; i < 4; i++)
     ASSERT(xferVar[0].pu8_data[i] == i);
 }
 #endif
