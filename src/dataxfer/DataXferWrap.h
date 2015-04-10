@@ -1,9 +1,12 @@
 #ifndef DATAXFERWRAP_H
 #define DATAXFERWRAP_H
 
+#include <mutex>
 #include <string>
 
 #include "IDataXferWrapCallbacks.h"
+
+extern "C" void outChar(uint8_t);
 
 class DataXferWrap {
 public:
@@ -27,7 +30,7 @@ public:
     // Before sending data, escape any characters if necessary.
     //
     // Return value: raw characters which can be sent over the serial port.
-    std::string& escapeDataOut(
+    const std::string& escapeDataOut(
       // Characters from the user, which should be escapted before sending.
       const std::string& typed);
 
@@ -44,6 +47,13 @@ public:
 protected:
     // Provide access to the callbacks which this wrapper will invoke.
     IDataXferWrapCallbacks *iDataXferWrapCallbacks;
+
+private:
+    // Accumulate output characters in a buffer. Must be static because the C library
+    // does not support the concept of a userdata variable for callbacks.
+    friend void outChar(uint8_t);
+    static std::string outCharBuffer;
+    static std::mutex outCharBufferMutex;
 };
 
 #endif

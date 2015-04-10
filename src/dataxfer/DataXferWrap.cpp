@@ -2,6 +2,9 @@
 #include "dataXfer.h"
 #include <iostream>
 
+std::string DataXferWrap::outCharBuffer;
+std::mutex DataXferWrap::outCharBufferMutex;
+
 DataXferWrap::DataXferWrap(IDataXferWrapCallbacks *callbacks)
 {
     this->iDataXferWrapCallbacks = callbacks;
@@ -54,16 +57,18 @@ void DataXferWrap::onDataIn(const std::string &bytes, const unsigned int current
     }
 }
 
-// Accumulate output characters in a buffer.
-static std::string outCharBuffer;
-void outChar(uint8_t c) {
-    outCharBuffer.append(1, c);
+extern "C" void outChar(uint8_t c)
+{
+    DataXferWrap::outCharBuffer.append(1, c);
 }
 
-std::string& DataXferWrap::escapeDataOut(const std::string &typed)
+const std::string& DataXferWrap::escapeDataOut(const std::string &typed)
 {
     // Clear the output buffer, fill it with output charactesrs (outCharXfer will
     // call outChar above), then return that for transmission.
+
+    std::lock_guard<std::mutex> guard(outCharBufferMutex);
+
     outCharBuffer.clear();
     for (auto c: typed) {
         outCharXfer(c);
@@ -78,5 +83,7 @@ void DataXferWrap::variableEdited(const unsigned int u_index, const std::string 
 
     // Convert the data then send it.
     sscanf(reinterpret_cast<char*>(xferVar[u_index].pu8_data), xferVar[u_index].psz_format, newValue.data());
+
+    std::lock_guard<std::mutex> guard(outCharBufferMutex);
     sendVar(u_index);
 }
