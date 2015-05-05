@@ -70,7 +70,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->configBitCheckBox, &QAbstractButton::toggled, picDriver, &QtPicDriver::setConfigBitsEnabled);
 	connect(ui->configBitCheckBox, &QAbstractButton::toggled, this, &MainWindow::saveConfigBitsPref);
 
-	connect(ui->mclrButton, &QAbstractButton::clicked, picDriver, &QtPicDriver::setMCLR);
+	connect(ui->mclrButton, &QAbstractButton::toggled, picDriver, &QtPicDriver::setMCLR);
 	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &QAbstractButton::setChecked);
 
 	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });

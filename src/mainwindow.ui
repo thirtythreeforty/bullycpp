@@ -57,15 +57,18 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="mclrButton">
+       <widget class="StickyQButton" name="mclrButton">
         <property name="text">
          <string>MCL&amp;R</string>
         </property>
         <property name="shortcut">
          <string>Alt+R</string>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
+        <property name="popupMode">
+         <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextOnly</enum>
         </property>
        </widget>
       </item>
@@ -455,6 +458,11 @@
    <extends>QTabWidget</extends>
    <header>widgets/CollapsingQTabWidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StickyQButton</class>
+   <extends>QToolButton</extends>
+   <header>widgets/StickyQButton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

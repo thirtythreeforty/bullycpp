@@ -35,7 +35,8 @@ HEADERS += \
     QtPicDriver.h \
     SerialPort.h \
     widgets/CollapsingQTabWidget.h \
-    widgets/InterceptQPlainTextEdit.h
+    widgets/InterceptQPlainTextEdit.h \
+    widgets/StickyQButton.h
 
 FORMS += mainwindow.ui
 
