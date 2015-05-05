@@ -27,15 +27,15 @@ HEADERS += \
     dataxfer/dataXferImpl.h \
     dataxfer/IDataXferWrapCallbacks.h \
     dataxfer/DataXferWrap.h \
-    CollapsingQTabWidget.h \
     GitHubUpdateChecker.h \
-    InterceptQPlainTextEdit.h \
     MainWindow.h \
     QStdStreamBuf.h \
     QtDataXfer.h \
     QtPicBootloaderDriver.h \
     QtPicDriver.h \
-    SerialPort.h
+    SerialPort.h \
+    widgets/CollapsingQTabWidget.h \
+    widgets/InterceptQPlainTextEdit.h
 
 FORMS += mainwindow.ui
 

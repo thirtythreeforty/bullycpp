@@ -451,12 +451,12 @@
   <customwidget>
    <class>InterceptQPlainTextEdit</class>
    <extends>QPlainTextEdit</extends>
-   <header>InterceptQPlainTextEdit.h</header>
+   <header>widgets/InterceptQPlainTextEdit.h</header>
   </customwidget>
   <customwidget>
    <class>CollapsingQTabWidget</class>
    <extends>QTabWidget</extends>
-   <header>CollapsingQTabWidget.h</header>
+   <header>widgets/CollapsingQTabWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

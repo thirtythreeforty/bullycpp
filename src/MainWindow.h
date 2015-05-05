@@ -26,7 +26,6 @@
 #include <QSettings>
 
 #include "GitHubUpdateChecker.h"
-#include "InterceptQPlainTextEdit.h"
 #include "QtDataXfer.h"
 #include "QtPicDriver.h"
 
