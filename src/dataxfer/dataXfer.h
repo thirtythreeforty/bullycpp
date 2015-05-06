@@ -40,7 +40,7 @@
 extern "C" {
 #endif
 
-/// Number of for loop iterations which equal a timeout for the PIC.
+/// Number of for loop iterations which equal a timeout for the microcontroller.
 ///     # loops   =      instructions/sec * loops/instruction * seconds
 #define RECEIVE_TIMEOUT (FCY              * 1/20              * 0.1)
 
@@ -68,14 +68,14 @@ void testOutChar(uint8_t c);
 void
 initDataXfer();
 
-#if defined(PIC) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
+#if defined(MICROCONTROLLER) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
 /** Specify a variable to be sent or received. <b>uC only.</b>
  *  \param u_varIndex       A value from 0-\ref NUM_XFER_VARS, unique for each var
  *  \param pv_data          A pointer to the data to be sent
  *  \param u_size           Size of the data in bytes; must be from 1 to 256.
  *  \param b_isWriteable    True if the PC is allowed to change this
  *                            variable; false otherwise. This does *NOT*
- *                            restrict the PIC to read-only access to this
+ *                            restrict the microcontroller to read-only access to this
  *                            variable.
  *  \param psz_format       printf format string to use in displaying the
  *                            Variable.
@@ -94,7 +94,7 @@ specifyVar(uint u_varIndex, volatile void* pv_data, uint u_size,
  *  \param data          A pointer to the data to be sent
  *  \param isWriteable   True if the PC is allowed to change this
  *                        variable; false otherwise. This does *NOT*
- *                        restrict the PIC to read-only access to this
+ *                        restrict the microcontroller to read-only access to this
  *                        variable.
  *  \param format        printf format string to use in displaying the
  *                        variable
@@ -110,7 +110,7 @@ specifyVar(u_varIndex, &data, sizeof(data), isWriteable, format, #data, desc)
 void
 sendVar(uint u_varIndex);
 
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 /** Return a string with the data stored in the given variable formatted using
  *  the format string contained in the variable. <b>PC only.</b>
  *  \param u_varIndex The index of the variable to send; must be from 0 to
@@ -127,7 +127,7 @@ formatVar(uint u_varIndex, char* psz_buf, size_t s_len);
 #endif
 
 
-#if defined(PIC) || defined(__DOXYGEN__)
+#if defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 /** Receive a character or a variable. Any errors that occur are
   *  reported via outString. <b>uC only.</b>
   *  \param c Pointer to space for storing the received character, if
