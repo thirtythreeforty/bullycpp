@@ -2,6 +2,9 @@ PROJECT = bullycpp
 CONFIG += qt c++11
 QT += core gui network serialport widgets
 
+VERSION = 0.7
+DEFINES += VERSION_STRING=\\\"v$$VERSION\\\"
+
 SOURCES += \
     bullycpp/MemRow.cpp \
     bullycpp/PicBootloaderDriver.cpp \

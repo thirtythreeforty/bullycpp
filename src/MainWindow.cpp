@@ -32,8 +32,6 @@
 #define PROGRAM_CONFIG_KEY    QStringLiteral("programConfigBits")
 #define HEX_FILE_NAME_KEY     QStringLiteral("hexFileName")
 
-#define VERSION_STRING "v0.7"
-
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
