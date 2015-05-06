@@ -42,6 +42,7 @@ FORMS += mainwindow.ui
 
 RESOURCES += bullycpp.qrc
 
+RC_ICONS = bullycpp.ico
 ICON = bullycpp.icns
 
 TARGET = BullyCPP
