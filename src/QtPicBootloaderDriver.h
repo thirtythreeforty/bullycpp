@@ -24,7 +24,7 @@
 #include "bullycpp/ISerialPort.h"
 #include "bullycpp/PicBootloaderDriver.h"
 
-class QtPicBootloaderDriver : public QObject, public bullycpp::IProgressCallback
+class QtPicBootloaderDriver : public QObject, private bullycpp::IProgressCallback
 {
 	Q_OBJECT
 public:
