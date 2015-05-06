@@ -97,7 +97,8 @@ else
 #include <stdint.h>
 #include <stdlib.h>
 
-// Determine if we're compiling for a microcontroller or not.
+// Determine if we're compiling for a microcontroller or not. If so, include
+// an ASSERT statement.
 #if defined(__PIC24H__) || defined(__PIC24F__) || defined(__dsPIC33F__) || defined(__PIC24FK__) || defined(__PIC24E__) || defined(__dsPIC33E__)
 #define MICROCONTROLLER
 #include "pic24_unittest.h"
@@ -186,16 +187,13 @@ extern "C" {
 // @}
 
 /// An abbreviation for an unsigned integer.
-  typedef unsigned int uint;
+typedef unsigned int uint;
 
 #ifndef MICROCONTROLLER
 /// An abbreviation for an 8-bit unsigned integer.
-  typedef unsigned char uint8_t;
+typedef unsigned char uint8_t;
 #endif
 
-
-// Unit testing: uncomment the following line to run microcontroller tests on PC.
-//#define MICROCONTROLLER
 
 /// \name Command-finding state machine
 //@{
