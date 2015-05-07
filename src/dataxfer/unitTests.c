@@ -23,9 +23,9 @@
 //    Please maintain this header in its entirety when copying/modifying
 //    these files.
 //
-// ************************************************************
-// unitTest.c - Implements unit tests for the PIC comm protocol
-// ************************************************************
+// ************************************************************************
+// unitTest.c - Implements unit tests for the microcontroller comm protocol
+// ************************************************************************
 // A very simple test runner, runAllTests(), executes the
 // tests. ASSERT statements provide verification.
 
@@ -185,7 +185,7 @@ void setupXferData(
 
   // Set up structure.
   xferVar[u_index].u8_size = u_len - 1;  // Value is length-1
-#ifdef PIC
+#ifdef MICROCONTROLLER
   // On a microcontroller, provide a statically-allocated buffer
   // to hold received data.
   static uint8_t au8_data[256];
@@ -444,8 +444,9 @@ void sendLongData() {
     ASSERT(xferVar[0].pu8_data[i] == i);
 }
 
-#ifdef PIC
-// Test sending data to a read-only variable. Only applies to the PIC.
+#ifdef MICROCONTROLLER
+// Test sending data to a read-only variable. Only applies to the
+// microcontroller.
 void sendReadOnly() {
   // Set up index 0 for 1 byte of data, read-only
   setupXferData(0, 1);
@@ -459,18 +460,18 @@ void sendReadOnly() {
 
 
 // Test sending a var spec
-void sendVarSpecPic() {
+void sendVarSpecMicrocontroller() {
   // Set up index 0 for 1 byte of data, read-only
   setupXferData(0, 1);
   uint8_t au8_data[] = { CMD_TOKEN, CMD_SEND_ONLY };
   sendData(au8_data, 1);
 
   RECEIVE_ERROR re = stepReceiveMachine(au8_data[1]);
-  ASSERT(re == ERR_PIC_VAR_SPEC);
+  ASSERT(re == ERR_MICROCONTROLLER_VAR_SPEC);
 }
 #endif
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 // Used to create strings with commands in them below.
 #define CMD_TOKEN_STR "\xAA"
 #define CMD_SEND_ONLY_STR "\xFE"
@@ -571,8 +572,7 @@ void sendVarSpecAndData() {
 
   ASSERT(isReceiveMachineData());
   ASSERT(getReceiveMachineIndex() == 0);
-  uint i;
-  for (i = 0; i < 4; i++)
+  for (uint i = 0; i < 4; i++)
     ASSERT(xferVar[0].pu8_data[i] == i);
 }
 #endif
@@ -656,7 +656,7 @@ void testSendIndexUnspecificed() {
 }
 
 // Send to a read-only variable (PC only)
-#ifndef PIC
+#ifndef MICROCONTROLLER
 void testSendToReadOnly() {
   // Set up index 0 for 1 byte of data, read-only
   setupXferData(0, 1);
@@ -919,12 +919,12 @@ void (*afp_testList[])() = {
   sendLongToHighIndex,
   sendLongWithWrongSize,
   sendLongData,
-#ifdef PIC
+#ifdef MICROCONTROLLER
   testSpecifyLongFormat,
   testSpecifyLongName,
   testSpecifyLongDesc,
   sendReadOnly,
-  sendVarSpecPic,
+  sendVarSpecMicrocontroller,
   testSpecifyMinimalVar,
 #else
   sendVarSpec,
@@ -970,8 +970,8 @@ void runAllTests() {
     runTest(u_index);
     printf("success.\n");
   }
-  // Free all memory used by the last test (for the PC; the PIC
-  // doesn't dynamically allocate memory.
+  // Free all memory used by the last test (for the PC; the microcontroller
+  // doesn't dynamically allocate memory).
   initDataXfer();
   printf("All %d tests passed.\n", u_index);
 }

@@ -49,7 +49,10 @@ void DataXferWrap::onDataIn(const std::string &bytes, const unsigned int current
                 }
 
                 // Pass it to the GUI.
+#if 0
+                // Debug info, if needed.
                 std::cout << "u_index = " << u_index << ", name = " << name << ", description = " << description << ", value = " << value << ", isModifiable = " << isModifiable << "\n";
+#endif
                 this->iDataXferWrapCallbacks->variableUpdated(u_index, name, description,
                                                               value, isModifiable);
             }
@@ -81,9 +84,13 @@ void DataXferWrap::variableEdited(const unsigned int u_index, const std::string 
     ASSERT(u_index < NUM_XFER_VARS);
     ASSERT(isVarWriteable(u_index));
 
-    // Convert the data then send it.
-    sscanf(reinterpret_cast<char*>(xferVar[u_index].pu8_data), xferVar[u_index].psz_format, newValue.data());
+    // Convert the data.
+    sscanf(newValue.data(), xferVar[u_index].psz_format, xferVar[u_index].pu8_data);
 
+    // Send it. sendVar merely places characters in a buffer to be sent.
+    // So, clear the buffer, fill it via sendVar, then send it.
     std::lock_guard<std::mutex> guard(outCharBufferMutex);
+    outCharBuffer.clear();
     sendVar(u_index);
+    this->iDataXferWrapCallbacks->sendRawData(outCharBuffer);
 }

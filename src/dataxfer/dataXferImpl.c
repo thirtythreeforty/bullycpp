@@ -120,13 +120,13 @@ static uint u_index;
 /// state machine. See \ref stepReceiveMachine for more information.
 static RECEIVE_ERROR receiveError;
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 /// True if the data just received by the receive state machine
 /// was a specification. See \ref stepReceiveMachine for more information.
 static BOOL b_isSpec;
 #define B_IS_SPEC b_isSpec
 #else
-// For the PIC, we never have a spec.
+// For the microcontroller, we never have a spec.
 #define B_IS_SPEC 0
 #endif
 
@@ -150,7 +150,7 @@ RECEIVE_ERROR getReceiveMachineError() {
 }
 
 
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 BOOL getReceiveMachineIsSpec() {
   return b_isSpec;
 }
@@ -170,7 +170,7 @@ void clearReceiveMachineError() {
   receiveError = ERR_NONE;
 }
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 /** Free memory associted with a variable.
  *
  *  \param u_varIndex    A value from 0-\ref NUM_XFER_VARS, unique for each var.
@@ -186,7 +186,7 @@ static void freeVariable(uint u_index) {
 #endif
 
 void clearReceiveStruct() {
-#ifndef PIC
+#ifndef MICROCONTROLLER
   // Free all memory allocated for receive variables.
   uint u_index;
   for (u_index = 0; u_index < NUM_XFER_VARS; ++u_index) {
@@ -209,7 +209,7 @@ BOOL isReceiveMachineData() {
 }
 
 
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 BOOL isReceiveMachineSpec() {
   return ( (receiveState == STATE_RECV_START) && (receiveError == ERR_NONE) &&
            (u_index != CHAR_RECEIVED_INDEX) && B_IS_SPEC);
@@ -252,7 +252,7 @@ static uint8_t* validateIndex() {
   }
 
   // If this variable is read-only, issue an error and abort
-#ifdef PIC
+#ifdef MICROCONTROLLER
   if (!isVarWriteable(u_index)) {
     receiveError = ERR_READ_ONLY_VAR;
     receiveState = STATE_RECV_START;
@@ -301,7 +301,7 @@ static BOOL validateLength(uint u_varLength) {
   }
 }
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 /// Temporary storage for a variable spec being received, with
 /// enough additional space to terminate 3 unterminated strings for safety.
 static uint8_t au8_varSpecData[(UINT8_MAX + 1) + 3];
@@ -378,7 +378,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
   static uint u_varLength;
   // A pointer which variable data is read into
   static uint8_t* pu8_data = NULL;
-#ifndef PIC
+#ifndef MICROCONTROLLER
   // The last command received
   static char c_lastCommand;
 #endif
@@ -471,10 +471,10 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
 
             case CMD_SEND_ONLY :
             case CMD_SEND_RECEIVE_VAR :
-#ifdef PIC
-              // The PIC should never receive a variable spec
+#ifdef MICROCONTROLLER
+              // The microcontroller should never receive a variable spec
               receiveState = STATE_RECV_START;
-              receiveError = ERR_PIC_VAR_SPEC;
+              receiveError = ERR_MICROCONTROLLER_VAR_SPEC;
               break;
 #else
               // Record this command, for use in the next state.
@@ -493,7 +493,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
               // the variable number and length.
               u_index = getVarIndex(c_outChar);
               u_varLength = getVarLength(c_outChar);
-#ifndef PIC
+#ifndef MICROCONTROLLER
               b_isSpec = FALSE;
 #endif
               // Validate the index, getting a pointer to the data
@@ -525,7 +525,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
       if (--u_varLength == 0) {
         receiveError = ERR_NONE;
         receiveState = STATE_RECV_START;
-#ifndef PIC
+#ifndef MICROCONTROLLER
         if (b_isSpec)
           parseVarSpec();
 #endif
@@ -535,7 +535,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
     case STATE_RECV_LONG_INDEX :
       // Save the index of this variable
       u_index = c_outChar;
-#ifndef PIC
+#ifndef MICROCONTROLLER
       b_isSpec = FALSE;
 #endif
       // Validate the index, getting a pointer to the data
@@ -547,7 +547,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
       receiveState = STATE_RECV_LONG_LENGTH;
       break;
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
     case STATE_RECV_SPEC_INDEX :
       // Save the index of this variable
       u_index = c_outChar;
@@ -575,7 +575,7 @@ RECEIVE_ERROR stepReceiveMachine(char c_inChar) {
       // Validate it only if this isn't a variable spec
       if (!B_IS_SPEC && !validateLength(u_varLength))
         break;
-#ifndef PIC
+#ifndef MICROCONTROLLER
       else
         // Otherwise, record the number of bytes in the spec for later processing
         // in parseVarSpec.

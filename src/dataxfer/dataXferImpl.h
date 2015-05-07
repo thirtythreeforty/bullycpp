@@ -79,7 +79,7 @@ if isLongVar(varBits):
   varNum, len = getch
 else
   assign varNum, len from varBits
-if isVarSpec and !PIC
+if isVarSpec and !MICROCONTROLLER
   getch len times to buf
   parse to var spec
   report any errors, restart
@@ -97,9 +97,10 @@ else
 #include <stdint.h>
 #include <stdlib.h>
 
-// Determine if we're compiling for the PIC or not.
+// Determine if we're compiling for a microcontroller or not. If so, include
+// an ASSERT statement.
 #if defined(__PIC24H__) || defined(__PIC24F__) || defined(__dsPIC33F__) || defined(__PIC24FK__) || defined(__PIC24E__) || defined(__dsPIC33E__)
-#define PIC
+#define MICROCONTROLLER
 #include "pic24_unittest.h"
 #endif
 
@@ -138,7 +139,7 @@ extern "C" {
 # define BOOL bool
 
 /// On MSVC under C++, use a throw for an assert. This
-/// is defined already for the PIC.
+/// is defined already for the microcontroller.
 # ifndef ASSERT
 #   ifdef _NOASSERT
 #     define ASSERT(placeholder) (void)0
@@ -186,16 +187,13 @@ extern "C" {
 // @}
 
 /// An abbreviation for an unsigned integer.
-  typedef unsigned int uint;
+typedef unsigned int uint;
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 /// An abbreviation for an 8-bit unsigned integer.
-  typedef unsigned char uint8_t;
+typedef unsigned char uint8_t;
 #endif
 
-
-// Unit testing: uncomment the following line to run PIC tests on PC.
-//#define PIC
 
 /// \name Command-finding state machine
 //@{
@@ -318,7 +316,7 @@ extern "C" {
     uint8_t* pu8_data;
     /// Size of data in bytes - 1: 0 = 1 byte, etc.
     uint8_t u8_size;
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
     /// printf format string to use in displaying the variable. <b>PC only.</b>
     char* psz_format;
     /// Name of this variable, typically the same as used
@@ -344,7 +342,7 @@ extern "C" {
 
 /// An array of isWriteable bits for each var. Each bit is true if the PC is
 /// allowed to change this variable; false otherwise. This does *NOT*
-/// restrict the PIC to read-only access to this variable.
+/// restrict the microcontroller to read-only access to this variable.
   extern uint8_t au8_xferVarWriteable[NUM_XFER_VARS/8 + ((NUM_XFER_VARS % 8) > 0)];
 
 //@}
@@ -406,12 +404,12 @@ typedef enum {
   ERR_VAR_SIZE_MISMATCH,
   /// The destination variable is read-only.
   ERR_READ_ONLY_VAR,
-  /// The PIC is sent a variable specification
-  ERR_PIC_VAR_SPEC
+  /// The microcontroller is sent a variable specification
+  ERR_MICROCONTROLLER_VAR_SPEC
 } RECEIVE_ERROR;
 
 /// Number of error codes in the \ref RECEIVE_ERROR enum.
-#define NUM_ERROR_CODES (ERR_PIC_VAR_SPEC + 1)
+#define NUM_ERROR_CODES (ERR_MICROCONTROLLER_VAR_SPEC + 1)
 
 /// Return the current receive machine state. See \ref stepReceiveMachine
 /// for more information.
@@ -430,7 +428,7 @@ uint getReceiveMachineIndex();
 /// clears the error status.
 RECEIVE_ERROR getReceiveMachineError();
 
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 /// Determine if the last data found by the receive state machine
 /// was a specification; if not, it was data.
 /// See \ref stepReceiveMachine for more information. <b>PC only.</b>
@@ -460,7 +458,7 @@ BOOL isReceiveMachineChar();
  */
 BOOL isReceiveMachineData();
 
-#if !defined(PIC) || defined(__DOXYGEN__)
+#if !defined(MICROCONTROLLER) || defined(__DOXYGEN__)
 /** Determines if the receive state machine just received an updated specification.
  *  <b>PC only.</b>
  *  \return True when the machine just received an updated spec.
@@ -490,7 +488,7 @@ void assignBit(uint u_index, BOOL b_bitVal);
  *  \param u_index The index of the variable to set.
  *  \return The bit value at this index. TRUE indicated the
  *     variable is writeable; FALSE indicates a read-only
- *     variable: only the PIC, but not the PC, may change
+ *     variable: only the microcontroller, but not the PC, may change
  *     its value.
  */
 BOOL isVarWriteable(uint u_index);
@@ -504,7 +502,7 @@ BOOL isVarWriteable(uint u_index);
  */
 RECEIVE_ERROR notifyOfTimeout();
 
-/** This state machine receives data from the PIC. It takes a character
+/** This state machine receives data from the microcontroller. It takes a character
  *  received plus an indication if a timeout occurred since the last
  *  invocation of this function and advances the machine. The machine
  *  produces outputs when the returned state is \ref STATE_RECV_START. Outputs:

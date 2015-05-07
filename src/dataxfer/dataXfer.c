@@ -31,7 +31,7 @@ outCharXfer(char c) {
     OUT_CHAR(ESCAPED_CMD);
 }
 
-#if defined(PIC) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
+#if defined(MICROCONTROLLER) || defined(__DOXYGEN__) || defined(UNIT_TESTS)
 void
 specifyVar(uint u_varIndex, volatile void* pv_data, uint u_size,
            BOOL b_isWriteable, char* psz_format, char* psz_name,
@@ -99,7 +99,7 @@ sendVar(uint u_varIndex) {
   pXferVar = xferVar + u_varIndex;
   ASSERTM("sendVar:indexNotSpecified", pXferVar->pu8_data != NULL);
   // Make sure it's read/write (PC only)
-#ifndef PIC
+#ifndef MICROCONTROLLER
   ASSERTM("sendVar:notWriteable", isVarWriteable(u_varIndex));
 #endif
 
@@ -127,7 +127,7 @@ sendVar(uint u_varIndex) {
 
 //@}
 
-#ifndef PIC
+#ifndef MICROCONTROLLER
 int
 formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
   XFER_VAR* pXferVar;
@@ -158,7 +158,7 @@ formatVar(uint u_varIndex, char* psz_buf, size_t s_len) {
 }
 #endif
 
-#ifdef PIC
+#ifdef MICROCONTROLLER
 
 #include "pic24_clockfreq.h"
 #include "pic24_util.h"
