@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="*" Name="BullyCPP" Language="1033" Version="0.8.1.0" Manufacturer="George Hilliard" UpgradeCode="{8AD9DF1E-FAC8-442D-9F69-91D439E154B4}">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
+		<Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine"/>
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
@@ -10,12 +10,15 @@
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
 
+    <Feature Id="VCRedist" Title="Visual C++ 12.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedist"/>
+    </Feature>
+
     <Icon Id="BullyCPP.ico" SourceFile="..\src\BullyCPP.ico"/>
 
     <Property Id="ARPPRODUCTICON" Value="BullyCPP.ico" />
     <Property Id="ARPHELPLINK" Value="https://www.github.com/thirtythreeforty/bullycpp" />
 
-    <Property Id="ALLUSERS" Value="2"/>
     <Property Id="MSIINSTALLPERUSER" Value="1"/>
 
     <UIRef Id="WixUI_Minimal" />
@@ -38,7 +41,14 @@
           <Shortcut Id="BullyCPPStartMenuShortcut" Directory="ProgramMenuFolder" Name="BullyCPP"
                     WorkingDirectory="PersonalFolder" Icon="BullyCPP.ico" Advertise="yes"/>
         </File>
-			</Component>
+      </Component>
+      <Component Id="RemovableUserSettings" Guid="{D5855E5E-79E5-4AD4-BD65-41B133630254}">
+        <RegistryValue Root='HKCU' Key='Software\thirtythreeforty\[ProductName]' Type='string' Value='' KeyPath='yes' />
+        <RemoveRegistryKey Root="HKCU" Action="removeOnUninstall" Key="Software\thirtythreeforty\[ProductName]"/>
+      </Component>
 		</ComponentGroup>
+    <DirectoryRef Id="TARGETDIR">
+      <Merge Id="VCRedist" SourceFile="Microsoft_VC120_CRT_x86.msm" Language="0" DiskId="1"/>
+    </DirectoryRef>
 	</Fragment>
 </Wix>

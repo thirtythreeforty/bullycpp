@@ -50,6 +50,7 @@ The Qt `configure` line used to build the provided Windows precompiled versions 
 
 The Windows installer package is built using the WiX toolset.
 After building (and optionally compressing with UPX) the executable, copy it to the `installer/` directory.
+Copy the Visual C++ 12.0 Redistributable merge module into `installer/` as well (if Visual Studio is installed, it is found at `C:\Program Files\Common Files\Merge Modules\Microsoft_VC120_CRT_x86.msm`).
 Now simply run `MakeInstaller.bat` to generate the MSI object.
 
 Usage
