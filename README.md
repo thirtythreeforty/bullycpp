@@ -48,6 +48,10 @@ The Qt `configure` line used to build the provided Windows precompiled versions 
 
     configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
 
+The Windows installer package is built using the WiX toolset.
+After building (and optionally compressing with UPX) the executable, copy it to the `installer/` directory.
+Now simply run `MakeInstaller.bat` to generate the MSI object.
+
 Usage
 -----
 BullyCPP has both a command-line and a GUI mode.

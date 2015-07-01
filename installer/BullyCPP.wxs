@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="BullyCPP" Language="1033" Version="0.8.1.0" Manufacturer="George Hilliard" UpgradeCode="{8AD9DF1E-FAC8-442D-9F69-91D439E154B4}">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+
+		<Feature Id="Complete" Title="BullyCPP" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <Icon Id="BullyCPP.ico" SourceFile="..\src\BullyCPP.ico"/>
+
+    <Property Id="ARPPRODUCTICON" Value="BullyCPP.ico" />
+    <Property Id="ARPHELPLINK" Value="https://www.github.com/thirtythreeforty/bullycpp" />
+
+    <Property Id="ALLUSERS" Value="2"/>
+    <Property Id="MSIINSTALLPERUSER" Value="1"/>
+
+    <UIRef Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="gpl3.0.rtf" />
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+  			<Directory Id="INSTALLDIR" Name="BullyCPP" />
+			</Directory>
+      <Directory Id="ProgramMenuFolder"/>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLDIR">
+			<Component Id="MainExecutable" Guid="{2D3EBD62-670F-4A8F-B2A1-76E380E66618}">
+        <File Id="BullyCPPEXE" Name="BullyCPP.exe" Source="BullyCPP.exe" KeyPath="yes">
+          <Shortcut Id="BullyCPPStartMenuShortcut" Directory="ProgramMenuFolder" Name="BullyCPP"
+                    WorkingDirectory="PersonalFolder" Icon="BullyCPP.ico" Advertise="yes"/>
+        </File>
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
