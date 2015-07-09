@@ -17,7 +17,8 @@ SOURCES += \
     QtDataXfer.cpp \
     QtPicBootloaderDriver.cpp \
     QtPicDriver.cpp \
-    SerialPort.cpp
+    SerialPort.cpp \
+    widgets/StickyQButton.cpp
 
 HEADERS += \
     bullycpp/IProgressCallback.h \
@@ -41,7 +42,8 @@ HEADERS += \
     widgets/InterceptQPlainTextEdit.h \
     widgets/StickyQButton.h
 
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+    StickyQButton.ui
 
 RESOURCES += bullycpp.qrc
 

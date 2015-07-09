@@ -57,24 +57,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="StickyQButton" name="mclrButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>MCL&amp;R</string>
-        </property>
-        <property name="shortcut">
-         <string>Alt+R</string>
-        </property>
-        <property name="popupMode">
-         <enum>QToolButton::MenuButtonPopup</enum>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextOnly</enum>
+       <widget class="StickyQButton" name="mclrButton" native="true">
+        <property name="title" stdset="0">
+         <string notr="true">MCLR</string>
         </property>
        </widget>
       </item>
@@ -467,8 +452,9 @@
   </customwidget>
   <customwidget>
    <class>StickyQButton</class>
-   <extends>QToolButton</extends>
+   <extends>QWidget</extends>
    <header>widgets/StickyQButton.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

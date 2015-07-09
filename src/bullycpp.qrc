@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>devices.txt</file>
         <file>bullycpp.png</file>
+        <file>widgets/lock.png</file>
     </qresource>
 </RCC>

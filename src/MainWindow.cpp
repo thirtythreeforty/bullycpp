@@ -68,8 +68,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->configBitCheckBox, &QAbstractButton::toggled, picDriver, &QtPicDriver::setConfigBitsEnabled);
 	connect(ui->configBitCheckBox, &QAbstractButton::toggled, this, &MainWindow::saveConfigBitsPref);
 
-	connect(ui->mclrButton, &QAbstractButton::toggled, picDriver, &QtPicDriver::setMCLR);
-	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &QAbstractButton::setChecked);
+	connect(ui->mclrButton, &StickyQButton::toggled, picDriver, &QtPicDriver::setMCLR);
+	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &StickyQButton::setChecked);
 
 	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });
 	connect(&qtDataXfer, &QtDataXfer::sendRawBytes, picDriver, &QtPicDriver::sendSerialData);
@@ -100,7 +100,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, ui->dataXferTable, &QWidget::setVisible);
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
-	connect(ui->mclrButton, &QAbstractButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
+	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 
