@@ -12,7 +12,6 @@ SOURCES += \
     dataxfer/dataXfer.c \
     dataxfer/dataXferImpl.c \
     dataxfer/DataXferWrap.cpp \
-    GitHubUpdateChecker.cpp \
     MainWindow.cpp \
     QtDataXfer.cpp \
     QtPicBootloaderDriver.cpp \
@@ -31,7 +30,6 @@ HEADERS += \
     dataxfer/dataXferImpl.h \
     dataxfer/IDataXferWrapCallbacks.h \
     dataxfer/DataXferWrap.h \
-    GitHubUpdateChecker.h \
     MainWindow.h \
     QStdStreamBuf.h \
     QtDataXfer.h \
@@ -52,3 +50,13 @@ RC_ICONS = bullycpp.ico
 ICON = bullycpp.icns
 
 TARGET = BullyCPP
+
+
+# These features can be set on the command line
+# as in: $ qmake FEATURES+=the-feature
+if(contains(FEATURES, no_update_check)) {
+    DEFINES += NO_UPDATE_CHECK
+} else {
+    SOURCES += GitHubUpdateChecker.cpp
+    HEADERS += GitHubUpdateChecker.h
+}

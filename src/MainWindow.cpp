@@ -33,11 +33,13 @@
 #define HEX_FILE_NAME_KEY     QStringLiteral("hexFileName")
 
 MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
-	QMainWindow(parent),
-	ui(new Ui::MainWindow),
-	appIcon(":/bullycpp.png"),
-	picDriver(new QtPicDriver(parser.values("piclist"))),
-	checker("thirtythreeforty", "bullycpp", VERSION_STRING)
+	QMainWindow(parent)
+	, ui(new Ui::MainWindow)
+	, appIcon(":/bullycpp.png")
+	, picDriver(new QtPicDriver(parser.values("piclist")))
+#ifndef NO_UPDATE_CHECK
+	, checker("thirtythreeforty", "bullycpp", VERSION_STRING)
+#endif
 {
 	ui->setupUi(this);
 	setWindowIcon(appIcon);
@@ -104,7 +106,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	connect(&serialRefreshTimer, &QTimer::timeout, this, &MainWindow::refreshSerialPortsKeepCurrent);
 
+#ifndef NO_UPDATE_CHECK
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
+#endif
 
 	// Set the serial window's font to be a monospace font.
 	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.
@@ -144,8 +148,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	else if((savedHexFileName = settings.value(HEX_FILE_NAME_KEY, "").toString()).size())
 		ui->hexFileNameEdit->setText(savedHexFileName);
 
+#ifndef NO_UPDATE_CHECK
 	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
 		checker.checkForUpdate();
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -274,15 +280,18 @@ void MainWindow::showAbout()
 
 	aboutBox.setIconPixmap(appIcon.pixmap(128, 128));
 
+#ifndef NO_UPDATE_CHECK
 	QCheckBox* cb = new QCheckBox("Check for updates automatically");
-
 	cb->setChecked(settings.value(AUTO_UPDATE_KEY, true).toBool());
-
 	aboutBox.setCheckBox(cb);
+#endif
+
 	aboutBox.exec();
 
+#ifndef NO_UPDATE_CHECK
 	settings.setValue(AUTO_UPDATE_KEY, cb->isChecked());
 	settings.sync();
+#endif
 }
 
 void MainWindow::saveSerialPortPref(QString name)

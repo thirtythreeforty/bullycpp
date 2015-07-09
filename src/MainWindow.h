@@ -26,9 +26,12 @@
 #include <QTimer>
 #include <QSettings>
 
-#include "GitHubUpdateChecker.h"
 #include "QtDataXfer.h"
 #include "QtPicDriver.h"
+
+#ifndef NO_UPDATE_CHECK
+#include "GitHubUpdateChecker.h"
+#endif
 
 namespace Ui {
 class MainWindow;
@@ -79,13 +82,16 @@ private:
 	QThread thread;
 	QIcon appIcon;
 	QtPicDriver *picDriver;
-	GitHubUpdateChecker checker;
 	QSettings settings;
 	QByteArray rawSerialBuffer;
 	QtDataXfer qtDataXfer;
 
 	QTimer serialRefreshTimer;
 	const static int serialRefreshIntervalMs = 5000;
+
+#ifndef NO_UPDATE_CHECK
+	GitHubUpdateChecker checker;
+#endif
 };
 
 #endif // MAINWINDOW_H
