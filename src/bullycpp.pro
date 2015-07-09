@@ -40,7 +40,8 @@ HEADERS += \
     SerialPort.h \
     widgets/CollapsingQTabWidget.h \
     widgets/InterceptQPlainTextEdit.h \
-    widgets/StickyQButton.h
+    widgets/StickyQButton.h \
+    widgets/PopupAlertQComboBox.h
 
 FORMS += mainwindow.ui \
     StickyQButton.ui

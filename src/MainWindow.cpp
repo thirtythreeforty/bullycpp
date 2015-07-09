@@ -81,10 +81,10 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 
 	connect(ui->aboutButton, &QAbstractButton::clicked, this, &MainWindow::showAbout);
 
-	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-	        picDriver, &QtPicDriver::setSerialPort);
-	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-	        this, &MainWindow::saveSerialPortPref);
+	connectSerialPortComboBox();
+	connect(ui->serialPortComboBox, &PopupAlertQComboBox::popupShown, &serialRefreshTimer, &QTimer::stop);
+	connect(ui->serialPortComboBox, &PopupAlertQComboBox::popupHidden, [this]{ serialRefreshTimer.start(serialRefreshIntervalMs); });
+
 	connect(ui->baudComboBox, &QComboBox::currentTextChanged, picDriver, &QtPicDriver::setBaudRate);
 	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->serialText, &QWidget::setEnabled);
 	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->serialErrorWidget, &QWidget::setHidden);
@@ -102,6 +102,8 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
 	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
+	connect(&serialRefreshTimer, &QTimer::timeout, this, &MainWindow::refreshSerialPortsKeepCurrent);
+
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 
 	// Set the serial window's font to be a monospace font.
@@ -110,20 +112,14 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	monoFont.setStyleHint(QFont::TypeWriter);
 	ui->serialText->setFont(std::move(monoFont));
 
-	using std::begin; using std::end;
-	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-	QStringList portStrings;
-	std::transform(begin(ports), end(ports), std::back_inserter(portStrings),
-	               [](QSerialPortInfo& i){ return i.portName(); });
-	int chosenSerialPortIndex = -1;
-	if(settings.contains(SERIAL_PORT_NAME_KEY))
-		chosenSerialPortIndex = getPositionIfPresent(portStrings, settings.value(SERIAL_PORT_NAME_KEY).toString(), chosenSerialPortIndex);
-	if(parser.isSet("device"))
-		chosenSerialPortIndex = addIfNotPresent(portStrings, parser.value("device"));
-	ui->serialPortComboBox->addItems(portStrings);
-	if(chosenSerialPortIndex != -1)
-		ui->serialPortComboBox->setCurrentIndex(chosenSerialPortIndex);
+	// Set up the serial port combo box.
+	// We would like to refresh every 5 seconds (or so).
+	refreshSerialPorts(settings.value(SERIAL_PORT_NAME_KEY).toString(), true);
+	serialRefreshTimer.setInterval(serialRefreshIntervalMs);
+	serialRefreshTimer.setTimerType(Qt::VeryCoarseTimer);
+	serialRefreshTimer.start();
 
+	using std::begin; using std::end;
 	QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
 	QStringList baudStrings;
 	std::transform(begin(bauds), end(bauds), std::back_inserter(baudStrings),
@@ -248,6 +244,14 @@ void MainWindow::tryEnableProgramButton()
 	);
 }
 
+void MainWindow::refreshSerialPortsKeepCurrent()
+{
+	// Don't dis/reconnect to the same serial port every timer event.
+	disconnectSerialPortComboBox();
+	refreshSerialPorts(ui->serialPortComboBox->currentText(), false);
+	connectSerialPortComboBox();
+}
+
 void MainWindow::showAbout()
 {
 	QMessageBox aboutBox(QMessageBox::NoIcon,
@@ -321,4 +325,37 @@ int MainWindow::addIfNotPresent(QStringList& list, const QString& value)
 	}
 	else
 		return it - begin(list);
+}
+
+void MainWindow::refreshSerialPorts(const QString& current, bool startingUp)
+{
+	using std::begin; using std::end;
+	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+	QStringList portStrings;
+	std::transform(begin(ports), end(ports), std::back_inserter(portStrings),
+	               [](QSerialPortInfo& i){ return i.portName(); });
+	int chosenSerialPortIndex = -1;
+
+	if(startingUp && settings.contains(SERIAL_PORT_NAME_KEY))
+		chosenSerialPortIndex = getPositionIfPresent(portStrings, settings.value(SERIAL_PORT_NAME_KEY).toString(), chosenSerialPortIndex);
+	if(!current.isEmpty())
+		chosenSerialPortIndex = addIfNotPresent(portStrings, current);
+	ui->serialPortComboBox->clear();
+	ui->serialPortComboBox->addItems(portStrings);
+	if(chosenSerialPortIndex != -1)
+		ui->serialPortComboBox->setCurrentIndex(chosenSerialPortIndex);
+}
+
+void MainWindow::connectSerialPortComboBox() {
+	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	        picDriver, &QtPicDriver::setSerialPort);
+	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	        this, &MainWindow::saveSerialPortPref);
+}
+
+void MainWindow::disconnectSerialPortComboBox() {
+	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	           picDriver, &QtPicDriver::setSerialPort);
+	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+	           this, &MainWindow::saveSerialPortPref);
 }

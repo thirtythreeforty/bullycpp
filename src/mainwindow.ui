@@ -18,7 +18,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QComboBox" name="serialPortComboBox">
+       <widget class="PopupAlertQComboBox" name="serialPortComboBox">
         <property name="insertPolicy">
          <enum>QComboBox::InsertAlphabetically</enum>
         </property>
@@ -455,6 +455,11 @@
    <extends>QWidget</extends>
    <header>widgets/StickyQButton.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PopupAlertQComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/PopupAlertQComboBox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

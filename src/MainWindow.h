@@ -23,6 +23,7 @@
 #include <QIcon>
 #include <QMainWindow>
 #include <QThread>
+#include <QTimer>
 #include <QSettings>
 
 #include "GitHubUpdateChecker.h"
@@ -57,6 +58,8 @@ private slots:
 	void onUpdateAvailable(QString version, QString url);
 	void tryEnableProgramButton();
 
+	void refreshSerialPortsKeepCurrent();
+
 	void showAbout();
 
 	void saveSerialPortPref(QString);
@@ -67,6 +70,10 @@ private slots:
 private:
 	int getPositionIfPresent(QStringList&, const QString&, int);
 	int addIfNotPresent(QStringList&, const QString&);
+	void refreshSerialPorts(const QString& current, bool startingUp);
+
+	inline void connectSerialPortComboBox();
+	inline void disconnectSerialPortComboBox();
 
 	Ui::MainWindow *ui;
 	QThread thread;
@@ -76,6 +83,9 @@ private:
 	QSettings settings;
 	QByteArray rawSerialBuffer;
 	QtDataXfer qtDataXfer;
+
+	QTimer serialRefreshTimer;
+	const static int serialRefreshIntervalMs = 5000;
 };
 
 #endif // MAINWINDOW_H
