@@ -23,8 +23,7 @@ Building
 BullyCPP depends on Qt 5.2 or later.  Qt is cross-platform, so BullyCPP should work on any platform with Qt support and a C++11 compiler.
 
 If you have Qt Creator installed, you can simply import the QMake project and click Build.
-This is the recommended way to build on Windows.
-(Note that you will have to compile and use a static version of Qt if you wish to redistribute the executable to users who do not have Qt installed.)
+This is the recommended way to build for personal use on Windows and Mac.
 
 On Linux and Mac OS X, you can build with Qt Creator as described above, or you can build manually.
 Begin by cloning the repository:
@@ -42,16 +41,22 @@ Now build (you can pass `-j` if you have a multicore processor):
 
 The executable `BullyCPP` will be generated.
 
-Note:  If you want to redistribute the resulting application, you will need to use a statically linked Qt, which you must compile yourself.
-The precompiled binaries are statically linked with Qt 5.4.0, built with MSVC 2013 Ultimate, and compressed with UPX.
-The Qt `configure` line used to build the provided Windows precompiled versions is
+Redistributing
+--------------
+If you want to redistribute the application, you will need to use a statically linked Qt, which you must compile yourself.
+(The precompiled binaries are statically linked with Qt 5.5.0.)
+The `configure` line used to build Qt for the provided Windows precompiled versions is
 
     configure -opensource -confirm-license -static -release -openssl-linked -skip qtwebkit -platform win32-msvc2013 -nomake examples -nomake tests -no-style-fusion -mp -I C:\openssl\include -L C:\openssl\out32 -L "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib"
 
-The Windows installer package is built using the WiX toolset.
-After building (and optionally compressing with UPX) the executable, copy it to the `installer/` directory.
-Copy the Visual C++ 12.0 Redistributable merge module into `installer/` as well (if Visual Studio is installed, it is found at `C:\Program Files\Common Files\Merge Modules\Microsoft_VC120_CRT_x86.msm`).
-Now simply run `MakeInstaller.bat` to generate the MSI object.
+The Windows installer package is built using the WiX toolset and MSVC 2013.
+To build the release installer package, you must have the above Qt toolchain and WiX in your `PATH`.
+Open an MSVC command prompt and navigate to `installer/windows/`, then just run
+
+    Build
+    MakeInstaller
+
+The first batch file will build `BullyCPP.exe`, and the second will assemble the installer.
 
 Usage
 -----
