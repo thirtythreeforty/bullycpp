@@ -84,8 +84,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->aboutButton, &QAbstractButton::clicked, this, &MainWindow::showAbout);
 
 	connectSerialPortComboBox();
-	connect(ui->serialPortComboBox, &PopupAlertQComboBox::popupShown, &serialRefreshTimer, &QTimer::stop);
-	connect(ui->serialPortComboBox, &PopupAlertQComboBox::popupHidden, [this]{ serialRefreshTimer.start(serialRefreshIntervalMs); });
+	connect(ui->serialPortComboBox, &PopupAlertQComboBox::popupShown, this, &MainWindow::refreshSerialPortsKeepCurrent);
 
 	connect(ui->baudComboBox, &QComboBox::currentTextChanged, picDriver, &QtPicDriver::setBaudRate);
 	connect(picDriver, &QtPicDriver::serialPortStatusChanged, ui->serialText, &QWidget::setEnabled);
@@ -104,8 +103,6 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
 	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
-	connect(&serialRefreshTimer, &QTimer::timeout, this, &MainWindow::refreshSerialPortsKeepCurrent);
-
 #ifndef NO_UPDATE_CHECK
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 #endif
@@ -119,9 +116,6 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	// Set up the serial port combo box.
 	// We would like to refresh every 5 seconds (or so).
 	refreshSerialPorts(settings.value(SERIAL_PORT_NAME_KEY).toString(), true);
-	serialRefreshTimer.setInterval(serialRefreshIntervalMs);
-	serialRefreshTimer.setTimerType(Qt::VeryCoarseTimer);
-	serialRefreshTimer.start();
 
 	using std::begin; using std::end;
 	QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
@@ -252,7 +246,7 @@ void MainWindow::tryEnableProgramButton()
 
 void MainWindow::refreshSerialPortsKeepCurrent()
 {
-	// Don't dis/reconnect to the same serial port every timer event.
+	// Don't dis/reconnect to the same serial port every time the user opens the list!
 	disconnectSerialPortComboBox();
 	refreshSerialPorts(ui->serialPortComboBox->currentText(), false);
 	connectSerialPortComboBox();

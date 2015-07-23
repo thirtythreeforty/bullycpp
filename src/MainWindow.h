@@ -86,9 +86,6 @@ private:
 	QByteArray rawSerialBuffer;
 	QtDataXfer qtDataXfer;
 
-	QTimer serialRefreshTimer;
-	const static int serialRefreshIntervalMs = 5000;
-
 #ifndef NO_UPDATE_CHECK
 	GitHubUpdateChecker checker;
 #endif
