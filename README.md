@@ -2,6 +2,7 @@ BullyCPP
 ========
 
 [![License GPL 3][badge-license]][license]
+[![Build status][badge-appveyor]][appveyor]
 
 BullyCPP is a PC-side driver for the [Bully Bootloader](http://www.reesemicro.com/), a bootloader for the PIC24 and dsPIC33 series of microcontrollers.
 The Bully Bootloader provides an excellent framework to download application code to these devices without needing to use an ICSP programmer such as a PICKit.
@@ -117,3 +118,5 @@ The license can be found in the `LICENSE` file.
 
 [badge-license]: https://img.shields.io/badge/license-GPL_3-green.svg?dummy
 [license]: https://github.com/thirtythreeforty/bullycpp/blob/master/LICENSE
+[badge-appveyor]: https://ci.appveyor.com/api/projects/status/fvcvqpw3me5l25pk?svg=true
+[appveyor]: https://ci.appveyor.com/project/thirtythreeforty/bullycpp
