@@ -1,0 +1,13 @@
+Format-Specification: http://www.debian.org/doc/packagin-manuals/copyright-format/1.0/
+Maintainer: George Hilliard <thirtythreeforty@gmail.com>
+Source: https://www.github.com/thirtythreeforty/bullycpp
+
+Copyright: 2014-2015 George Hilliard <thirtythreeforty@gmail.com>
+License: GPL-3+
+
+Files: src/dataxfer/*
+Copyright: 2008 Robert B. Reese, Bryan A. Jones, J. W. Bruce
+License: MIT
+
+License: GPL-3+
+  /usr/share/common-licenses/GPL-3
