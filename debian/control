@@ -1,0 +1,17 @@
+Source: bullycpp
+Maintainer: George Hilliard <thirtythreeforty@gmail.com>
+Section: utils
+Priority: optional
+Standards-Version: 3.9.6
+Build-Depends: debhelper (>= 9),
+               libqt5serialport5-dev
+
+Package: bullycpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A Bully Bootloader PC driver program
+ BullyCPP is a PC-side driver for the Bully Bootloader, a bootloader for the
+ PIC24 and dsPIC33 series of microcontrollers.  The Bully Bootloader provides
+ an excellent framework to download application code to these devices without
+ needing to use an ICSP programmer such as a PICKit.  Instead, any UART serial
+ adapter may be used.

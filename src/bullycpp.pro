@@ -51,6 +51,24 @@ ICON = bullycpp.icns
 
 TARGET = BullyCPP
 
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local/
+    }
+
+    BINDIR = $$PREFIX/bin
+    DATADIR = $$PREFIX/share
+
+    target.path = $$BINDIR
+
+    desktop.path = $$DATADIR/applications/
+    desktop.files += BullyCPP.desktop
+
+    icon.path = $$DATADIR/icons/
+    icon.files += BullyCPP.png
+
+    INSTALLS += target desktop icon
+}
 
 # These features can be set on the command line
 # as in: $ qmake FEATURES+=the-feature
@@ -59,4 +77,17 @@ if(contains(FEATURES, no_update_check)) {
 } else {
     SOURCES += GitHubUpdateChecker.cpp
     HEADERS += GitHubUpdateChecker.h
+}
+
+if(contains(FEATURES, test)) {
+    DEFINES += OUT_CHAR
+
+    SOURCES -= \
+        bullycpp.cpp \
+
+    SOURCES += \
+        bullycpp_test.cpp \
+        dataxfer/unitTests.c \
+
+    TARGET = BullyCPP_test
 }

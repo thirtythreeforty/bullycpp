@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="BullyCPP" Language="1033" Version="0.8.1.0" Manufacturer="George Hilliard" UpgradeCode="{8AD9DF1E-FAC8-442D-9F69-91D439E154B4}">
+		<Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine"/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="Complete" Title="BullyCPP" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+		<Feature Id="VCRedist" Title="Visual C++ 12.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+			<MergeRef Id="VCRedist"/>
+		</Feature>
+
+		<Icon Id="BullyCPP.ico" SourceFile="..\..\src\BullyCPP.ico"/>
+
+		<Property Id="ARPPRODUCTICON" Value="BullyCPP.ico" />
+		<Property Id="ARPHELPLINK" Value="https://www.github.com/thirtythreeforty/bullycpp" />
+
+		<Property Id="MSIINSTALLPERUSER" Value="1"/>
+
+		<UIRef Id="WixUI_Minimal" />
+		<WixVariable Id="WixUILicenseRtf" Value="gpl3.0.rtf" />
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLDIR" Name="BullyCPP" />
+			</Directory>
+			<Directory Id="ProgramMenuFolder"/>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLDIR">
+			<Component Id="MainExecutable" Guid="{2D3EBD62-670F-4A8F-B2A1-76E380E66618}">
+				<File Id="BullyCPPEXE" Name="BullyCPP.exe" Source="BullyCPP.exe" KeyPath="yes">
+					<Shortcut Id="BullyCPPStartMenuShortcut" Directory="ProgramMenuFolder" Name="BullyCPP"
+										WorkingDirectory="PersonalFolder" Icon="BullyCPP.ico" Advertise="yes"/>
+				</File>
+			</Component>
+			<Component Id="RemovableUserSettings" Guid="{D5855E5E-79E5-4AD4-BD65-41B133630254}">
+				<RegistryValue Root='HKCU' Key='Software\thirtythreeforty\[ProductName]' Type='string' Value='' KeyPath='yes' />
+				<RemoveRegistryKey Root="HKCU" Action="removeOnUninstall" Key="Software\thirtythreeforty\[ProductName]"/>
+			</Component>
+		</ComponentGroup>
+		<DirectoryRef Id="TARGETDIR">
+			<Merge Id="VCRedist" SourceFile="Microsoft_VC120_CRT_x86.msm" Language="0" DiskId="1"/>
+		</DirectoryRef>
+	</Fragment>
+</Wix>

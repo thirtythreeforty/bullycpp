@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=BullyCPP %u
+Icon=bullycpp
+Name=BullyCPP
+Comment=A Bully Bootloader PC driver program
+Categories=Development
