@@ -43,13 +43,18 @@ bool QtPicBootloaderDriver::configBitsEnabled()
 
 void QtPicBootloaderDriver::programHexFile(const QString path, const bool rethrow)
 {
-	// Our ISerialPort implementation may throw its TimeoutException
+	// Our ISerialPort implementation may throw its TimeoutException.
+	// Or, the driver may throw a logic_error.
 	try {
 		driver.programHexFile(path.toStdString());
 	}
 	catch(SerialPort::TimeoutException&) {
 		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
 		// Serial console wants us to throw the error so it can display it.
+		if(rethrow) throw;
+	}
+	catch(std::logic_error& e) {
+		emit programmingStatusChanged(IProgressCallback::Status::Error, 0);
 		if(rethrow) throw;
 	}
 }
