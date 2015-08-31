@@ -10,10 +10,10 @@ install:
 - '"%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
 
 build_script:
-- CD installer/windows
+- CD windows
 - Build
 - MakeInstaller
 
 artifacts:
-- path: installer/windows/BullyCPP.exe
+- path: windows/BullyCPP.exe
   name: BullyCPP.exe
