@@ -14,7 +14,7 @@
 			<MergeRef Id="VCRedist"/>
 		</Feature>
 
-		<Icon Id="BullyCPP.ico" SourceFile="..\..\src\BullyCPP.ico"/>
+		<Icon Id="BullyCPP.ico" SourceFile="..\src\BullyCPP.ico"/>
 
 		<Property Id="ARPPRODUCTICON" Value="BullyCPP.ico" />
 		<Property Id="ARPHELPLINK" Value="https://www.github.com/thirtythreeforty/bullycpp" />
