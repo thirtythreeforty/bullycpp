@@ -1,5 +1,8 @@
 #include "QtDataXfer.h"
 
+#include <cassert>
+#include <limits>
+
 #include <QCheckBox>
 #include <QDateTime>
 #include <QHBoxLayout>
@@ -22,12 +25,15 @@ void QtDataXfer::setTableWidget(QTableWidget *table)
 
 void QtDataXfer::sendRawData(const std::string &bytes)
 {
-	emit sendRawBytes(QByteArray::fromStdString(bytes));
+	// For some reason Qt accepts an int, not an unsigned int
+	assert(bytes.size() <= std::numeric_limits<int>::max());
+	emit sendRawBytes(QByteArray{bytes.c_str(), static_cast<int>(bytes.size())});
 }
 
 void QtDataXfer::displayRawData(const std::string &bytes)
 {
-	emit inboundBytesReady(QByteArray::fromStdString(bytes));
+	assert(bytes.size() <= std::numeric_limits<int>::max());
+	emit inboundBytesReady(QByteArray{bytes.c_str(), static_cast<int>(bytes.size())});
 }
 
 namespace {
@@ -82,7 +88,8 @@ void QtDataXfer::variableUpdated(const unsigned int index,
 void QtDataXfer::processOutboundBytes(QByteArray outbound)
 {
 	if(enabled) {
-		std::string s = dataXferWrap.escapeDataOut(outbound.toStdString());
+		std::string s = dataXferWrap.escapeDataOut(
+			std::string{outbound.constData(), static_cast<std::string::size_type>(outbound.size())});
 		emit sendRawBytes(QByteArray::fromStdString(s));
 	} else
 		emit sendRawBytes(outbound);
@@ -91,7 +98,10 @@ void QtDataXfer::processOutboundBytes(QByteArray outbound)
 void QtDataXfer::processInboundBytes(QByteArray inbound)
 {
 	if(enabled)
-		dataXferWrap.onDataIn(inbound.toStdString(), QDateTime::currentMSecsSinceEpoch());
+		dataXferWrap.onDataIn(
+			std::string{inbound.constData(), static_cast<std::string::size_type>(inbound.size())},
+			QDateTime::currentMSecsSinceEpoch()
+		);
 	else
 		emit inboundBytesReady(inbound);
 }
