@@ -90,7 +90,8 @@ void QtDataXfer::processOutboundBytes(QByteArray outbound)
 	if(enabled) {
 		std::string s = dataXferWrap.escapeDataOut(
 			std::string{outbound.constData(), static_cast<std::string::size_type>(outbound.size())});
-		emit sendRawBytes(QByteArray::fromStdString(s));
+		assert(s.size() <= std::numeric_limits<int>::max());
+		emit sendRawBytes(QByteArray{s.c_str(), static_cast<int>(s.size())});
 	} else
 		emit sendRawBytes(outbound);
 }
