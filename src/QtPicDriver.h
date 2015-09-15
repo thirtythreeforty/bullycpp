@@ -29,7 +29,7 @@ class QtPicDriver : public QObject
 {
 	Q_OBJECT
 public:
-	explicit QtPicDriver(const QStringList& deviceFiles, QObject *parent = 0);
+	explicit QtPicDriver(const QStringList& deviceFiles, bool rethrow = false, QObject *parent = 0);
 	virtual ~QtPicDriver();
 
 signals:
@@ -45,8 +45,7 @@ signals:
 
 public slots:
 	void sendSerialData(const QByteArray data);
-	void programHexFile(const QString path) { programHexFile(path, false); }
-	void programHexFile(const QString path, const bool rethrow);
+	void programHexFile(const QString path);
 	void setSerialPort(const QString name);
 	void setBaudRate(const QString baud);
 	void setMCLR(bool mclr);
@@ -64,6 +63,7 @@ private:
 	QtPicBootloaderDriver bootloaderDriver;
 	std::atomic<bool> forwardData;
 	bool mclrOnProgram;
+	bool rethrow; // Should we rethrow errors after catching them?
 };
 
 #endif // QTPICDRIVER_H

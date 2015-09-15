@@ -18,12 +18,13 @@
 
 #include <stdexcept>
 
-QtPicDriver::QtPicDriver(const QStringList& deviceFiles, QObject *parent)
+QtPicDriver::QtPicDriver(const QStringList& deviceFiles, bool rethrow, QObject *parent)
 	: QObject(parent)
 	, serialPort(this)
 	, bootloaderDriver(serialPort)
 	, forwardData(true)
 	, mclrOnProgram(false)
+	, rethrow(rethrow)
 {
 	openSerialPort();
 	for(const auto& deviceFile: deviceFiles)
@@ -45,7 +46,7 @@ void QtPicDriver::sendSerialData(const QByteArray data)
 	serialPort.getQSerialPort().write(data);
 }
 
-void QtPicDriver::programHexFile(const QString path, const bool rethrow)
+void QtPicDriver::programHexFile(const QString path)
 {
 	forwardData = false;
 
@@ -115,6 +116,7 @@ void QtPicDriver::openSerialPort()
 	catch(std::runtime_error& e) {
 		emit serialPortStatusChanged(false);
 		emit serialPortErrorChanged(e.what());
+		if(rethrow) throw;
 	}
 }
 

@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
 		std::cout << "OK\n";
 
-		driver.programHexFile(parser.positionalArguments()[0], true);
+		driver.programHexFile(parser.positionalArguments()[0]);
 	}
 	catch(std::exception& e) {
 		std::cout << argv[0] << ": " << e.what() << std::endl;
