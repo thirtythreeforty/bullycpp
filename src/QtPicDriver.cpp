@@ -131,7 +131,7 @@ void QtPicDriver::onDeviceChanged(const QString device)
 	emit deviceChanged(device);
 }
 
-void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status status, int percent)
+void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status status, int percent, QString error)
 {
 	typedef bullycpp::IProgressCallback::Status Status;
 	const static QMap<Status, QString> map = {
@@ -139,7 +139,7 @@ void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status
 		{Status::Busy,        QStringLiteral("Working...")},
 		{Status::Programming, QStringLiteral("Programming (%1%)")},
 		{Status::Verifying,   QStringLiteral("Verifying (%1%)")},
-		{Status::Error,       QStringLiteral("An error occured!")}
+		{Status::Error,       QStringLiteral("Error: %1")}
 	};
 
 	QString strStatus = map[status];
@@ -169,6 +169,7 @@ void QtPicDriver::onProgrammingStatusChanged(bullycpp::IProgressCallback::Status
 	case Status::Error:
 		emit programmingStateChanged(false);
 		emit programmingErrorChanged(true);
+		strStatus = strStatus.arg(error);
 		break;
 	}
 	emit programmingProgressChanged(strStatus, scaledPercent);

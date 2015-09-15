@@ -38,7 +38,7 @@ public:
 signals:
 	void configBitsEnabledChanged(bool);
 	void deviceChanged(QString);
-	void programmingStatusChanged(bullycpp::IProgressCallback::Status, int);
+	void programmingStatusChanged(bullycpp::IProgressCallback::Status, int, QString);
 
 public slots:
 	void programHexFile(const QString path, const bool rethrow);
