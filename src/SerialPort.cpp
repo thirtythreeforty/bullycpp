@@ -54,7 +54,10 @@ void SerialPort::setName(const char* name)
 
 void SerialPort::setSpeed(const unsigned int speed)
 {
-	qserialport.setBaudRate(speed);
+	if(!qserialport.setBaudRate(speed))
+		throw std::runtime_error(
+				std::string("Could not set serial port speed: ")
+						.append(qserialport.errorString().toStdString()));
 }
 
 void SerialPort::open()

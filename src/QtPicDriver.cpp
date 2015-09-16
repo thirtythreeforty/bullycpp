@@ -79,10 +79,21 @@ void QtPicDriver::setSerialPort(const QString name)
 
 void QtPicDriver::setBaudRate(const QString baud)
 {
+	bool ok;
+
 	serialPort.close();
-	unsigned int intBaud = baud.toInt();
-	if(intBaud) {
-		serialPort.setSpeed(intBaud);
+
+	unsigned int intBaud = baud.toUInt(&ok);
+	if(ok) {
+		try {
+			serialPort.setSpeed(intBaud);
+		}
+		catch(std::runtime_error& e) {
+			emit serialPortStatusChanged(false);
+			emit serialPortErrorChanged(QString(e.what()));
+			if(rethrow) throw;
+			return;
+		}
 		openSerialPort();
 	}
 	else {
