@@ -44,7 +44,6 @@ public slots:
 
 private slots:
 	void onLockToggle(bool checked);
-	void onPushToggle(bool checked);
 
 private:
 	Ui::StickyQButton *ui;

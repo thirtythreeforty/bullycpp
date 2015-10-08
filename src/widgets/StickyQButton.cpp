@@ -23,7 +23,10 @@ StickyQButton::StickyQButton(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	connect(ui->pushButton, &QPushButton::toggled, this, &StickyQButton::onPushToggle);
+	connect(ui->pushButton, &QPushButton::pressed, [this]{ emit toggled(true); });
+	connect(ui->pushButton, &QPushButton::released, [this]{ emit toggled(false); });
+	connect(ui->pushButton, &QPushButton::released, [this]{ ui->lockButton->setChecked(false); });
+
 	connect(ui->lockButton, &QPushButton::toggled, this, &StickyQButton::onLockToggle);
 }
 
@@ -52,14 +55,6 @@ void StickyQButton::onLockToggle(bool checked)
 	else {
 		ui->pushButton->setChecked(false);
 		ui->pushButton->setCheckable(false);
-	}
-}
-
-void StickyQButton::onPushToggle(bool checked)
-{
-	emit toggled(checked);
-	if(!checked) {
-		ui->lockButton->setChecked(false);
 	}
 }
 
