@@ -66,15 +66,17 @@ BullyCPP has both a command-line and a GUI mode.
 Running it with no arguments will launch the GUI.
 
 For advanced usage, you may wish to run it without the interface.
-Simply pass `--no-gui`, the device name, and the name of an Intel hex file (emitted by MPLAB) you want to flash:
+You must use the `--no-gui` option, the device name, and the name of an Intel hex file (emitted by MPLAB) you want to flash:
 
-    bullycpp --no-gui -D ttyUSB0 ~/target_code.hex
+    bullycpp --no-gui --device ttyUSB0 ~/target_code.hex
 
 (You may need to use `./bullycpp` if you have not copied it to your path.)
+This command will program the device and exit, providing progress information on the console.
 The options used are explained further below.
 
 BullyCPP has several options you may find of use.
 These options affect the GUI mode as well, so you may find it helpful to create a shortcut to the program with all your preferred settings passed on the command line.
+Again, note that you *must* pass `--no-gui` if you just want to program via the command line; all the options below do not imply it.
 For an overview of available options, use the `--help` flag.
 
 The most common option is `--mclr` or `-r` (for Reset).
