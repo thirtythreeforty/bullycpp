@@ -17,3 +17,5 @@ build_script:
 artifacts:
 - path: windows/BullyCPP.exe
   name: BullyCPP.exe
+- path: windows/BullyCPPw.exe
+  name: BullyCPPw.exe

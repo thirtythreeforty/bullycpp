@@ -37,10 +37,13 @@
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLDIR">
 			<Component Id="MainExecutable" Guid="{2D3EBD62-670F-4A8F-B2A1-76E380E66618}">
-				<File Id="BullyCPPEXE" Name="BullyCPP.exe" Source="BullyCPP.exe" KeyPath="yes">
+				<File Id="BullyCPPWEXE" Name="BullyCPPw.exe" Source="BullyCPPw.exe" KeyPath="yes">
 					<Shortcut Id="BullyCPPStartMenuShortcut" Directory="ProgramMenuFolder" Name="BullyCPP"
-										WorkingDirectory="PersonalFolder" Icon="BullyCPP.ico" Advertise="yes"/>
+					          WorkingDirectory="PersonalFolder" Icon="BullyCPP.ico" Advertise="yes"/>
 				</File>
+			</Component>
+			<Component Id="ConsoleWrapper" Guid="{857944F9-C30C-4B89-B64D-4A515C58D623}">
+				<File Id="BullyCPPEXE" Name="BullyCPP.exe" Source="BullyCPP.exe" KeyPath="yes" />
 			</Component>
 			<Component Id="RemovableUserSettings" Guid="{D5855E5E-79E5-4AD4-BD65-41B133630254}">
 				<RegistryValue Root='HKCU' Key='Software\thirtythreeforty\[ProductName]' Type='string' Value='' KeyPath='yes' />

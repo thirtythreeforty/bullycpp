@@ -50,6 +50,7 @@ RC_ICONS = bullycpp.ico
 ICON = bullycpp.icns
 
 TARGET = BullyCPP
+win32:TARGET = BullyCPPw
 
 unix {
     isEmpty(PREFIX) {
