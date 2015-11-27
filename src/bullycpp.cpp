@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	try {
 		std::cout << "Initializing... ";
 
-		QtPicDriver driver(parser.values("piclist"));
+		QtPicDriver driver(parser.values("piclist"), true);
 		driver.setSerialPort(parser.value("device"));
 		driver.setBaudRate(parser.value("baud"));
 		driver.setMCLROnProgram(parser.isSet("mclr"));
