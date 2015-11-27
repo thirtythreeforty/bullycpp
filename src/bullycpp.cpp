@@ -13,6 +13,7 @@ int main(int argc, char** argv)
 {
 	QCoreApplication::setOrganizationName("thirtythreeforty");
 	QCoreApplication::setApplicationName("BullyCPP");
+	QCoreApplication::setApplicationVersion(VERSION_STRING);
 	QApplication app(argc, argv);
 
 	// Parse options
@@ -20,6 +21,7 @@ int main(int argc, char** argv)
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Flashes code to PIC devices running the Bully Bootloader.");
 	parser.addHelpOption();
+	parser.addVersionOption();
 	parser.addOption(QCommandLineOption({"r", "mclr"},
 		"Assert MCLR (RTS/DTR line) before programming target"));
 	parser.addOption(QCommandLineOption({"c", "configbits"},
