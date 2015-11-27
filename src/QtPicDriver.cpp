@@ -26,7 +26,6 @@ QtPicDriver::QtPicDriver(const QStringList& deviceFiles, bool rethrow, QObject *
 	, mclrOnProgram(false)
 	, rethrow(rethrow)
 {
-	openSerialPort();
 	for(const auto& deviceFile: deviceFiles)
 		bootloaderDriver.parseDeviceFile(deviceFile);
 	connect(&serialPort.getQSerialPort(), &QIODevice::readyRead, this, &QtPicDriver::onReadyRead);
