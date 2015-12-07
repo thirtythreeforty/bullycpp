@@ -51,11 +51,12 @@ void StickyQButton::onLockToggle(bool checked)
 	if(checked) {
 		ui->pushButton->setCheckable(true);
 		ui->pushButton->setChecked(true);
+		ui->lockButton->setChecked(true);
 	}
 	else {
 		ui->pushButton->setChecked(false);
 		ui->pushButton->setCheckable(false);
-        ui->lockButton->setChecked(false);
+		ui->lockButton->setChecked(false);
 	}
 }
 
