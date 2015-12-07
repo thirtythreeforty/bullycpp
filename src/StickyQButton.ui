@@ -55,7 +55,8 @@
      </property>
      <property name="icon">
       <iconset resource="bullycpp.qrc">
-       <normaloff>:/widgets/lock.png</normaloff>:/widgets/lock.png</iconset>
+       <normaloff>:/widgets/LockOpened.png</normaloff>
+       <normalon>:/widgets/LockClosed.png</normalon>:/widgets/LockOpened.png</iconset>
      </property>
      <property name="iconSize">
       <size>
