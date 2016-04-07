@@ -2,7 +2,7 @@ PROJECT = bullycpp
 CONFIG += qt c++11
 QT += core gui network serialport widgets
 
-VERSION = 0.8.1
+VERSION = 1.0.0
 DEFINES += VERSION_STRING=\\\"v$$VERSION\\\"
 
 SOURCES += \
