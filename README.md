@@ -98,6 +98,16 @@ For example:
 
     bullycpp --baud 115200 ~/target_code.hex
 
+Custom Device List
+------------------
+BullyCPP uses a device list to identify various Microchip parts.
+This list is in the same format as the list used by the legacy Bully Bootloader tool.
+The default list is packed into the program at compile time; it can be found [in the source tree](src/devices.txt).
+If you need to use a device not present in the default list, you can supply your own list with the `--piclist` command-line option.
+For example:
+
+    bullycpp --piclist ~/custom_devices.txt
+
 DataXfer
 --------
 BullyCPP can use the [µC/PC data transfer protocol](http://www.ece.msstate.edu/courses/ece3724/main_pic24/docs/data_xfer.html) to mux serial data with variable transfer.
