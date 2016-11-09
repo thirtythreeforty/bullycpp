@@ -17,6 +17,8 @@
 #ifndef INTERCEPTQPLAINTEXTEDIT_H
 #define INTERCEPTQPLAINTEXTEDIT_H
 
+#include <QApplication>
+#include <QClipboard>
 #include <QFile>
 #include <QMimeData>
 #include <QPlainTextEdit>
@@ -36,8 +38,16 @@ signals:
 
 protected:
 	virtual void keyPressEvent(QKeyEvent *e) {
-		// Do not forward this upward (we don't want local echo)
-		emit keyPressed(e->text());
+		// Do not forward this upward (we don't want local echo).
+
+		// Look for a paste command. Since the QPlainTextEdit has editing
+		// disabled, this won't be detected by default.
+		if (e->matches(QKeySequence::Paste)) {
+			emit keyPressed(QApplication::clipboard()->text());
+		}
+		else {
+			emit keyPressed(e->text());
+		}
 	}
 	virtual void insertFromMimeData(const QMimeData *source) {
 		if(source->hasUrls()) {
