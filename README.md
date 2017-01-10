@@ -121,6 +121,9 @@ It uses the GitHub API to perform this check; no identifying information is sent
 If a new release is found, a dialog will appear with a link to the new release.
 You can disable this behavior in the About dialog if you wish.
 
+Update checks can also be disabled permanently at compile time by setting the `NO_UPDATE_CHECK` preprocessor variable to `1`.
+This is especially useful for Linux builds that are distributed with a package manager that performs its own update checks.
+
 Licensing
 ---------
 BullyCPP is free software, released under the GNU General Public License version 3 or later, as published by the Free Software Foundation.
