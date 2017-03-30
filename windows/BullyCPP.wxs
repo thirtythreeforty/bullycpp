@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="BullyCPP" Language="1033" Version="1.0.0.0" Manufacturer="George Hilliard" UpgradeCode="{8AD9DF1E-FAC8-442D-9F69-91D439E154B4}">
+	<Product Id="*" Name="BullyCPP" Language="1033" Version="1.1.0.0" Manufacturer="George Hilliard" UpgradeCode="{8AD9DF1E-FAC8-442D-9F69-91D439E154B4}">
 		<Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine"/>
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
