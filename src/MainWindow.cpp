@@ -258,7 +258,7 @@ void MainWindow::showAbout()
 	                     QStringLiteral("About BullyCPP"),
 	                     "<p align='center'>"
 	                     "<h2>BullyCPP " VERSION_STRING "</h2><br>"
-	                     "Copyright &#0169; 2014 - 2015 George Hilliard (\"thirtythreeforty\") and contributors"
+	                     "Copyright &#0169; 2014 - 2017 George Hilliard (\"thirtythreeforty\") and contributors"
 	                     "<p align='center'>"
 	                     "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
 	                     "for updates and source code."
