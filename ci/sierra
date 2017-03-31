@@ -1,0 +1,17 @@
+#!/bin/bash
+case $1 in
+before_install)
+    brew update
+;;
+install)
+    brew install qt5
+    brew link qt5 --force
+;;
+script)
+    cd mac && ./build.sh
+;;
+*)
+echo "I don't know what `$1` is, but it isn't a valid command."
+exit 1
+;;
+esac

@@ -1,11 +1,15 @@
+language: cpp
 os:
     - linux
+    - osx
 dist: trusty
 sudo: required
+osx_image: xcode8.3
 
 before_install:
-    - ./ci/trusty before_install
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CI=./ci/sierra; else export CI=./ci/trusty; fi
+    - $CI before_install
 install:
-    - ./ci/trusty install
+    - $CI install
 script:
-    - ./ci/trusty script
+    - $CI script
