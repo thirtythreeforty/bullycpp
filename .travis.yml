@@ -1,11 +1,16 @@
+os:
+    - linux
+dist: trusty
+sudo: required
+
 before_install:
-    - sudo add-apt-repository ppa:beineri/opt-qt551 -y
+    - sudo add-apt-repository ppa:beineri/opt-qt58-trusty -y
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update
 install:
-    - sudo apt-get install g++-5 qt55base qt55serialport
+    - sudo apt-get install g++-5 qt58base qt58serialport
 script:
-    - source /opt/qt55/bin/qt55-env.sh
+    - source /opt/qt58/bin/qt58-env.sh
     - mkdir build
     - cd build
     - qmake QMAKE_CC=gcc-5 QMAKE_CXX=g++-5 ../src/bullycpp.pro
