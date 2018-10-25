@@ -13,3 +13,16 @@ install:
     - $CI install
 script:
     - $CI script
+
+before_deploy:
+    - git tag -f travis-latest
+deploy:
+  provider: releases
+  api_key:
+    secure: HHKUELYSEdM/av1iMlokJSmV6fCSVh10Y8ZDu1fPgEtJDBnHtpuGKNzBF5rQxBwxGtXOby4HzB9ioJEcu7z5ZL0UqFc+q/GCAR2vNAjqJr947FvZLVa6pRxGf9rDcH0snQaoo32v5mZnroZg1IQlZisoga6Mykbssa7i8Hq4+IM216YdadU7/DdGAkc0FWoFCVGy1Cjqm/Hxhrkk4K/oEVDETGCuPvGt17JZinMder1dVz8FpMVQ8vDcgusQdFlVYTIF0TLwzcjvQbGGDo1g3AxqKsQU/z9DVhdbaMty7wQ3KbDD98oIutvzNYp6F/dRi4xUsQP+S3t4l+MR9vUigL0T3V3SmbkjDG5Cxa1IlsSdwtU3VRXmGhRUzbK8e632/jmUiMaSLA9m2boWHA9FYV97h64lhp0M7jzZigShaybRRZy9RuypHyghaF5XJO08ZA9L1FwXM/29P3EkxBh+YGWkkv2Un+CDn8CdrvM9TDf1g9dcxL8IaoJ78A7L4A/oaWU58DcppAc+mWD7xzxcs6Oju6xlC+MWEx66cq66r6QVF4a6thqIwyjbUHiHcRru6rMoR6XtMgUDI5QDpOQUEupVUEl7l717qNxG2wLNbpVStrbtx+/ffw0ylRSKfOKzf9GBu/JNldSyXH4gYN+EFBsAgd1B3hZKrJzntI0gd0s=
+  file: mac/BullyCPP.dmg
+  skip_cleanup: true
+  prerelease: true
+  on:
+    repo: thirtythreeforty/bullycpp
+    all_branches: true
