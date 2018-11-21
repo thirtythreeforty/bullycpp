@@ -114,7 +114,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.
 	QFont monoFont("Monospace");
 	monoFont.setStyleHint(QFont::TypeWriter);
-	ui->serialText->setFont(std::move(monoFont));
+    ui->serialText->setFont(std::move(monoFont));
 
 	// Set up the serial port combo box.
 	// We would like to refresh every 5 seconds (or so).
@@ -149,6 +149,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
 		checker.checkForUpdate();
 #endif
+
+    // Set the monospace font for the send message TextBox
+    ui->sendMsg_TextBox->setFont(std::move(monoFont));
 }
 
 MainWindow::~MainWindow()
