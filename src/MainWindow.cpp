@@ -73,7 +73,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->mclrButton, &StickyQButton::toggled, picDriver, &QtPicDriver::setMCLR);
 	connect(picDriver, &QtPicDriver::mclrChanged, ui->mclrButton, &StickyQButton::setChecked);
 
-	connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });
+    connect(ui->serialText, &InterceptQPlainTextEdit::keyPressed, [=](QString s){ qtDataXfer.processOutboundBytes(s.toLocal8Bit()); });
 	connect(&qtDataXfer, &QtDataXfer::sendRawBytes, picDriver, &QtPicDriver::sendSerialData);
 	connect(picDriver, &QtPicDriver::serialDataReceived, &qtDataXfer, &QtDataXfer::processInboundBytes);
 	connect(&qtDataXfer, &QtDataXfer::inboundBytesReady, this, &MainWindow::onSerialTextReceived);
@@ -102,6 +102,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, ui->dataXferTable, &QWidget::setVisible);
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
 	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
+
+    connect(ui->sendMsg_TextBox, &QLineEdit::returnPressed, this, &MainWindow::sendMsgReturnPressed);
+    connect(ui->sendMsg_Button, &QAbstractButton::clicked, this, &MainWindow::sendMsgButtonClicked);
 
 #ifndef NO_UPDATE_CHECK
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
@@ -361,4 +364,30 @@ void MainWindow::disconnectSerialPortComboBox() {
 	           picDriver, &QtPicDriver::setSerialPort);
 	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
 	           this, &MainWindow::saveSerialPortPref);
+}
+
+void MainWindow::sendMsgButtonClicked() {
+    // if control key is not pressed, insert newline
+    if (!QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
+        ui->sendMsg_TextBox->insert("\n");
+    }
+
+    // actually send the data
+    qtDataXfer.processOutboundBytes(ui->sendMsg_TextBox->text().toLocal8Bit());
+
+    // clear the box if told to
+    if (ui->clearOnSendCheckBox->isChecked()) {
+        ui->sendMsg_TextBox->clear();
+        ui->sendMsg_TextBox->setFocus();
+    }
+}
+
+void MainWindow::sendMsgReturnPressed() {
+    // if checked, click the button
+    // otherwise, insert a newline character
+    if (ui->sendOnReturnCheckBox->isChecked()) {
+        ui->sendMsg_Button->click();
+    } else {
+        ui->sendMsg_TextBox->insert("\n");
+    }
 }
