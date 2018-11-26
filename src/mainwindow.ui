@@ -220,6 +220,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>CTRL+SEND to omit \n append</string>
+            </property>
             <property name="text">
              <string>Send</string>
             </property>
@@ -242,7 +245,7 @@
           <item>
            <widget class="QCheckBox" name="sendOnReturnCheckBox">
             <property name="text">
-             <string>Send on return/enter press</string>
+             <string>Send on ENTER</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -250,20 +253,17 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-            <property name="text">
-             <string>CTRL+SEND to omit \n append</string>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
+           </spacer>
           </item>
          </layout>
         </item>
