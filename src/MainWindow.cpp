@@ -151,7 +151,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 #endif
 
 	// Set the monospace font for the send message TextBox
-	ui->sendMsg_TextBox->setFont(std::move(monoFont));
+	ui->sendMsg_TextBox->setFont(monoFont);
 }
 
 MainWindow::~MainWindow()
