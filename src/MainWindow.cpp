@@ -370,13 +370,16 @@ void MainWindow::disconnectSerialPortComboBox() {
 }
 
 void MainWindow::sendMsgButtonClicked() {
+	// grab the text from the message box
+	QString text = ui->sendMsg_TextBox->text();
+
 	// if control key is not pressed, insert newline
 	if (!QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
-		ui->sendMsg_TextBox->insert("\n");
+		text.append('\n');
 	}
 
 	// actually send the data
-	qtDataXfer.processOutboundBytes(ui->sendMsg_TextBox->text().toLocal8Bit());
+	qtDataXfer.processOutboundBytes(text.toLocal8Bit());
 
 	// clear the box if told to
 	if (ui->clearOnSendCheckBox->isChecked()) {
