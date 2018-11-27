@@ -71,7 +71,7 @@ private slots:
 	void saveConfigBitsPref(bool);
 
     void sendMsgButtonClicked();
-    void sendMsgReturnPressed();
+    void sendMsgEnterPressed();
 
 private:
 	int getPositionIfPresent(QStringList&, const QString&, int);

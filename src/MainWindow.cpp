@@ -103,7 +103,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
 	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
-	connect(ui->sendMsg_TextBox, &QLineEdit::returnPressed, this, &MainWindow::sendMsgReturnPressed);
+	connect(ui->sendMsg_TextBox, &QLineEdit::returnPressed, this, &MainWindow::sendMsgEnterPressed);
 	connect(ui->sendMsg_Button, &QAbstractButton::clicked, this, &MainWindow::sendMsgButtonClicked);
 
 #ifndef NO_UPDATE_CHECK
@@ -388,7 +388,7 @@ void MainWindow::sendMsgButtonClicked() {
 	}
 }
 
-void MainWindow::sendMsgReturnPressed() {
+void MainWindow::sendMsgEnterPressed() {
 	// if checked, click the button
 	// otherwise, insert a newline character
 	if (ui->sendOnReturnCheckBox->isChecked()) {
