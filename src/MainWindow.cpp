@@ -57,7 +57,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->hexFileNameEdit, &QLineEdit::textChanged, this, &MainWindow::onHexFileTextChanged);
 	connect(ui->hexFileNameEdit, &QLineEdit::textChanged, this, &MainWindow::saveHexFilePref);
 	connect(this, &MainWindow::programHexFile,
-			picDriver, static_cast<void (QtPicDriver::*)(QString)>(&QtPicDriver::programHexFile));
+	        picDriver, static_cast<void (QtPicDriver::*)(QString)>(&QtPicDriver::programHexFile));
 	connect(picDriver, &QtPicDriver::deviceChanged, ui->deviceInfoLabel, &QLabel::setText);
 	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->progressWidget, &QWidget::setVisible);
 	connect(picDriver, &QtPicDriver::programmingStateChanged, ui->programmingWidget, &QWidget::setHidden);
@@ -124,7 +124,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
 	QStringList baudStrings;
 	std::transform(begin(bauds), end(bauds), std::back_inserter(baudStrings),
-				   [](qint32 baud){ QString s; s.setNum(baud); return s; });
+	               [](qint32 baud){ QString s; s.setNum(baud); return s; });
 	// Baud is always set in parser (default option is present).
 	// Because of this fact, it is difficult to determine the "most wanted"
 	// value, so we don't save this one.
@@ -261,21 +261,21 @@ void MainWindow::refreshSerialPortsKeepCurrent()
 void MainWindow::showAbout()
 {
 	QMessageBox aboutBox(QMessageBox::NoIcon,
-						 QStringLiteral("About BullyCPP"),
-						 "<p align='center'>"
-						 "<h2>BullyCPP " VERSION_STRING "</h2><br>"
-						 "Copyright &#0169; 2014 - 2015 George Hilliard (\"thirtythreeforty\") and contributors"
-						 "<p align='center'>"
-						 "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
-						 "for updates and source code."
-						 "<p>"
-						 "BullyCPP is a serial console and a driver for the open source Bully Bootloader for the PIC24 and dsPIC33.  "
-						 "See <a href='http://www.reesemicro.com/'>www.reesemicro.com</a> for the microcontroller firmware."
-						 "<p>"
-						 "This program is free software; you can redistribute it and/or modify it under the terms of "
-						 "the GNU General Public License v3 or later, as published by the Free Software Foundation.",
-						 QMessageBox::Ok,
-						 this
+	                     QStringLiteral("About BullyCPP"),
+	                     "<p align='center'>"
+	                     "<h2>BullyCPP " VERSION_STRING "</h2><br>"
+	                     "Copyright &#0169; 2014 - 2015 George Hilliard (\"thirtythreeforty\") and contributors"
+	                     "<p align='center'>"
+	                     "See <a href='https://www.github.com/thirtythreeforty/bullycpp'>www.github.com/thirtythreeforty/bullycpp</a> "
+	                     "for updates and source code."
+	                     "<p>"
+	                     "BullyCPP is a serial console and a driver for the open source Bully Bootloader for the PIC24 and dsPIC33.  "
+	                     "See <a href='http://www.reesemicro.com/'>www.reesemicro.com</a> for the microcontroller firmware."
+	                     "<p>"
+	                     "This program is free software; you can redistribute it and/or modify it under the terms of "
+	                     "the GNU General Public License v3 or later, as published by the Free Software Foundation.",
+	                     QMessageBox::Ok,
+	                     this
 	);
 
 	aboutBox.setIconPixmap(appIcon.pixmap(128, 128));
@@ -342,7 +342,7 @@ void MainWindow::refreshSerialPorts(const QString& current, bool startingUp)
 	QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
 	QStringList portStrings;
 	std::transform(begin(ports), end(ports), std::back_inserter(portStrings),
-				   [](QSerialPortInfo& i){ return i.portName(); });
+	               [](QSerialPortInfo& i){ return i.portName(); });
 	int chosenSerialPortIndex = -1;
 
 	if(startingUp && settings.contains(SERIAL_PORT_NAME_KEY))
@@ -357,16 +357,16 @@ void MainWindow::refreshSerialPorts(const QString& current, bool startingUp)
 
 void MainWindow::connectSerialPortComboBox() {
 	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-			picDriver, &QtPicDriver::setSerialPort);
+	        picDriver, &QtPicDriver::setSerialPort);
 	connect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-			this, &MainWindow::saveSerialPortPref);
+	        this, &MainWindow::saveSerialPortPref);
 }
 
 void MainWindow::disconnectSerialPortComboBox() {
 	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-			   picDriver, &QtPicDriver::setSerialPort);
+	           picDriver, &QtPicDriver::setSerialPort);
 	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
-			   this, &MainWindow::saveSerialPortPref);
+	           this, &MainWindow::saveSerialPortPref);
 }
 
 void MainWindow::sendMsgButtonClicked() {
