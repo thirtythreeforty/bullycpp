@@ -103,6 +103,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	connect(ui->useDataXferCheckBox, &QAbstractButton::toggled, &qtDataXfer, &QtDataXfer::enable);
 	connect(ui->mclrButton, &StickyQButton::pressed, [=]{ ui->dataXferTable->setRowCount(0); });
 
+	connect(ui->sendMsg_TextBox, &QLineEdit::returnPressed, this, &MainWindow::sendMsgEnterPressed);
+	connect(ui->sendMsg_Button, &QAbstractButton::clicked, this, &MainWindow::sendMsgButtonClicked);
+
 #ifndef NO_UPDATE_CHECK
 	connect(&checker, &GitHubUpdateChecker::updateAvailable, this, &MainWindow::onUpdateAvailable);
 #endif
@@ -111,7 +114,7 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	// The "Monospace" suggestion won't work on Windows, which is what the StyleHint is for.
 	QFont monoFont("Monospace");
 	monoFont.setStyleHint(QFont::TypeWriter);
-	ui->serialText->setFont(std::move(monoFont));
+	ui->serialText->setFont(monoFont);
 
 	// Set up the serial port combo box.
 	// We would like to refresh every 5 seconds (or so).
@@ -146,6 +149,9 @@ MainWindow::MainWindow(const QCommandLineParser& parser, QWidget* parent) :
 	if(settings.value(AUTO_UPDATE_KEY, true).toBool())
 		checker.checkForUpdate();
 #endif
+
+	// Set the monospace font for the send message TextBox
+	ui->sendMsg_TextBox->setFont(monoFont);
 }
 
 MainWindow::~MainWindow()
@@ -361,4 +367,33 @@ void MainWindow::disconnectSerialPortComboBox() {
 	           picDriver, &QtPicDriver::setSerialPort);
 	disconnect(ui->serialPortComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
 	           this, &MainWindow::saveSerialPortPref);
+}
+
+void MainWindow::sendMsgButtonClicked() {
+	// grab the text from the message box
+	QString text = ui->sendMsg_TextBox->text();
+
+	// if control key is not pressed, insert newline
+	if (!QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
+		text.append('\n');
+	}
+
+	// actually send the data
+	qtDataXfer.processOutboundBytes(text.toLocal8Bit());
+
+	// clear the box if told to
+	if (ui->clearOnSendCheckBox->isChecked()) {
+		ui->sendMsg_TextBox->clear();
+		ui->sendMsg_TextBox->setFocus();
+	}
+}
+
+void MainWindow::sendMsgEnterPressed() {
+	// if checked, click the button
+	// otherwise, insert a newline character
+	if (ui->sendOnReturnCheckBox->isChecked()) {
+		ui->sendMsg_Button->click();
+	} else {
+		ui->sendMsg_TextBox->insert("\n");
+	}
 }

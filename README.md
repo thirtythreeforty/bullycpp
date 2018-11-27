@@ -66,6 +66,20 @@ Usage
 BullyCPP has both a command-line and a GUI mode.
 Running it with no arguments will launch the GUI.
 
+#### GUI mode
+GUI Mode provides a visual interaction interface with BullyCPP.
+Serial text is displayed in the large text area centered in the GUI. Typing directly in the serial text area will send individual characters as typed.
+
+**Send Message:**
+Used to send a string over the serial port. BullyCPP will automatically append a new-line character (\n) to the end of the string before sending. To omit this, hold down CONTROL when either clicking SEND or pressing ENTER (if enabled).
+
+**Target Programming:**
+Used to transmit a .hex file over serial. Select the program file with OPEN... and send the data via PROGRAM. Enable "MCLR before programming" to send a MCLR over serial before sending the program file.
+
+**Use µC/PC Variables:**
+Used to view variables with serial.
+
+#### Command-line mode
 For advanced usage, you may wish to run it without the interface.
 You must use the `--no-gui` option, the device name, and the name of an Intel hex file (emitted by MPLAB) you want to flash:
 
